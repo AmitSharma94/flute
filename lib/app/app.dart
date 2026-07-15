@@ -10,7 +10,7 @@ class FluteApp extends StatelessWidget {
     return MaterialApp.router(
       title: 'Flute',
       debugShowCheckedModeBanner: false,
-      theme: AppTheme.light,
+      theme: AppTheme.dark,
       routerConfig: appRouter,
     );
   }
