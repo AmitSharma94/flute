@@ -23,17 +23,14 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
           flutter-version: '3.44.6'
           channel: stable
 
-
       - name: Install dependencies
         run: flutter pub get
-
 
       - name: Patch on_audio_query Android compatibility
         run: |
@@ -46,30 +43,21 @@ jobs:
           echo "Manifest file:"
           echo $MANIFEST_FILE
 
-          if [ -z "$GRADLE_FILE" ]; then
-            echo "ERROR: on_audio_query_android build.gradle not found"
-            exit 1
-          fi
-
-          if [ -z "$MANIFEST_FILE" ]; then
-            echo "ERROR: on_audio_query_android AndroidManifest.xml not found"
-            exit 1
-          fi
-
           sed -i '/android {/a\    namespace "com.lucasjosino.on_audio_query_android"' "$GRADLE_FILE"
 
           sed -i 's/package="com.lucasjosino.on_audio_query"//' "$MANIFEST_FILE"
 
-          echo "on_audio_query patch completed"
+          sed -i '/android {/a\    compileOptions { sourceCompatibility JavaVersion.VERSION_17 targetCompatibility JavaVersion.VERSION_17 }' "$GRADLE_FILE"
 
+          sed -i '/android {/a\    kotlinOptions { jvmTarget = "17" }' "$GRADLE_FILE"
+
+          echo "Patch complete"
 
       - name: Analyze project
         run: flutter analyze
 
-
       - name: Build APK
         run: flutter build apk --release
-
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
