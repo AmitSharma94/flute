@@ -23,26 +23,53 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
           flutter-version: '3.44.6'
           channel: stable
 
+
       - name: Install dependencies
         run: flutter pub get
 
-      - name: Patch on_audio_query namespace
+
+      - name: Patch on_audio_query Android compatibility
         run: |
-          FILE=$(find ~/.pub-cache -path "*on_audio_query_android-1.1.0/android/build.gradle")
-          echo "Patching $FILE"
-          sed -i '/android {/a\    namespace "com.lucasjosino.on_audio_query_android"' "$FILE"
+          GRADLE_FILE=$(find ~/.pub-cache -path "*on_audio_query_android-1.1.0/android/build.gradle" | head -1)
+          MANIFEST_FILE=$(find ~/.pub-cache -path "*on_audio_query_android-1.1.0/android/src/main/AndroidManifest.xml" | head -1)
+
+          echo "Gradle file:"
+          echo $GRADLE_FILE
+
+          echo "Manifest file:"
+          echo $MANIFEST_FILE
+
+          if [ -z "$GRADLE_FILE" ]; then
+            echo "ERROR: on_audio_query_android build.gradle not found"
+            exit 1
+          fi
+
+          if [ -z "$MANIFEST_FILE" ]; then
+            echo "ERROR: on_audio_query_android AndroidManifest.xml not found"
+            exit 1
+          fi
+
+          sed -i '/android {/a\    namespace "com.lucasjosino.on_audio_query_android"' "$GRADLE_FILE"
+
+          sed -i 's/package="com.lucasjosino.on_audio_query"//' "$MANIFEST_FILE"
+
+          echo "on_audio_query patch completed"
+
 
       - name: Analyze project
         run: flutter analyze
 
+
       - name: Build APK
         run: flutter build apk --release
+
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
