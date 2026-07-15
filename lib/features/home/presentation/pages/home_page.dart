@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../music/providers/music_provider.dart';
+import '../../../player/providers/player_provider.dart';
 
 class HomePage extends ConsumerWidget {
   const HomePage({super.key});
@@ -42,12 +43,20 @@ class HomePage extends ConsumerWidget {
                 title: Text(song.title),
                 subtitle: Text(song.artist),
                 trailing: const Icon(Icons.play_arrow),
-                onTap: () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text("Selected: ${song.title}"),
-                    ),
-                  );
+                onTap: () async {
+                  final player = ref.read(audioPlayerProvider);
+
+                  try {
+                    await player.play(song.path);
+                  } catch (e) {
+                    if (context.mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text("Failed to play: $e"),
+                        ),
+                      );
+                    }
+                  }
                 },
               );
             },
