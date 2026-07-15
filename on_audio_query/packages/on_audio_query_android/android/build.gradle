@@ -33,6 +33,8 @@ android {
     }
     defaultConfig {
         minSdkVersion 16
+kotlinOptions {
+    jvmTarget = "17"
     }
 }
 
