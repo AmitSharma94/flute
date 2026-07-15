@@ -23,21 +23,20 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Clear Gradle Cache
-        run: |
-          rm -rf ~/.gradle/caches
-
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
           flutter-version: '3.44.6'
           channel: stable
 
-      - name: Flutter Doctor
-        run: flutter doctor -v
-
       - name: Install dependencies
         run: flutter pub get
+
+      - name: Patch on_audio_query namespace
+        run: |
+          FILE=$(find ~/.pub-cache -path "*on_audio_query_android-1.1.0/android/build.gradle")
+          echo "Patching $FILE"
+          sed -i '/android {/a\    namespace "com.lucasjosino.on_audio_query_android"' "$FILE"
 
       - name: Analyze project
         run: flutter analyze
