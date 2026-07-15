@@ -4,6 +4,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../music/providers/music_provider.dart';
 import '../../../player/providers/player_provider.dart';
 import '../../../player/providers/current_song_provider.dart';
+import '../../../player/providers/queue_provider.dart';
+import '../../../player/providers/queue_index_provider.dart';
 
 class LibraryPage extends ConsumerWidget {
   const LibraryPage({super.key});
@@ -31,11 +33,23 @@ class LibraryPage extends ConsumerWidget {
 
               return Card(
                 child: ListTile(
-                  leading: const Icon(Icons.music_note),
+                  leading: const Icon(
+                    Icons.music_note,
+                  ),
                   title: Text(song.title),
                   subtitle: Text(song.artist),
-                  trailing: const Icon(Icons.play_arrow),
+                  trailing: const Icon(
+                    Icons.play_arrow,
+                  ),
                   onTap: () {
+                    ref
+                        .read(queueProvider.notifier)
+                        .setQueue(list);
+
+                    ref
+                        .read(queueIndexProvider.notifier)
+                        .setIndex(index);
+
                     ref
                         .read(currentSongProvider.notifier)
                         .setSong(song);
@@ -51,7 +65,9 @@ class LibraryPage extends ConsumerWidget {
         },
         error: (error, stack) {
           return Center(
-            child: Text(error.toString()),
+            child: Text(
+              error.toString(),
+            ),
           );
         },
         loading: () {

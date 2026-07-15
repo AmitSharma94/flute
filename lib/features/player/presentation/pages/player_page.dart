@@ -1,4 +1,5 @@
 import '../widgets/player_seek_bar.dart';
+import '../../providers/queue_controller_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -105,12 +106,16 @@ class PlayerPage extends ConsumerWidget {
                 ),
 
                 IconButton(
-                  icon: const Icon(
-                    Icons.skip_next,
-                    size: 40,
-                  ),
-                  onPressed: () {},
-                ),
+  icon: const Icon(
+    Icons.skip_next,
+    size: 40,
+  ),
+  onPressed: () {
+    ref
+        .read(queueControllerProvider)
+        .next();
+  },
+),
               ],
             ),
           ],
