@@ -5,6 +5,8 @@ import '../../../music/providers/music_provider.dart';
 import '../../../player/providers/current_song_provider.dart';
 import '../../../player/providers/queue_provider.dart';
 import '../../../player/providers/queue_index_provider.dart';
+import '../../../favorites/providers/favorite_provider.dart';
+import '../../../history/providers/history_provider.dart';
 import '../../../../core/audio/providers/audio_handler_provider.dart';
 
 class LibraryPage extends ConsumerWidget {
@@ -12,73 +14,201 @@ class LibraryPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+
     final songs = ref.watch(songsProvider);
+
 
     return Scaffold(
       appBar: AppBar(
         title: const Text('Library'),
       ),
+
+
       body: songs.when(
+
         data: (list) {
+
           if (list.isEmpty) {
+
             return const Center(
-              child: Text('No songs found'),
+              child: Text(
+                'No songs found',
+              ),
             );
           }
 
+
           return ListView.builder(
+
             itemCount: list.length,
+
+
             itemBuilder: (context, index) {
+
               final song = list[index];
 
+
+              final isFav =
+                  ref
+                      .watch(favoriteProvider)
+                      .contains(song);
+
+
+
               return Card(
+
                 child: ListTile(
+
+
                   leading: const Icon(
                     Icons.music_note,
                   ),
-                  title: Text(song.title),
-                  subtitle: Text(song.artist),
-                  trailing: const Icon(
-                    Icons.play_arrow,
+
+
+                  title: Text(
+                    song.title,
                   ),
-                  onTap: () {
-                    ref
-                        .read(queueProvider.notifier)
-                        .setQueue(list);
 
-                    ref
-                        .read(queueIndexProvider.notifier)
-                        .setIndex(index);
 
-                    ref
-                        .read(currentSongProvider.notifier)
-                        .setSong(song);
+                  subtitle: Text(
+                    song.artist,
+                  ),
 
-                    ref
-   			 .read(audioHandlerProvider)
-    			 .playSong(
-  song.path,
-  title: song.title,
-  artist: song.artist,
-);
-                  },
+
+
+                  trailing: Row(
+
+                    mainAxisSize:
+                        MainAxisSize.min,
+
+
+                    children: [
+
+
+                      IconButton(
+
+                        icon: Icon(
+
+                          isFav
+                              ? Icons.favorite
+                              : Icons.favorite_border,
+
+                        ),
+
+
+                        onPressed: () {
+
+                          ref
+                              .read(
+                                favoriteProvider.notifier,
+                              )
+                              .toggle(song);
+
+                        },
+
+                      ),
+
+
+
+
+                      IconButton(
+
+                        icon: const Icon(
+                          Icons.play_arrow,
+                        ),
+
+
+
+                        onPressed: () {
+
+
+                          ref
+                              .read(
+                                queueProvider.notifier,
+                              )
+                              .setQueue(list);
+
+
+
+                          ref
+                              .read(
+                                queueIndexProvider.notifier,
+                              )
+                              .setIndex(index);
+
+
+
+
+                          ref
+                              .read(
+                                currentSongProvider.notifier,
+                              )
+                              .setSong(song);
+
+
+
+
+                          ref
+                              .read(
+                                historyProvider.notifier,
+                              )
+                              .addSong(song);
+
+
+
+
+                          ref
+                              .read(
+                                audioHandlerProvider,
+                              )
+                              .playSong(
+
+                                song.path,
+
+                                title: song.title,
+
+                                artist: song.artist,
+
+                              );
+
+                        },
+
+                      ),
+
+                    ],
+                  ),
                 ),
               );
             },
           );
         },
+
+
+
         error: (error, stack) {
+
           return Center(
+
             child: Text(
+
               error.toString(),
+
             ),
           );
         },
+
+
+
         loading: () {
+
           return const Center(
-            child: CircularProgressIndicator(),
+
+            child:
+                CircularProgressIndicator(),
+
           );
         },
+
       ),
     );
   }

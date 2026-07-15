@@ -1,6 +1,6 @@
-import '../../features/player/presentation/widgets/mini_player.dart';
 import 'package:flutter/material.dart';
 
+import '../../features/player/presentation/widgets/mini_player.dart';
 import '../../features/home/presentation/pages/home_page.dart';
 import '../../features/library/presentation/pages/library_page.dart';
 import '../../features/search/presentation/pages/search_page.dart';
@@ -28,7 +28,9 @@ class _MainShellState extends State<MainShell> {
     return Scaffold(
   body: pages[currentIndex],
 
-  bottomSheet: const MiniPlayer(),
+ bottomSheet: SafeArea(
+  child: const MiniPlayer(),
+),
       bottomNavigationBar: NavigationBar(
         selectedIndex: currentIndex,
 
