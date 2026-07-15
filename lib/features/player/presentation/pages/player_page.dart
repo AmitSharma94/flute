@@ -1,3 +1,4 @@
+import '../widgets/player_seek_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -59,10 +60,7 @@ class PlayerPage extends ConsumerWidget {
 
             const SizedBox(height: 40),
 
-            Slider(
-              value: 0,
-              onChanged: (_) {},
-            ),
+            const PlayerSeekBar(),
 
             Row(
               mainAxisAlignment:
