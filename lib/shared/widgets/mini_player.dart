@@ -25,7 +25,7 @@ class MiniPlayer extends ConsumerWidget {
 
       loading: () => const SizedBox(),
 
-      error: (_,__) => const SizedBox(),
+      error: (_, _) => const SizedBox(),
 
       data: (playerState) {
 
