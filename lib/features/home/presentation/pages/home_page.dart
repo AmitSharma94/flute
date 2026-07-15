@@ -1,74 +1,59 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../history/presentation/widgets/recently_played.dart';
+import '../../../music/providers/music_provider.dart';
 
-
-class HomePage extends StatelessWidget {
-
-  const HomePage({
-    super.key,
-  });
-
+class HomePage extends ConsumerWidget {
+  const HomePage({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final songs = ref.watch(songsProvider);
 
     return Scaffold(
-
       appBar: AppBar(
-
-        title: const Text(
-          'Flute',
-        ),
-
+        title: const Text("Flute"),
         centerTitle: true,
-
       ),
-
-
-      body: ListView(
-
-        children: const [
-
-          SizedBox(
-            height: 20,
-          ),
-
-
-          RecentlyPlayed(),
-
-
-          SizedBox(
-            height: 20,
-          ),
-
-
-          Padding(
-
-            padding:
-                EdgeInsets.all(16),
-
-            child: Text(
-
-              'Welcome to Flute',
-
-              style: TextStyle(
-
-                fontSize: 28,
-
-                fontWeight:
-                    FontWeight.bold,
-
+      body: songs.when(
+        loading: () => const Center(
+          child: CircularProgressIndicator(),
+        ),
+        error: (e, _) => Center(
+          child: Text("Error: $e"),
+        ),
+        data: (songs) {
+          if (songs.isEmpty) {
+            return const Center(
+              child: Text(
+                "No songs found.\nGrant media permission and add music to your device.",
+                textAlign: TextAlign.center,
               ),
+            );
+          }
 
-            ),
+          return ListView.builder(
+            itemCount: songs.length,
+            itemBuilder: (context, index) {
+              final song = songs[index];
 
-          ),
-
-        ],
-
+              return ListTile(
+                leading: const Icon(Icons.music_note),
+                title: Text(song.title),
+                subtitle: Text(song.artist),
+                trailing: const Icon(Icons.play_arrow),
+                onTap: () {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text("Selected: ${song.title}"),
+                    ),
+                  );
+                },
+              );
+            },
+          );
+        },
       ),
-
     );
   }
 }
