@@ -4,39 +4,45 @@ on:
   push:
     branches:
       - main
+      - feature/day-1-foundation
 
   pull_request:
     branches:
       - main
+      - feature/day-1-foundation
 
   workflow_dispatch:
 
 jobs:
   build:
+
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout Repository
+
+      - name: Checkout repository
         uses: actions/checkout@v4
 
       - name: Clear Gradle Cache
         run: |
-        rm -rf ~/.gradle/caches
+          rm -rf ~/.gradle/caches
 
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: "3.44.6"
-          cache: true
+          flutter-version: '3.44.6'
+          channel: stable
 
-      - name: Install Dependencies
+      - name: Flutter Doctor
+        run: flutter doctor -v
+
+      - name: Install dependencies
         run: flutter pub get
 
-      
-      - name: Analyze Project
+      - name: Analyze project
         run: flutter analyze
 
-      - name: Build Release APK
+      - name: Build APK
         run: flutter build apk --release
 
       - name: Upload APK
