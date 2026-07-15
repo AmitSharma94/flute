@@ -1,12 +1,12 @@
 import 'package:go_router/go_router.dart';
+import '../../features/player/presentation/pages/player_page.dart';
 
-import '../../core/shell/main_shell.dart';
 
 final appRouter = GoRouter(
   routes: [
-    GoRoute(
-      path: '/',
-      builder: (context, state) => const MainShell(),
-    ),
+   GoRoute(
+ path: '/player',
+ builder: (context,state)=> const PlayerPage(),
+),
   ],
 );

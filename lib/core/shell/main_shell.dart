@@ -1,3 +1,4 @@
+import '../../features/player/presentation/widgets/mini_player.dart';
 import 'package:flutter/material.dart';
 
 import '../../features/home/presentation/pages/home_page.dart';
@@ -25,8 +26,9 @@ class _MainShellState extends State<MainShell> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: pages[currentIndex],
+  body: pages[currentIndex],
 
+  bottomSheet: const MiniPlayer(),
       bottomNavigationBar: NavigationBar(
         selectedIndex: currentIndex,
 
