@@ -1,35 +1,58 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class LibraryPage extends StatelessWidget {
+import '../../../music/providers/music_provider.dart';
+
+class LibraryPage extends ConsumerWidget {
   const LibraryPage({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final songs = ref.watch(songsProvider);
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Library'),
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              Icons.library_music,
-              size: 80,
-              color: Theme.of(context).colorScheme.primary,
+      body: songs.when(
+        data: (list) {
+          if (list.isEmpty) {
+            return const Center(
+              child: Text('No songs found'),
+            );
+          }
+
+          return ListView.builder(
+            itemCount: list.length,
+            itemBuilder: (context, index) {
+              final song = list[index];
+
+              return Card(
+                child: ListTile(
+                  leading: const Icon(
+                    Icons.music_note,
+                  ),
+                  title: Text(song.title),
+                  subtitle: Text(song.artist),
+                ),
+              );
+            },
+          );
+        },
+
+        error: (error, stack) {
+          return Center(
+            child: Text(
+              error.toString(),
             ),
-            const SizedBox(height: 16),
-            Text(
-              'Your Music Library',
-              style: Theme.of(context).textTheme.headlineSmall,
-            ),
-            const SizedBox(height: 8),
-            Text(
-              'Songs will appear here',
-              style: Theme.of(context).textTheme.bodyLarge,
-            ),
-          ],
-        ),
+          );
+        },
+
+        loading: () {
+          return const Center(
+            child: CircularProgressIndicator(),
+          );
+        },
       ),
     );
   }
