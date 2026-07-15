@@ -1,80 +1,39 @@
-import 'package:audio_service/audio_service.dart';
 import 'package:just_audio/just_audio.dart';
 
-class FluteAudioHandler extends BaseAudioHandler {
-
+class FluteAudioHandler {
   final AudioPlayer player = AudioPlayer();
 
-
-  FluteAudioHandler() {
-
-    player.playbackEventStream.listen((event) {
-
-      playbackState.add(
-        playbackState.value.copyWith(
-          controls: [
-            MediaControl.skipToPrevious,
-            MediaControl.play,
-            MediaControl.pause,
-            MediaControl.skipToNext,
-          ],
-
-          playing: player.playing,
-
-          processingState:
-              AudioProcessingState.ready,
-        ),
-      );
-
-    });
-
-  }
-
-
   Future<void> playSong(
-  String path, {
-  String? title,
-  String? artist,
-}) async {
-
-  mediaItem.add(
-    MediaItem(
-      id: path,
-      title: title ?? 'Unknown Song',
-      artist: artist ?? 'Unknown Artist',
-    ),
-  );
-
-  await player.setFilePath(path);
-
-  await player.play();
-}
-
-
-  @override
-  Future<void> play() =>
-      player.play();
-
-
-  @override
-  Future<void> pause() =>
-      player.pause();
-
-
-  @override
-  Future<void> stop() =>
-      player.stop();
-
-
-  @override
-  Future<void> skipToNext() async {
-
+    String path, {
+    String? title,
+    String? artist,
+  }) async {
+    await player.setFilePath(path);
+    await player.play();
   }
 
-
-  @override
-  Future<void> skipToPrevious() async {
-
+  Future<void> play() async {
+    await player.play();
   }
 
+  Future<void>pause() async {
+    await player.pause();
+  }
+
+  Future<void> stop() async {
+    await player.stop();
+  }
+
+  Future<void> seek(Duration position) async {
+    await player.seek(position);
+  }
+
+  Stream<PlayerState> get playerStateStream =>
+      player.playerStateStream;
+
+  Stream<Duration> get positionStream =>
+      player.positionStream;
+
+  Duration? get duration =>
+      player.duration;
 }
