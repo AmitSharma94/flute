@@ -16,7 +16,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
+      - name: Checkout Repository
         uses: actions/checkout@v4
 
       - name: Setup Flutter
@@ -25,10 +25,22 @@ jobs:
           flutter-version: "3.44.6"
           cache: true
 
-      - name: Install dependencies
+      - name: Install Dependencies
         run: flutter pub get
 
-      - name: Analyze project
+      - name: Patch on_audio_query_android Namespace
+        run: |
+          FILE="$HOME/.pub-cache/hosted/pub.dev/on_audio_query_android-1.1.0/android/build.gradle"
+
+          echo "Patching: $FILE"
+
+          if ! grep -q "namespace" "$FILE"; then
+            sed -i '/android {/a\    namespace "com.lucasjosino.on_audio_query"' "$FILE"
+          fi
+
+          cat "$FILE"
+
+      - name: Analyze Project
         run: flutter analyze
 
       - name: Build Release APK
