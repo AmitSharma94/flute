@@ -114,3 +114,14 @@ flutter_launcher_icons:
 
   adaptive_icon_background: "#000000"
   adaptive_icon_foreground: "assets/icons/flute_icon.png"
+
+flutter_native_splash:
+  color: "#121212"
+  image: assets/icons/flute_icon.png
+
+  android: true
+  ios: true
+
+  android_12:
+    color: "#121212"
+    image: assets/icons/flute_icon.png
