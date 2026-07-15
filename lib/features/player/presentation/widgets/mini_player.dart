@@ -3,77 +3,202 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../providers/current_song_provider.dart';
 import '../../providers/player_provider.dart';
+import '../../providers/player_state_provider.dart';
+
 
 class MiniPlayer extends ConsumerWidget {
-  const MiniPlayer({super.key});
+
+  const MiniPlayer({
+    super.key,
+  });
+
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final song = ref.watch(currentSongProvider);
+  Widget build(
+    BuildContext context,
+    WidgetRef ref,
+  ) {
+
+    final song =
+        ref.watch(currentSongProvider);
+
 
     if (song == null) {
+
       return const SizedBox.shrink();
+
     }
 
-    final player = ref.read(audioPlayerProvider);
 
-    return GestureDetector(
-      onTap: () {
-        Navigator.pushNamed(
-          context,
-          '/player',
-        );
-      },
+    final playerState =
+        ref.watch(playerStateProvider);
 
-      child: Card(
-        margin: const EdgeInsets.all(8),
-        elevation: 3,
 
-        child: ListTile(
-          leading: const Icon(
-            Icons.library_music_rounded,
-            size: 40,
+
+    return playerState.when(
+
+      loading: () =>
+          const SizedBox.shrink(),
+
+
+      error: (_,__) =>
+          const SizedBox.shrink(),
+
+
+      data: (state) {
+
+
+        return Container(
+
+          height: 75,
+
+          margin:
+              const EdgeInsets.all(12),
+
+
+          padding:
+              const EdgeInsets.symmetric(
+                horizontal: 12,
+              ),
+
+
+          decoration: BoxDecoration(
+
+            color:
+                Theme.of(context)
+                    .colorScheme
+                    .surfaceContainerHighest,
+
+
+            borderRadius:
+                BorderRadius.circular(18),
+
           ),
 
-          title: Text(
-            song.title,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-          ),
 
-          subtitle: Text(
-            song.artist,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-          ),
 
-          trailing: StreamBuilder<bool>(
-            stream: player.player.playingStream,
+          child: Row(
 
-            builder: (context, snapshot) {
-              final playing =
-                  snapshot.data ?? false;
+            children: [
 
-              return IconButton(
-                icon: Icon(
-                  playing
-                      ? Icons.pause_circle
-                      : Icons.play_circle,
-                  size: 36,
+
+              const CircleAvatar(
+
+                radius: 24,
+
+                child:
+                    Icon(
+                      Icons.music_note,
+                    ),
+
+              ),
+
+
+
+              const SizedBox(
+                width: 12,
+              ),
+
+
+
+              Expanded(
+
+                child: Column(
+
+                  mainAxisAlignment:
+                      MainAxisAlignment.center,
+
+
+                  crossAxisAlignment:
+                      CrossAxisAlignment.start,
+
+
+                  children: [
+
+
+                    Text(
+
+                      song.title,
+
+                      maxLines: 1,
+
+                      overflow:
+                          TextOverflow.ellipsis,
+
+                      style:
+                          const TextStyle(
+                            fontWeight:
+                                FontWeight.bold,
+                          ),
+
+                    ),
+
+
+
+                    Text(
+
+                      song.artist,
+
+                      maxLines: 1,
+
+                      overflow:
+                          TextOverflow.ellipsis,
+
+                    ),
+
+
+                  ],
+
                 ),
 
+              ),
+
+
+
+              IconButton(
+
+                icon: Icon(
+
+                  state.playing
+                      ? Icons.pause_circle
+                      : Icons.play_circle,
+
+                  size: 40,
+
+                ),
+
+
                 onPressed: () {
-                  if (playing) {
-                    player.pause();
-                  } else {
-                    player.resume();
-                  }
+
+
+                  final player =
+                      ref.read(
+                        audioPlayerProvider,
+                      );
+
+
+                  state.playing
+                      ? player.pause()
+                      : player.resume();
+
+
                 },
-              );
-            },
+
+              ),
+
+
+
+            ],
+
           ),
-        ),
-      ),
+
+        );
+
+
+      },
+
     );
+
   }
+
 }
