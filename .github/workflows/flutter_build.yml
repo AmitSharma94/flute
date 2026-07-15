@@ -43,15 +43,22 @@ jobs:
           echo "Manifest file:"
           echo $MANIFEST_FILE
 
-          sed -i '/android {/a\    namespace "com.lucasjosino.on_audio_query_android"' "$GRADLE_FILE"
+          sed -i '/android {/a\
+              namespace "com.lucasjosino.on_audio_query_android"\
+              compileSdkVersion 35\
+              compileOptions {\
+                  sourceCompatibility JavaVersion.VERSION_17\
+                  targetCompatibility JavaVersion.VERSION_17\
+              }' "$GRADLE_FILE"
+
+          sed -i '/android {/a\
+          kotlinOptions {\
+              jvmTarget = "17"\
+          }' "$GRADLE_FILE"
 
           sed -i 's/package="com.lucasjosino.on_audio_query"//' "$MANIFEST_FILE"
 
-          sed -i '/android {/a\    compileOptions { sourceCompatibility JavaVersion.VERSION_17 targetCompatibility JavaVersion.VERSION_17 }' "$GRADLE_FILE"
-
-          sed -i '/android {/a\    kotlinOptions { jvmTarget = "17" }' "$GRADLE_FILE"
-
-          echo "Patch complete"
+          echo "Patch completed"
 
       - name: Analyze project
         run: flutter analyze
