@@ -41,7 +41,7 @@ class MiniPlayer extends ConsumerWidget {
           const SizedBox.shrink(),
 
 
-      error: (_,__) =>
+      error: (_, _) =>
           const SizedBox.shrink(),
 
 
