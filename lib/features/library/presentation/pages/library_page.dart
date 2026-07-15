@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../music/providers/music_provider.dart';
-import '../../../player/providers/player_provider.dart';
 import '../../../player/providers/current_song_provider.dart';
 import '../../../player/providers/queue_provider.dart';
 import '../../../player/providers/queue_index_provider.dart';
+import '../../../../core/audio/providers/audio_handler_provider.dart';
 
 class LibraryPage extends ConsumerWidget {
   const LibraryPage({super.key});
@@ -55,8 +55,12 @@ class LibraryPage extends ConsumerWidget {
                         .setSong(song);
 
                     ref
-                        .read(audioPlayerProvider)
-                        .play(song.path);
+   			 .read(audioHandlerProvider)
+    			 .playSong(
+  song.path,
+  title: song.title,
+  artist: song.artist,
+);
                   },
                 ),
               );

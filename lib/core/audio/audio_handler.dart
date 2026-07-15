@@ -3,15 +3,24 @@ import 'package:just_audio/just_audio.dart';
 
 class FluteAudioHandler extends BaseAudioHandler {
 
-  final AudioPlayer _player = AudioPlayer();
+  final AudioPlayer player = AudioPlayer();
+
 
   FluteAudioHandler() {
 
-    _player.playbackEventStream.listen((event) {
+    player.playbackEventStream.listen((event) {
 
       playbackState.add(
         playbackState.value.copyWith(
-          playing: _player.playing,
+          controls: [
+            MediaControl.skipToPrevious,
+            MediaControl.play,
+            MediaControl.pause,
+            MediaControl.skipToNext,
+          ],
+
+          playing: player.playing,
+
           processingState:
               AudioProcessingState.ready,
         ),
@@ -22,27 +31,50 @@ class FluteAudioHandler extends BaseAudioHandler {
   }
 
 
-  Future<void> playSong(String path) async {
+  Future<void> playSong(
+  String path, {
+  String? title,
+  String? artist,
+}) async {
 
-    await _player.setFilePath(path);
+  mediaItem.add(
+    MediaItem(
+      id: path,
+      title: title ?? 'Unknown Song',
+      artist: artist ?? 'Unknown Artist',
+    ),
+  );
 
-    await _player.play();
+  await player.setFilePath(path);
+
+  await player.play();
+}
+
+
+  @override
+  Future<void> play() =>
+      player.play();
+
+
+  @override
+  Future<void> pause() =>
+      player.pause();
+
+
+  @override
+  Future<void> stop() =>
+      player.stop();
+
+
+  @override
+  Future<void> skipToNext() async {
 
   }
 
 
   @override
-  Future<void> play() =>
-      _player.play();
+  Future<void> skipToPrevious() async {
 
-
-  @override
-  Future<void> pause() =>
-      _player.pause();
-
-
-  @override
-  Future<void> stop() =>
-      _player.stop();
+  }
 
 }
