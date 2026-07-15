@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../music/presentation/widgets/song_artwork.dart';
+
 import '../../providers/current_song_provider.dart';
 import '../../providers/player_provider.dart';
 import '../../providers/player_state_provider.dart';
@@ -47,10 +49,10 @@ class MiniPlayer extends ConsumerWidget {
 
       data: (state) {
 
-
         return Container(
 
-          height: 75,
+          height: 80,
+
 
           margin:
               const EdgeInsets.all(12),
@@ -82,14 +84,11 @@ class MiniPlayer extends ConsumerWidget {
             children: [
 
 
-              const CircleAvatar(
+              SongArtwork(
 
-                radius: 24,
+                id: song.id,
 
-                child:
-                    Icon(
-                      Icons.music_note,
-                    ),
+                size: 55,
 
               ),
 
@@ -125,10 +124,13 @@ class MiniPlayer extends ConsumerWidget {
                       overflow:
                           TextOverflow.ellipsis,
 
+
                       style:
                           const TextStyle(
+
                             fontWeight:
                                 FontWeight.bold,
+
                           ),
 
                     ),
@@ -160,12 +162,15 @@ class MiniPlayer extends ConsumerWidget {
                 icon: Icon(
 
                   state.playing
+
                       ? Icons.pause_circle
+
                       : Icons.play_circle,
 
-                  size: 40,
+                  size: 42,
 
                 ),
+
 
 
                 onPressed: () {
@@ -177,12 +182,19 @@ class MiniPlayer extends ConsumerWidget {
                       );
 
 
-                  state.playing
-                      ? player.pause()
-                      : player.resume();
+                  if (state.playing) {
+
+                    player.pause();
+
+                  } else {
+
+                    player.resume();
+
+                  }
 
 
                 },
+
 
               ),
 
@@ -192,13 +204,17 @@ class MiniPlayer extends ConsumerWidget {
 
           ),
 
+
         );
 
 
       },
 
+
     );
 
+
   }
+
 
 }
