@@ -1,243 +1,69 @@
 import 'package:flutter/material.dart';
 
-
 class AppTheme {
-
   AppTheme._();
 
+  static const _seed = Color(0xFF6750A4);
 
-
-  static const Color seed =
-      Color(0xFF7C4DFF);
-
-
-
-  static final ThemeData dark =
-      ThemeData(
-
+  static final ThemeData dark = ThemeData(
     useMaterial3: true,
-
-    brightness:
-        Brightness.dark,
-
-
-
-    colorScheme:
-        ColorScheme.fromSeed(
-
-      seedColor:
-          seed,
-
-      brightness:
-          Brightness.dark,
-
+    brightness: Brightness.dark,
+    colorScheme: ColorScheme.fromSeed(
+      seedColor: _seed,
+      brightness: Brightness.dark,
     ),
 
+    scaffoldBackgroundColor: const Color(0xFF121212),
 
-
-    scaffoldBackgroundColor:
-        const Color(0xFF0F0F0F),
-
-
-
-
-    appBarTheme:
-        const AppBarTheme(
-
-      elevation:
-          0,
-
-      backgroundColor:
-          Colors.transparent,
-
-      foregroundColor:
-          Colors.white,
-
-      centerTitle:
-          false,
-
-      titleTextStyle:
-          TextStyle(
-
-        fontSize:
-            26,
-
-        fontWeight:
-            FontWeight.w700,
-
-        color:
-            Colors.white,
-
+    appBarTheme: const AppBarTheme(
+      elevation: 0,
+      centerTitle: false,
+      backgroundColor: Colors.transparent,
+      foregroundColor: Colors.white,
+      titleTextStyle: TextStyle(
+        fontSize: 28,
+        fontWeight: FontWeight.bold,
+        color: Colors.white,
       ),
-
     ),
 
-
-
-
-    cardTheme:
-        CardThemeData(
-
-      elevation:
-          0,
-
-      color:
-          const Color(0xFF1A1A1A),
-
-      margin:
-          EdgeInsets.zero,
-
-      shape:
-          RoundedRectangleBorder(
-
-        borderRadius:
-            BorderRadius.circular(
-              22,
-            ),
-
+    cardTheme: CardThemeData(
+      elevation: 0,
+      color: const Color(0xFF1F1F1F),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(20),
       ),
-
     ),
 
-
-
-
-    listTileTheme:
-        const ListTileThemeData(
-
-      iconColor:
-          Colors.white70,
-
-      textColor:
-          Colors.white,
-
-      contentPadding:
-          EdgeInsets.symmetric(
-            horizontal: 16,
-          ),
-
+    listTileTheme: const ListTileThemeData(
+      iconColor: Colors.white,
+      textColor: Colors.white,
     ),
 
-
-
-
-
-    navigationBarTheme:
-        NavigationBarThemeData(
-
-      height:
-          72,
-
-      backgroundColor:
-          const Color(0xFF151515),
-
-
-      indicatorColor:
-          seed.withValues(
-            alpha: 0.25,
-          ),
-
-
-
-      labelTextStyle:
-          const WidgetStatePropertyAll(
-
-        TextStyle(
-
-          fontWeight:
-              FontWeight.w600,
-
-          fontSize:
-              12,
-
+    navigationBarTheme: NavigationBarThemeData(
+      backgroundColor: const Color(0xFF181818),
+      indicatorColor: Colors.deepPurple.shade400,
+      labelTextStyle: WidgetStatePropertyAll(
+        const TextStyle(
+          fontWeight: FontWeight.w600,
         ),
-
       ),
-
     ),
 
-
-
-
-    filledButtonTheme:
-        FilledButtonThemeData(
-
-      style:
-          FilledButton.styleFrom(
-
-        padding:
-            const EdgeInsets.symmetric(
-              horizontal: 28,
-              vertical: 14,
-            ),
-
-        shape:
-            RoundedRectangleBorder(
-
-          borderRadius:
-              BorderRadius.circular(
-                30,
-              ),
-
-        ),
-
+    inputDecorationTheme: InputDecorationTheme(
+      filled: true,
+      fillColor: const Color(0xFF252525),
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(16),
+        borderSide: BorderSide.none,
       ),
-
     ),
 
-
-
-
-    inputDecorationTheme:
-        InputDecorationTheme(
-
-      filled:
-          true,
-
-
-      fillColor:
-          const Color(0xFF202020),
-
-
-
-      border:
-          OutlineInputBorder(
-
-        borderRadius:
-            BorderRadius.circular(
-              18,
-            ),
-
-        borderSide:
-            BorderSide.none,
-
+    snackBarTheme: SnackBarThemeData(
+      behavior: SnackBarBehavior.floating,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
       ),
-
     ),
-
-
-
-
-    snackBarTheme:
-        SnackBarThemeData(
-
-      behavior:
-          SnackBarBehavior.floating,
-
-
-      shape:
-          RoundedRectangleBorder(
-
-        borderRadius:
-            BorderRadius.circular(
-              18,
-            ),
-
-      ),
-
-    ),
-
-
   );
-
 }

@@ -1,160 +1,112 @@
 import 'package:flutter/material.dart';
 
-
 class QuickAccessSection extends StatelessWidget {
-
-  const QuickAccessSection({
-    super.key,
-  });
-
-
+  const QuickAccessSection({super.key});
 
   @override
   Widget build(BuildContext context) {
-
-
-    final items = [
-
-      (
-        Icons.music_note,
-        "Songs"
+    return Padding(
+      padding: const EdgeInsets.symmetric(
+        horizontal: 20,
+        vertical: 12,
       ),
-
-      (
-        Icons.album,
-        "Albums"
-      ),
-
-      (
-        Icons.person,
-        "Artists"
-      ),
-
-      (
-        Icons.favorite,
-        "Favorites"
-      ),
-
-    ];
-
-
-
-    return SizedBox(
-
-      height: 90,
-
-
-      child: ListView.builder(
-
-        scrollDirection:
-            Axis.horizontal,
-
-
-        padding:
-            const EdgeInsets.symmetric(
-              horizontal: 16,
-            ),
-
-
-
-        itemCount:
-            items.length,
-
-
-
-        itemBuilder:
-            (context, index) {
-
-
-          return Container(
-
-            width:
-                90,
-
-
-            margin:
-                const EdgeInsets.only(
-                  right: 12,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            "Quick Access",
+            style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                  fontWeight: FontWeight.bold,
                 ),
+          ),
 
+          const SizedBox(height: 16),
 
-
-            decoration:
-                BoxDecoration(
-
-              color:
-                  Theme.of(context)
-                      .colorScheme
-                      .surfaceContainerHighest,
-
-              borderRadius:
-                  BorderRadius.circular(
-                    18,
-                  ),
-
-            ),
-
-
-
-            child:
-                Column(
-
-              mainAxisAlignment:
-                  MainAxisAlignment.center,
-
-
-              children: [
-
-
-                Icon(
-
-                  items[index].$1,
-
-                  size:
-                      28,
-
+          Row(
+            children: const [
+              Expanded(
+                child: _QuickAccessCard(
+                  icon: Icons.favorite_outline,
+                  title: "Favorites",
                 ),
-
-
-
-                const SizedBox(
-                  height: 6,
+              ),
+              SizedBox(width: 12),
+              Expanded(
+                child: _QuickAccessCard(
+                  icon: Icons.album_outlined,
+                  title: "Albums",
                 ),
+              ),
+            ],
+          ),
 
+          const SizedBox(height: 12),
 
-
-                Text(
-
-                  items[index].$2,
-
-
-                  style:
-                      const TextStyle(
-
-                    fontSize:
-                        12,
-
-                    fontWeight:
-                        FontWeight.w600,
-
-                  ),
-
+          Row(
+            children: const [
+              Expanded(
+                child: _QuickAccessCard(
+                  icon: Icons.person_outline,
+                  title: "Artists",
                 ),
-
-
-              ],
-
-            ),
-
-          );
-
-
-        },
-
+              ),
+              SizedBox(width: 12),
+              Expanded(
+                child: _QuickAccessCard(
+                  icon: Icons.history,
+                  title: "Recently Played",
+                ),
+              ),
+            ],
+          ),
+        ],
       ),
-
     );
-
   }
+}
 
+class _QuickAccessCard extends StatelessWidget {
+  final IconData icon;
+  final String title;
+
+  const _QuickAccessCard({
+    required this.icon,
+    required this.title,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      elevation: 0,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(18),
+      ),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(18),
+        onTap: () {},
+        child: Padding(
+          padding: const EdgeInsets.symmetric(
+            vertical: 20,
+            horizontal: 16,
+          ),
+          child: Column(
+            children: [
+              Icon(
+                icon,
+                size: 34,
+              ),
+              const SizedBox(height: 12),
+              Text(
+                title,
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
 }
