@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../providers/shuffle/shuffle_provider.dart';
+import 'queue/queue_page.dart';
 
 import '../../../music/presentation/widgets/song_artwork.dart';
 
@@ -142,14 +143,30 @@ class PlayerPage extends ConsumerWidget {
 
                       IconButton(
 
-                        icon:
-                            const Icon(
-                              Icons.more_vert,
-                            ),
+  icon:
+      const Icon(
+        Icons.queue_music,
+      ),
 
-                        onPressed: () {},
 
-                      ),
+  onPressed: () {
+
+    Navigator.push(
+
+      context,
+
+      MaterialPageRoute(
+
+        builder: (_) =>
+            const QueuePage(),
+
+      ),
+
+    );
+
+  },
+
+),
 
 
                     ],

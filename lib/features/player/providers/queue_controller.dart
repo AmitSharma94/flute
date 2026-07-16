@@ -37,6 +37,11 @@ class QueueController {
     }
 
 
+    final song =
+        queue[newIndex];
+
+
+
     ref
         .read(queueIndexProvider.notifier)
         .setIndex(newIndex);
@@ -45,16 +50,26 @@ class QueueController {
 
     ref
         .read(currentSongProvider.notifier)
-        .setSong(
-          queue[newIndex],
-        );
+        .setSong(song);
 
 
 
     await ref
         .read(audioPlayerProvider)
         .play(
-          queue[newIndex].path,
+
+          path:
+              song.path,
+
+          title:
+              song.title,
+
+          artist:
+              song.artist,
+
+          id:
+              song.id.toString(),
+
         );
 
   }
@@ -95,11 +110,9 @@ class QueueController {
     if (repeat == FluteRepeatMode.one) {
 
 
-      await ref
-          .read(audioPlayerProvider)
-          .play(
-            queue[index].path,
-          );
+      await playIndex(
+        index,
+      );
 
 
       return;
@@ -165,6 +178,7 @@ class QueueController {
       return;
 
     }
+
 
 
 

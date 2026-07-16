@@ -7,20 +7,59 @@ import '../providers/current_song_provider.dart';
 import '../providers/queue_index_provider.dart';
 import '../providers/queue_provider.dart';
 
+
+
 Future<void> playSong(
   WidgetRef ref,
   List<FluteSong> queue,
   int index,
 ) async {
-  final song = queue[index];
 
-  ref.read(queueProvider.notifier).setQueue(queue);
 
-  ref.read(queueIndexProvider.notifier).setIndex(index);
+  final song =
+      queue[index];
 
-  ref.read(currentSongProvider.notifier).setSong(song);
 
-  final player = ref.read(audioPlayerProvider);
 
-  await player.play(song.path);
+  ref
+      .read(queueProvider.notifier)
+      .setQueue(queue);
+
+
+
+  ref
+      .read(queueIndexProvider.notifier)
+      .setIndex(index);
+
+
+
+  ref
+      .read(currentSongProvider.notifier)
+      .setSong(song);
+
+
+
+  final player =
+      ref.read(
+        audioPlayerProvider,
+      );
+
+
+
+  await player.play(
+
+    path:
+        song.path,
+
+    title:
+        song.title,
+
+    artist:
+        song.artist,
+
+    id:
+        song.id.toString(),
+
+  );
+
 }
