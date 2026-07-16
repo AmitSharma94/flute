@@ -1,47 +1,44 @@
-name: Flutter Android Build
+name: Flute Release
 
 on:
   push:
-    branches:
-      - main
-      - feature/day-1-foundation
-
-  pull_request:
-    branches:
-      - main
-      - feature/day-1-foundation
+    tags:
+      - "v*"
 
   workflow_dispatch:
 
-jobs:
-  build:
+permissions:
+  contents: write
 
+jobs:
+  release:
+    name: Build & Release APK
     runs-on: ubuntu-latest
 
     steps:
-
-      - name: Checkout repository
+      - name: Checkout Repository
         uses: actions/checkout@v4
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
 
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.44.6'
+          flutter-version: "3.44.6"
           channel: stable
+          cache: true
 
-      - name: Install dependencies
+      - name: Install Dependencies
         run: flutter pub get
 
       - name: Patch on_audio_query Android compatibility
         run: |
           GRADLE_FILE=$(find ~/.pub-cache -path "*on_audio_query_android-1.1.0/android/build.gradle" | head -1)
           MANIFEST_FILE=$(find ~/.pub-cache -path "*on_audio_query_android-1.1.0/android/src/main/AndroidManifest.xml" | head -1)
-
-          echo "Gradle file:"
-          echo $GRADLE_FILE
-
-          echo "Manifest file:"
-          echo $MANIFEST_FILE
 
           sed -i '/android {/a\
               namespace "com.lucasjosino.on_audio_query_android"\
@@ -58,16 +55,24 @@ jobs:
 
           sed -i 's/package="com.lucasjosino.on_audio_query"//' "$MANIFEST_FILE"
 
-          echo "Patch completed"
-
-      - name: Analyze project
+      - name: Flutter Analyze
         run: flutter analyze
 
-      - name: Build APK
+      - name: Build Release APK
         run: flutter build apk --release
 
-      - name: Upload APK
+      - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: flute-release-apk
+          name: Flute-v0.1.0-alpha-preview
           path: build/app/outputs/flutter-apk/app-release.apk
+
+      - name: Create GitHub Pre-Release
+        uses: softprops/action-gh-release@v2
+        with:
+          prerelease: true
+          generate_release_notes: true
+          files: |
+            build/app/outputs/flutter-apk/app-release.apk
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
