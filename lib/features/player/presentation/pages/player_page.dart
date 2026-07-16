@@ -7,6 +7,7 @@ import '../widgets/player_seek_bar.dart';
 import '../../providers/current_song_provider.dart';
 import '../../providers/player_provider.dart';
 import '../../providers/player_state_provider.dart';
+import '../../providers/queue_controller_provider.dart';
 
 class PlayerPage extends ConsumerWidget {
   const PlayerPage({super.key});
@@ -24,6 +25,7 @@ class PlayerPage extends ConsumerWidget {
     }
 
     final player = ref.read(audioPlayerProvider);
+    final queueController = ref.read(queueControllerProvider);
     final playerState = ref.watch(playerStateProvider);
 
     return Scaffold(
@@ -49,10 +51,13 @@ class PlayerPage extends ConsumerWidget {
                     children: [
 
                       IconButton(
-                        icon: const Icon(Icons.keyboard_arrow_down),
-                        onPressed: () {
-                          Navigator.pop(context);
-                        },
+  		       icon: const Icon(
+                        Icons.skip_previous,
+                       ),
+                       iconSize: 40,
+                       onPressed: () {
+                        queueController.previous();
+                       },
                       ),
 
                       const Spacer(),
