@@ -1,16 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 import '../../providers/shuffle/shuffle_provider.dart';
-
-import '../../../music/presentation/widgets/song_artwork.dart';
-
-import '../widgets/player_seek_bar.dart';
-
 import '../../providers/current_song_provider.dart';
 import '../../providers/player_provider.dart';
 import '../../providers/player_state_provider.dart';
 import '../../providers/queue_controller_provider.dart';
 import '../../providers/repeat/repeat_provider.dart';
+
+import 'queue/queue_page.dart';
+
+import '../../../music/presentation/widgets/song_artwork.dart';
+import '../widgets/player_seek_bar.dart';
 
 
 class PlayerPage extends ConsumerWidget {
@@ -30,22 +31,19 @@ class PlayerPage extends ConsumerWidget {
         ref.watch(currentSongProvider);
 
 
-
     if (song == null) {
 
       return const Scaffold(
 
         body: Center(
-          child:
-              Text(
-                "No song selected",
-              ),
+          child: Text(
+            "No song selected",
+          ),
         ),
 
       );
 
     }
-
 
 
     final player =
@@ -69,17 +67,15 @@ class PlayerPage extends ConsumerWidget {
 
           loading: () =>
               const Center(
-                child:
-                    CircularProgressIndicator(),
+                child: CircularProgressIndicator(),
               ),
 
 
           error: (e, _) =>
               Center(
-                child:
-                    Text(
-                      e.toString(),
-                    ),
+                child: Text(
+                  e.toString(),
+                ),
               ),
 
 
@@ -105,23 +101,8 @@ class PlayerPage extends ConsumerWidget {
                     children: [
 
 
-                      IconButton(
-
-                        icon:
-                            const Icon(
-                              Icons.skip_previous,
-                            ),
-
-                        iconSize:
-                            40,
-
-
-                        onPressed: () {
-
-                          queueController.previous();
-
-                        },
-
+                      const SizedBox(
+                        width: 48,
                       ),
 
 
@@ -144,10 +125,28 @@ class PlayerPage extends ConsumerWidget {
 
                         icon:
                             const Icon(
-                              Icons.more_vert,
+                              Icons.queue_music,
                             ),
 
-                        onPressed: () {},
+
+                        onPressed: () {
+
+
+                          Navigator.push(
+
+                            context,
+
+                            MaterialPageRoute(
+
+                              builder: (_) =>
+                                  const QueuePage(),
+
+                            ),
+
+                          );
+
+
+                        },
 
                       ),
 
@@ -167,22 +166,19 @@ class PlayerPage extends ConsumerWidget {
 
 
 
+
                 Hero(
 
-                  tag:
-                      song.id,
+                  tag: song.id,
 
 
-                  child:
-                      SongArtwork(
+                  child: SongArtwork(
 
-                        id:
-                            song.id,
+                    id: song.id,
 
-                        size:
-                            320,
+                    size: 320,
 
-                      ),
+                  ),
 
                 ),
 
@@ -201,8 +197,7 @@ class PlayerPage extends ConsumerWidget {
                   song.title,
 
 
-                  maxLines:
-                      1,
+                  maxLines: 1,
 
 
                   overflow:
@@ -212,8 +207,7 @@ class PlayerPage extends ConsumerWidget {
                   style:
                       const TextStyle(
 
-                    fontSize:
-                        24,
+                    fontSize: 24,
 
                     fontWeight:
                         FontWeight.bold,
@@ -243,8 +237,7 @@ class PlayerPage extends ConsumerWidget {
                     color:
                         Colors.grey.shade500,
 
-                    fontSize:
-                        17,
+                    fontSize: 17,
 
                   ),
 
@@ -266,6 +259,7 @@ class PlayerPage extends ConsumerWidget {
                       EdgeInsets.symmetric(
                         horizontal: 20,
                       ),
+
 
                   child:
                       PlayerSeekBar(),
@@ -292,49 +286,55 @@ class PlayerPage extends ConsumerWidget {
 
 
                     Consumer(
-  builder: (context, ref, _) {
 
-    final shuffle =
-        ref.watch(
-          shuffleProvider,
-        );
+                      builder:
+                          (context, ref, _) {
 
 
-    return IconButton(
-
-      icon:
-          Icon(
-
-            Icons.shuffle,
-
-            color: shuffle
-                ? Theme.of(context)
-                    .colorScheme
-                    .primary
-                : Colors.grey,
-
-          ),
+                        final shuffle =
+                            ref.watch(
+                              shuffleProvider,
+                            );
 
 
-      iconSize:
-          28,
+                        return IconButton(
+
+                          icon: Icon(
+
+                            Icons.shuffle,
 
 
-      onPressed: () {
+                            color: shuffle
 
-        ref
-            .read(
-              shuffleProvider
-                  .notifier,
-            )
-            .toggle();
+                                ? Theme.of(context)
+                                    .colorScheme
+                                    .primary
 
-      },
+                                : Colors.grey,
 
-    );
+                          ),
 
-  },
-),
+
+                          onPressed: () {
+
+
+                            ref
+                                .read(
+                                  shuffleProvider
+                                      .notifier,
+                                )
+                                .toggle();
+
+
+                          },
+
+                        );
+
+
+                      },
+
+                    ),
+
 
 
 
@@ -346,8 +346,8 @@ class PlayerPage extends ConsumerWidget {
                             Icons.skip_previous,
                           ),
 
-                      iconSize:
-                          40,
+
+                      iconSize: 40,
 
 
                       onPressed: () {
@@ -357,6 +357,7 @@ class PlayerPage extends ConsumerWidget {
                       },
 
                     ),
+
 
 
 
@@ -408,10 +409,10 @@ class PlayerPage extends ConsumerWidget {
                                 : Icons.play_arrow,
 
 
-                            size:
-                                38,
+                            size: 38,
 
                           ),
+
 
                     ),
 
@@ -425,13 +426,15 @@ class PlayerPage extends ConsumerWidget {
                             Icons.skip_next,
                           ),
 
-                      iconSize:
-                          40,
+
+                      iconSize: 40,
 
 
                       onPressed: () {
 
+
                         queueController.next();
+
 
                       },
 
@@ -453,9 +456,7 @@ class PlayerPage extends ConsumerWidget {
                             );
 
 
-
                         Icon icon;
-
 
 
                         switch (repeat) {
@@ -465,12 +466,8 @@ class PlayerPage extends ConsumerWidget {
 
                             icon =
                                 const Icon(
-
                                   Icons.repeat,
-
-                                  color:
-                                      Colors.grey,
-
+                                  color: Colors.grey,
                                 );
 
                             break;
@@ -502,15 +499,9 @@ class PlayerPage extends ConsumerWidget {
 
 
 
-
                         return IconButton(
 
-                          icon:
-                              icon,
-
-
-                          iconSize:
-                              28,
+                          icon: icon,
 
 
                           onPressed: () {
@@ -541,6 +532,7 @@ class PlayerPage extends ConsumerWidget {
 
 
 
+
                 const SizedBox(
                   height: 20,
                 ),
@@ -551,6 +543,7 @@ class PlayerPage extends ConsumerWidget {
 
             );
 
+
           },
 
         ),
@@ -558,6 +551,7 @@ class PlayerPage extends ConsumerWidget {
       ),
 
     );
+
 
   }
 
