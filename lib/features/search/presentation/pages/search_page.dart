@@ -2,14 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../music/providers/music_provider.dart';
+
 import '../../providers/search_provider.dart';
+
+import '../../../player/helpers/play_song.dart';
+
+import '../../../../shared/widgets/song_tile.dart';
 
 
 class SearchPage extends ConsumerWidget {
-
-  const SearchPage({
-    super.key,
-  });
+  const SearchPage({super.key});
 
 
   @override
@@ -18,7 +20,7 @@ class SearchPage extends ConsumerWidget {
     WidgetRef ref,
   ) {
 
-    final songs =
+    final songsAsync =
         ref.watch(songsProvider);
 
 
@@ -31,23 +33,44 @@ class SearchPage extends ConsumerWidget {
 
       appBar: AppBar(
 
-        title: const Text(
-          'Search',
-        ),
+        title:
+            const Text(
+              "Search",
+            ),
 
       ),
 
 
 
-      body: songs.when(
+      body: songsAsync.when(
 
-        data: (list) {
+        loading: () =>
+            const Center(
+              child:
+                  CircularProgressIndicator(),
+            ),
+
+
+        error: (e, _) =>
+            Center(
+              child:
+                  Text(
+                    "Error: $e",
+                  ),
+            ),
+
+
+
+        data: (songs) {
 
 
           final results =
               ref.watch(
-                filteredSongsProvider(list),
+                filteredSongsProvider(
+                  songs,
+                ),
               );
+
 
 
           return Column(
@@ -63,17 +86,51 @@ class SearchPage extends ConsumerWidget {
 
                 child: TextField(
 
+                  autofocus:
+                      true,
+
+
                   decoration:
-                      const InputDecoration(
+                      InputDecoration(
 
                     hintText:
-                        'Search songs or artists',
+                        "Search songs or artists",
+
 
                     prefixIcon:
-                        Icon(Icons.search),
+                        const Icon(
+                          Icons.search,
+                        ),
+
+
+                    suffixIcon:
+                        query.isNotEmpty
+
+                            ? IconButton(
+
+                                icon:
+                                    const Icon(
+                                      Icons.clear,
+                                    ),
+
+                                onPressed: () {
+
+                                  ref
+                                      .read(
+                                        searchQueryProvider
+                                            .notifier,
+                                      )
+                                      .clear();
+
+                                },
+
+                              )
+
+                            : null,
+
 
                     border:
-                        OutlineInputBorder(),
+                        const OutlineInputBorder(),
 
                   ),
 
@@ -86,16 +143,11 @@ class SearchPage extends ConsumerWidget {
                           searchQueryProvider
                               .notifier,
                         )
-                        .updateQuery(value);
+                        .updateQuery(
+                          value,
+                        );
 
                   },
-
-
-
-                  controller:
-                      TextEditingController(
-                        text: query,
-                      ),
 
                 ),
 
@@ -105,41 +157,63 @@ class SearchPage extends ConsumerWidget {
 
               Expanded(
 
-                child: ListView.builder(
+                child:
 
-                  itemCount:
-                      results.length,
+                    results.isEmpty
 
+                        ? const Center(
 
-                  itemBuilder:
-                      (context, index) {
+                            child:
+                                Text(
+                                  "No songs found",
+                                ),
 
-
-                    final song =
-                        results[index];
-
-
-                    return ListTile(
-
-                      leading:
-                          const Icon(
-                            Icons.music_note,
-                          ),
+                          )
 
 
-                      title:
-                          Text(song.title),
+                        :
+
+                    ListView.builder(
+
+                      itemCount:
+                          results.length,
 
 
-                      subtitle:
-                          Text(song.artist),
+                      itemBuilder:
+                          (context, index) {
 
 
-                    );
+                        final song =
+                            results[index];
 
-                  },
 
-                ),
+                        return SongTile(
+
+                          song:
+                              song,
+
+
+                          onTap: () async {
+
+
+                            await playSong(
+
+                              ref,
+
+                              results,
+
+                              index,
+
+                            );
+
+
+                          },
+
+                        );
+
+                      },
+
+                    ),
 
               ),
 
@@ -149,28 +223,10 @@ class SearchPage extends ConsumerWidget {
 
         },
 
-
-        error: (error, stack) {
-
-          return Center(
-            child:
-                Text(error.toString()),
-          );
-
-        },
-
-
-        loading: () {
-
-          return const Center(
-            child:
-                CircularProgressIndicator(),
-          );
-
-        },
-
       ),
 
     );
+
   }
+
 }
