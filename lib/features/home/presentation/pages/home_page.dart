@@ -1,13 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../player/helpers/play_song.dart';
 
 import '../../../music/providers/music_provider.dart';
 import '../../../music/presentation/widgets/song_artwork.dart';
-
-import '../../../player/providers/current_song_provider.dart';
-import '../../../player/providers/player_provider.dart';
-import '../../../player/providers/queue_index_provider.dart';
-import '../../../player/providers/queue_provider.dart';
 
 import '../widgets/greeting_header.dart';
 import '../widgets/quick_access_section.dart';
@@ -160,7 +156,7 @@ class HomePage extends ConsumerWidget {
                 title: "All Songs",
               ),
 
-              ...List.generate(
+                           ...List.generate(
                 songs.length,
                 (index) {
                   final song = songs[index];
@@ -168,25 +164,11 @@ class HomePage extends ConsumerWidget {
                   return SongTile(
                     song: song,
                     onTap: () async {
-                      ref
-                          .read(queueProvider.notifier)
-                          .setQueue(songs);
-
-                      ref
-                          .read(
-                              queueIndexProvider.notifier)
-                          .setIndex(index);
-
-                      ref
-                          .read(
-                              currentSongProvider.notifier)
-                          .setSong(song);
-
-                      final player = ref.read(
-                        audioPlayerProvider,
+                      await playSong(
+                        ref,
+                        songs,
+                        index,
                       );
-
-                      await player.play(song.path);
                     },
                   );
                 },
