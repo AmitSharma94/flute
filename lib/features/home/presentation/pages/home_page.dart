@@ -10,6 +10,7 @@ import '../../../player/providers/queue_index_provider.dart';
 import '../../../player/providers/queue_provider.dart';
 
 import '../widgets/greeting_header.dart';
+import '../widgets/quick_access_section.dart';
 
 import '../../../../shared/widgets/section_title.dart';
 import '../../../../shared/widgets/song_tile.dart';
@@ -50,6 +51,10 @@ class HomePage extends ConsumerWidget {
                 songCount: songs.length,
               ),
 
+              const QuickAccessSection(),
+
+              const SizedBox(height: 8),
+
               const SectionTitle(
                 title: "Continue Listening",
               ),
@@ -58,14 +63,17 @@ class HomePage extends ConsumerWidget {
                 height: 190,
                 child: ListView.builder(
                   scrollDirection: Axis.horizontal,
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  itemCount: songs.length > 6 ? 6 : songs.length,
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16),
+                  itemCount:
+                      songs.length > 6 ? 6 : songs.length,
                   itemBuilder: (context, index) {
                     final song = songs[index];
 
                     return Container(
                       width: 150,
-                      margin: const EdgeInsets.only(right: 14),
+                      margin:
+                          const EdgeInsets.only(right: 14),
                       child: Column(
                         crossAxisAlignment:
                             CrossAxisAlignment.start,
@@ -113,14 +121,17 @@ class HomePage extends ConsumerWidget {
                 height: 160,
                 child: ListView.builder(
                   scrollDirection: Axis.horizontal,
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  itemCount: songs.length > 5 ? 5 : songs.length,
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16),
+                  itemCount:
+                      songs.length > 5 ? 5 : songs.length,
                   itemBuilder: (context, index) {
                     final song = songs[index];
 
                     return Container(
                       width: 120,
-                      margin: const EdgeInsets.only(right: 12),
+                      margin:
+                          const EdgeInsets.only(right: 12),
                       child: Column(
                         crossAxisAlignment:
                             CrossAxisAlignment.start,
@@ -158,32 +169,24 @@ class HomePage extends ConsumerWidget {
                     song: song,
                     onTap: () async {
                       ref
-                          .read(
-                            queueProvider.notifier,
-                          )
+                          .read(queueProvider.notifier)
                           .setQueue(songs);
 
                       ref
                           .read(
-                            queueIndexProvider
-                                .notifier,
-                          )
+                              queueIndexProvider.notifier)
                           .setIndex(index);
 
                       ref
                           .read(
-                            currentSongProvider
-                                .notifier,
-                          )
+                              currentSongProvider.notifier)
                           .setSong(song);
 
                       final player = ref.read(
                         audioPlayerProvider,
                       );
 
-                      await player.play(
-                        song.path,
-                      );
+                      await player.play(song.path);
                     },
                   );
                 },
