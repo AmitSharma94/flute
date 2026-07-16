@@ -50,14 +50,15 @@ class PlayerPage extends ConsumerWidget {
                   child: Row(
                     children: [
 
+                      // CLOSE PLAYER
                       IconButton(
-  		       icon: const Icon(
-                        Icons.skip_previous,
-                       ),
-                       iconSize: 40,
-                       onPressed: () {
-                        queueController.previous();
-                       },
+                        icon: const Icon(
+                          Icons.keyboard_arrow_down,
+                        ),
+                        iconSize: 40,
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
                       ),
 
                       const Spacer(),
@@ -84,7 +85,6 @@ class PlayerPage extends ConsumerWidget {
 
                 Hero(
                   tag: song.id,
-
                   child: SongArtwork(
                     id: song.id,
                     size: 320,
@@ -109,9 +109,7 @@ class PlayerPage extends ConsumerWidget {
 
                             Text(
                               song.title,
-
                               maxLines: 1,
-
                               overflow:
                                   TextOverflow.ellipsis,
 
@@ -126,18 +124,16 @@ class PlayerPage extends ConsumerWidget {
 
                             Text(
                               song.artist,
-
                               maxLines: 1,
-
                               overflow:
                                   TextOverflow.ellipsis,
 
                               style: TextStyle(
                                 fontSize: 17,
-                                color: Colors.grey.shade400,
+                                color:
+                                    Colors.grey.shade400,
                               ),
                             ),
-
                           ],
                         ),
                       ),
@@ -162,24 +158,6 @@ class PlayerPage extends ConsumerWidget {
                   child: PlayerSeekBar(),
                 ),
 
-                Padding(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 20),
-
-                  child: Row(
-                    mainAxisAlignment:
-                        MainAxisAlignment.spaceBetween,
-
-                    children: const [
-
-                      Text("0:00"),
-
-                      Text("--:--"),
-
-                    ],
-                  ),
-                ),
-
                 const Spacer(),
 
                 Padding(
@@ -193,23 +171,27 @@ class PlayerPage extends ConsumerWidget {
                     children: [
 
                       IconButton(
-                        icon: const Icon(Icons.shuffle),
-                        iconSize: 28,
+                        icon:
+                            const Icon(Icons.shuffle),
                         onPressed: () {},
                       ),
 
+                      // PREVIOUS SONG
                       IconButton(
                         icon: const Icon(
                           Icons.skip_previous,
                         ),
                         iconSize: 40,
-                        onPressed: () {},
+                        onPressed: () {
+                          queueController.previous();
+                        },
                       ),
 
                       FilledButton(
                         style:
                             FilledButton.styleFrom(
-                          shape: const CircleBorder(),
+                          shape:
+                              const CircleBorder(),
                           padding:
                               const EdgeInsets.all(22),
                         ),
@@ -232,17 +214,22 @@ class PlayerPage extends ConsumerWidget {
                         ),
                       ),
 
+
+                      // NEXT SONG
                       IconButton(
                         icon: const Icon(
                           Icons.skip_next,
                         ),
                         iconSize: 40,
-                        onPressed: () {},
+                        onPressed: () {
+                          queueController.next();
+                        },
                       ),
 
+
                       IconButton(
-                        icon: const Icon(Icons.repeat),
-                        iconSize: 28,
+                        icon:
+                            const Icon(Icons.repeat),
                         onPressed: () {},
                       ),
 
@@ -261,20 +248,20 @@ class PlayerPage extends ConsumerWidget {
 
                       TextButton.icon(
                         onPressed: () {},
-
-                        icon: const Icon(Icons.queue_music),
-
-                        label: const Text("Queue"),
+                        icon:
+                            const Icon(Icons.queue_music),
+                        label:
+                            const Text("Queue"),
                       ),
 
                       const Spacer(),
 
                       TextButton.icon(
                         onPressed: () {},
-
-                        icon: const Icon(Icons.lyrics),
-
-                        label: const Text("Lyrics"),
+                        icon:
+                            const Icon(Icons.lyrics),
+                        label:
+                            const Text("Lyrics"),
                       ),
 
                     ],
@@ -288,7 +275,8 @@ class PlayerPage extends ConsumerWidget {
                     child: Text(
                       "Lyrics will be available in a future update.",
                       style: TextStyle(
-                        color: Colors.grey.shade500,
+                        color:
+                            Colors.grey.shade500,
                       ),
                     ),
                   ),
