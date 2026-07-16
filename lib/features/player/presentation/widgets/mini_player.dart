@@ -27,7 +27,7 @@ class MiniPlayer extends ConsumerWidget {
     return playerState.when(
       loading: () => const SizedBox.shrink(),
 
-      error: (_, __) => const SizedBox.shrink(),
+      error: (_, _) => const SizedBox.shrink(),
 
       data: (state) {
         return GestureDetector(
