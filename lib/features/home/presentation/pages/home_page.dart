@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../music/providers/music_provider.dart';
+import '../../../music/presentation/widgets/song_artwork.dart';
+
 import '../../../player/providers/current_song_provider.dart';
 import '../../../player/providers/player_provider.dart';
 import '../../../player/providers/queue_index_provider.dart';
@@ -10,78 +12,104 @@ import '../../../player/providers/queue_provider.dart';
 import '../../../../shared/widgets/section_title.dart';
 import '../../../../shared/widgets/song_tile.dart';
 
+
 class HomePage extends ConsumerWidget {
   const HomePage({super.key});
+
 
   String getGreeting() {
     final hour = DateTime.now().hour;
 
     if (hour >= 5 && hour < 12) {
       return "Good Morning 👋";
-    } else if (hour >= 12 && hour < 17) {
+    } 
+    else if (hour >= 12 && hour < 17) {
       return "Good Afternoon 👋";
-    } else if (hour >= 17 && hour < 21) {
+    } 
+    else if (hour >= 17 && hour < 21) {
       return "Good Evening 👋";
-    } else {
+    } 
+    else {
       return "Good Night 🌙";
     }
   }
 
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+
     final songsAsync = ref.watch(songsProvider);
 
+
     return Scaffold(
+
       appBar: AppBar(
+
         title: const Text(
           "Flute",
           style: TextStyle(
             fontWeight: FontWeight.bold,
           ),
         ),
+
         actions: [
+
           IconButton(
             icon: const Icon(Icons.search),
             onPressed: () {},
           ),
+
         ],
       ),
 
+
+
       body: songsAsync.when(
+
         loading: () => const Center(
           child: CircularProgressIndicator(),
         ),
 
-        error: (error, _) => Center(
+
+        error: (e, _) => Center(
           child: Text(
-            "Error: $error",
+            "Error: $e",
           ),
         ),
 
+
+
         data: (songs) {
+
+
           return ListView(
+
             padding: const EdgeInsets.only(
               bottom: 120,
             ),
 
+
             children: [
 
+
+
               Padding(
-                padding: const EdgeInsets.fromLTRB(
-                  20,
-                  20,
-                  20,
-                  10,
-                ),
+
+                padding: const EdgeInsets.all(20),
+
 
                 child: Column(
+
                   crossAxisAlignment:
                       CrossAxisAlignment.start,
+
 
                   children: [
 
                     Text(
+
                       getGreeting(),
+
                       style: Theme.of(context)
                           .textTheme
                           .headlineMedium
@@ -89,11 +117,14 @@ class HomePage extends ConsumerWidget {
                             fontWeight:
                                 FontWeight.bold,
                           ),
+
                     ),
+
 
                     const SizedBox(
                       height: 8,
                     ),
+
 
                     Text(
                       "${songs.length} songs available",
@@ -104,79 +135,131 @@ class HomePage extends ConsumerWidget {
               ),
 
 
+
+
+
               const SectionTitle(
                 title: "Continue Listening",
               ),
 
 
+
               SizedBox(
-                height: 150,
+
+                height: 190,
+
 
                 child: ListView.builder(
+
                   scrollDirection:
                       Axis.horizontal,
 
+
                   padding:
                       const EdgeInsets.symmetric(
-                    horizontal: 16,
-                  ),
+                        horizontal: 16,
+                      ),
+
 
                   itemCount:
                       songs.length > 6
                           ? 6
                           : songs.length,
 
+
                   itemBuilder:
                       (context, index) {
+
 
                     final song =
                         songs[index];
 
-                    return Card(
-                      child: SizedBox(
-                        width: 140,
 
-                        child: Padding(
-                          padding:
-                              const EdgeInsets.all(
-                            12,
+                    return Container(
+
+                      width: 150,
+
+
+                      margin:
+                          const EdgeInsets.only(
+                            right: 14,
                           ),
 
-                          child: Column(
-                            mainAxisAlignment:
-                                MainAxisAlignment.center,
 
-                            children: [
+                      child: Column(
 
-                              const Icon(
-                                Icons.music_note,
-                                size: 40,
-                              ),
+                        crossAxisAlignment:
+                            CrossAxisAlignment.start,
 
-                              const SizedBox(
-                                height: 10,
-                              ),
 
-                              Text(
-                                song.title,
+                        children: [
 
-                                maxLines: 2,
 
-                                overflow:
-                                    TextOverflow
-                                        .ellipsis,
+                          SongArtwork(
 
-                                textAlign:
-                                    TextAlign.center,
-                              ),
-                            ],
+                            id: song.id,
+
+                            size: 150,
+
                           ),
-                        ),
+
+
+
+                          const SizedBox(
+                            height: 8,
+                          ),
+
+
+
+                          Text(
+
+                            song.title,
+
+                            maxLines: 1,
+
+                            overflow:
+                                TextOverflow.ellipsis,
+
+                            style:
+                                const TextStyle(
+                              fontWeight:
+                                  FontWeight.w600,
+                            ),
+
+                          ),
+
+
+
+                          Text(
+
+                            song.artist,
+
+                            maxLines: 1,
+
+                            overflow:
+                                TextOverflow.ellipsis,
+
+                            style:
+                                TextStyle(
+                              color:
+                                  Colors.grey.shade500,
+                            ),
+
+                          ),
+
+
+                        ],
                       ),
                     );
+
                   },
+
                 ),
+
               ),
+
+
+
 
 
 
@@ -185,59 +268,101 @@ class HomePage extends ConsumerWidget {
               ),
 
 
+
               SizedBox(
-                height: 120,
+
+                height: 160,
+
 
                 child: ListView.builder(
+
                   scrollDirection:
                       Axis.horizontal,
 
+
                   padding:
                       const EdgeInsets.symmetric(
-                    horizontal: 16,
-                  ),
+                        horizontal: 16,
+                      ),
+
 
                   itemCount:
                       songs.length > 5
                           ? 5
                           : songs.length,
 
+
                   itemBuilder:
                       (context, index) {
+
 
                     final song =
                         songs[index];
 
-                    return Card(
-                      child: SizedBox(
-                        width: 120,
 
-                        child: Center(
-                          child: Padding(
-                            padding:
-                                const EdgeInsets.all(
-                              8,
-                            ),
 
-                            child: Text(
-                              song.title,
+                    return Container(
 
-                              maxLines: 2,
+                      width: 120,
 
-                              overflow:
-                                  TextOverflow
-                                      .ellipsis,
 
-                              textAlign:
-                                  TextAlign.center,
-                            ),
+                      margin:
+                          const EdgeInsets.only(
+                            right: 12,
                           ),
-                        ),
+
+
+                      child: Column(
+
+                        crossAxisAlignment:
+                            CrossAxisAlignment.start,
+
+
+                        children: [
+
+
+                          SongArtwork(
+
+                            id: song.id,
+
+                            size: 120,
+
+                          ),
+
+
+
+                          const SizedBox(
+                            height: 6,
+                          ),
+
+
+
+                          Text(
+
+                            song.title,
+
+                            maxLines: 1,
+
+                            overflow:
+                                TextOverflow.ellipsis,
+
+                          ),
+
+
+                        ],
+
                       ),
+
                     );
+
                   },
+
                 ),
+
               ),
+
+
+
 
 
 
@@ -247,18 +372,28 @@ class HomePage extends ConsumerWidget {
 
 
 
+
+
               ...List.generate(
+
                 songs.length,
 
+
                 (index) {
+
 
                   final song =
                       songs[index];
 
+
+
                   return SongTile(
+
                     song: song,
 
+
                     onTap: () async {
+
 
                       ref
                           .read(
@@ -268,6 +403,7 @@ class HomePage extends ConsumerWidget {
                           .setQueue(
                             songs,
                           );
+
 
 
                       ref
@@ -280,6 +416,7 @@ class HomePage extends ConsumerWidget {
                           );
 
 
+
                       ref
                           .read(
                             currentSongProvider
@@ -290,24 +427,36 @@ class HomePage extends ConsumerWidget {
                           );
 
 
+
                       final player =
                           ref.read(
                             audioPlayerProvider,
                           );
 
 
+
                       await player.play(
                         song.path,
                       );
+
                     },
+
                   );
+
                 },
+
               ),
 
             ],
+
           );
+
         },
+
       ),
+
     );
+
   }
+
 }
