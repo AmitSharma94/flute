@@ -40,11 +40,30 @@ jobs:
       - name: Run tests
         run: flutter test
 
+      - name: Restore Gradle wrapper if missing
+        run: |
+          if [ ! -f android/gradlew ]; then
+            echo "Gradle wrapper is missing. Generating temporary Android wrapper files."
+
+            flutter create --platforms=android /tmp/flute_wrapper
+
+            cp /tmp/flute_wrapper/android/gradlew android/gradlew
+            cp /tmp/flute_wrapper/android/gradlew.bat android/gradlew.bat
+
+            mkdir -p android/gradle/wrapper
+
+            cp /tmp/flute_wrapper/android/gradle/wrapper/gradle-wrapper.jar \
+              android/gradle/wrapper/gradle-wrapper.jar
+
+            cp /tmp/flute_wrapper/android/gradle/wrapper/gradle-wrapper.properties \
+              android/gradle/wrapper/gradle-wrapper.properties
+          fi
+
+          chmod +x android/gradlew
+
       - name: Build debug APK with Gradle
         working-directory: android
-        run: |
-          chmod +x gradlew
-          ./gradlew assembleDebug --stacktrace
+        run: ./gradlew assembleDebug --stacktrace
 
       - name: Find generated APK
         run: |
@@ -59,6 +78,7 @@ jobs:
           fi
 
           echo "APK found at: $APK_PATH"
+
           mkdir -p release-artifacts
           cp "$APK_PATH" release-artifacts/flute-debug.apk
 
