@@ -1,558 +1,196 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../providers/shuffle/shuffle_provider.dart';
+import '../../../music/presentation/widgets/song_artwork.dart';
 import '../../providers/current_song_provider.dart';
-import '../../providers/player_provider.dart';
+import '../../providers/playback_controller.dart';
 import '../../providers/player_state_provider.dart';
-import '../../providers/queue_controller_provider.dart';
 import '../../providers/repeat/repeat_provider.dart';
-
+import '../../providers/shuffle/shuffle_provider.dart';
+import '../widgets/player_seek_bar.dart';
 import 'queue/queue_page.dart';
 
-import '../../../music/presentation/widgets/song_artwork.dart';
-import '../widgets/player_seek_bar.dart';
-
-
 class PlayerPage extends ConsumerWidget {
-
-  const PlayerPage({
-    super.key,
-  });
-
+  const PlayerPage({super.key});
 
   @override
-  Widget build(
-    BuildContext context,
-    WidgetRef ref,
-  ) {
-
-    final song =
-        ref.watch(currentSongProvider);
-
-
+  Widget build(BuildContext context, WidgetRef ref) {
+    final song = ref.watch(currentSongProvider);
     if (song == null) {
-
-      return const Scaffold(
-
-        body: Center(
-          child: Text(
-            "No song selected",
-          ),
-        ),
-
-      );
-
+      return const Scaffold(body: Center(child: Text('No song selected')));
     }
 
-
-    final player =
-        ref.read(audioPlayerProvider);
-
-
-    final queueController =
-        ref.read(queueControllerProvider);
-
-
-    final playerState =
-        ref.watch(playerStateProvider);
-
-
+    final playerState = ref.watch(playerStateProvider);
+    final busy = ref.watch(playbackBusyProvider);
+    final shuffle = ref.watch(shuffleProvider);
+    final repeat = ref.watch(repeatProvider);
+    final controller = ref.read(playbackControllerProvider);
 
     return Scaffold(
-
       body: SafeArea(
-
         child: playerState.when(
-
-          loading: () =>
-              const Center(
-                child: CircularProgressIndicator(),
-              ),
-
-
-          error: (e, _) =>
-              Center(
-                child: Text(
-                  e.toString(),
-                ),
-              ),
-
-
-
-          data: (state) {
-
-
-            return Column(
-
-              children: [
-
-
-                Padding(
-
-                  padding:
-                      const EdgeInsets.symmetric(
-                        horizontal: 12,
-                      ),
-
-
-                  child: Row(
-
-                    children: [
-
-
-                      const SizedBox(
-                        width: 48,
-                      ),
-
-
-
-                      const Spacer(),
-
-
-
-                      const Text(
-                        "NOW PLAYING",
-                      ),
-
-
-
-                      const Spacer(),
-
-
-
-                      IconButton(
-
-                        icon:
-                            const Icon(
-                              Icons.queue_music,
-                            ),
-
-
-                        onPressed: () {
-
-
-                          Navigator.push(
-
-                            context,
-
-                            MaterialPageRoute(
-
-                              builder: (_) =>
-                                  const QueuePage(),
-
-                            ),
-
-                          );
-
-
-                        },
-
-                      ),
-
-
-                    ],
-
-                  ),
-
-                ),
-
-
-
-
-                const SizedBox(
-                  height: 20,
-                ),
-
-
-
-
-                Hero(
-
-                  tag: song.id,
-
-
-                  child: SongArtwork(
-
-                    id: song.id,
-
-                    size: 320,
-
-                  ),
-
-                ),
-
-
-
-
-                const SizedBox(
-                  height: 30,
-                ),
-
-
-
-
-                Text(
-
-                  song.title,
-
-
-                  maxLines: 1,
-
-
-                  overflow:
-                      TextOverflow.ellipsis,
-
-
-                  style:
-                      const TextStyle(
-
-                    fontSize: 24,
-
-                    fontWeight:
-                        FontWeight.bold,
-
-                  ),
-
-                ),
-
-
-
-
-                const SizedBox(
-                  height: 5,
-                ),
-
-
-
-
-                Text(
-
-                  song.artist,
-
-
-                  style:
-                      TextStyle(
-
-                    color:
-                        Colors.grey.shade500,
-
-                    fontSize: 17,
-
-                  ),
-
-                ),
-
-
-
-
-                const SizedBox(
-                  height: 20,
-                ),
-
-
-
-
-                const Padding(
-
-                  padding:
-                      EdgeInsets.symmetric(
-                        horizontal: 20,
-                      ),
-
-
-                  child:
-                      PlayerSeekBar(),
-
-                ),
-
-
-
-
-                const Spacer(),
-
-
-
-
-                Row(
-
-                  mainAxisAlignment:
-                      MainAxisAlignment.center,
-
-
+          loading: () => const Center(child: CircularProgressIndicator()),
+          error: (error, _) => Center(child: Text(error.toString())),
+          data: (state) => Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8),
+                child: Row(
                   children: [
-
-
-
-
-                    Consumer(
-
-                      builder:
-                          (context, ref, _) {
-
-
-                        final shuffle =
-                            ref.watch(
-                              shuffleProvider,
-                            );
-
-
-                        return IconButton(
-
-                          icon: Icon(
-
-                            Icons.shuffle,
-
-
-                            color: shuffle
-
-                                ? Theme.of(context)
-                                    .colorScheme
-                                    .primary
-
-                                : Colors.grey,
-
-                          ),
-
-
-                          onPressed: () {
-
-
-                            ref
-                                .read(
-                                  shuffleProvider
-                                      .notifier,
-                                )
-                                .toggle();
-
-
-                          },
-
-                        );
-
-
-                      },
-
-                    ),
-
-
-
-
-
                     IconButton(
-
-                      icon:
-                          const Icon(
-                            Icons.skip_previous,
-                          ),
-
-
-                      iconSize: 40,
-
-
-                      onPressed: () {
-
-                        queueController.previous();
-
-                      },
-
+                      tooltip: 'Back',
+                      icon: const Icon(Icons.keyboard_arrow_down),
+                      onPressed: () => Navigator.maybePop(context),
                     ),
-
-
-
-
-
-                    FilledButton(
-
-                      style:
-                          FilledButton.styleFrom(
-
-                        shape:
-                            const CircleBorder(),
-
-                        padding:
-                            const EdgeInsets.all(
-                              22,
-                            ),
-
+                    const Expanded(
+                      child: Text(
+                        'NOW PLAYING',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w600,
+                          letterSpacing: 1.2,
+                        ),
                       ),
-
-
-
-                      onPressed: () {
-
-
-                        if (state.playing) {
-
-                          player.pause();
-
-                        }
-
-                        else {
-
-                          player.resume();
-
-                        }
-
-
-                      },
-
-
-
-                      child:
-                          Icon(
-
-                            state.playing
-
-                                ? Icons.pause
-
-                                : Icons.play_arrow,
-
-
-                            size: 38,
-
-                          ),
-
-
                     ),
-
-
-
-
                     IconButton(
-
-                      icon:
-                          const Icon(
-                            Icons.skip_next,
-                          ),
-
-
-                      iconSize: 40,
-
-
-                      onPressed: () {
-
-
-                        queueController.next();
-
-
-                      },
-
+                      tooltip: 'Queue',
+                      icon: const Icon(Icons.queue_music),
+                      onPressed: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (_) => const QueuePage()),
+                      ),
                     ),
-
-
-
-
-
-                    Consumer(
-
-                      builder:
-                          (context, ref, _) {
-
-
-                        final repeat =
-                            ref.watch(
-                              repeatProvider,
-                            );
-
-
-                        Icon icon;
-
-
-                        switch (repeat) {
-
-
-                          case FluteRepeatMode.off:
-
-                            icon =
-                                const Icon(
-                                  Icons.repeat,
-                                  color: Colors.grey,
-                                );
-
-                            break;
-
-
-
-                          case FluteRepeatMode.all:
-
-                            icon =
-                                const Icon(
-                                  Icons.repeat,
-                                );
-
-                            break;
-
-
-
-                          case FluteRepeatMode.one:
-
-                            icon =
-                                const Icon(
-                                  Icons.repeat_one,
-                                );
-
-                            break;
-
-
-                        }
-
-
-
-                        return IconButton(
-
-                          icon: icon,
-
-
-                          onPressed: () {
-
-
-                            ref
-                                .read(
-                                  repeatProvider
-                                      .notifier,
-                                )
-                                .toggle();
-
-
-                          },
-
-                        );
-
-
-                      },
-
-                    ),
-
-
-
                   ],
-
                 ),
-
-
-
-
-                const SizedBox(
-                  height: 20,
+              ),
+              const SizedBox(height: 20),
+              Expanded(
+                flex: 5,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 28),
+                  child: FittedBox(
+                    fit: BoxFit.contain,
+                    child: Hero(
+                      tag: song.id,
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(24),
+                        child: SongArtwork(id: song.id, size: 320),
+                      ),
+                    ),
+                  ),
                 ),
-
-
-
-              ],
-
-            );
-
-
-          },
-
+              ),
+              const SizedBox(height: 24),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 28),
+                child: Column(
+                  children: [
+                    Text(
+                      song.title,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 6),
+                    Text(
+                      song.artist,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                        fontSize: 16,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 20),
+              const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 20),
+                child: PlayerSeekBar(),
+              ),
+              const SizedBox(height: 12),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    IconButton(
+                      tooltip: shuffle ? 'Disable shuffle' : 'Enable shuffle',
+                      icon: Icon(
+                        Icons.shuffle,
+                        color: shuffle
+                            ? Theme.of(context).colorScheme.primary
+                            : Theme.of(context).colorScheme.onSurfaceVariant,
+                      ),
+                      onPressed: () =>
+                          ref.read(shuffleProvider.notifier).toggle(),
+                    ),
+                    IconButton(
+                      tooltip: 'Previous',
+                      icon: const Icon(Icons.skip_previous),
+                      iconSize: 42,
+                      onPressed: busy ? null : controller.previous,
+                    ),
+                    FilledButton(
+                      style: FilledButton.styleFrom(
+                        shape: const CircleBorder(),
+                        padding: const EdgeInsets.all(22),
+                      ),
+                      onPressed: busy ? null : controller.togglePlayPause,
+                      child: busy
+                          ? const SizedBox.square(
+                              dimension: 34,
+                              child: CircularProgressIndicator(strokeWidth: 3),
+                            )
+                          : Icon(
+                              state.playing ? Icons.pause : Icons.play_arrow,
+                              size: 38,
+                            ),
+                    ),
+                    IconButton(
+                      tooltip: 'Next',
+                      icon: const Icon(Icons.skip_next),
+                      iconSize: 42,
+                      onPressed: busy ? null : controller.next,
+                    ),
+                    IconButton(
+                      tooltip: _repeatTooltip(repeat),
+                      icon: Icon(
+                        repeat == FluteRepeatMode.one
+                            ? Icons.repeat_one
+                            : Icons.repeat,
+                        color: repeat == FluteRepeatMode.off
+                            ? Theme.of(context).colorScheme.onSurfaceVariant
+                            : Theme.of(context).colorScheme.primary,
+                      ),
+                      onPressed: () =>
+                          ref.read(repeatProvider.notifier).toggle(),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 24),
+            ],
+          ),
         ),
-
       ),
-
     );
-
-
   }
 
+  String _repeatTooltip(FluteRepeatMode mode) {
+    switch (mode) {
+      case FluteRepeatMode.off:
+        return 'Repeat off';
+      case FluteRepeatMode.all:
+        return 'Repeat all';
+      case FluteRepeatMode.one:
+        return 'Repeat one';
+    }
+  }
 }

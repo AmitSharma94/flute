@@ -162,68 +162,58 @@ class SettingsPage extends ConsumerWidget {
   }
 
   Future<void> _showThemePicker(
-  BuildContext context,
-  WidgetRef ref,
-  ThemeMode selectedMode,
-) async {
-  final mode = await showModalBottomSheet<ThemeMode>(
-    context: context,
-    showDragHandle: true,
-    builder: (context) => SafeArea(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          const SizedBox(height: 8),
-
-          ListTile(
-            leading: const Icon(Icons.settings_brightness_rounded),
-            title: const Text('System default'),
-            trailing: selectedMode == ThemeMode.system
-                ? const Icon(Icons.check)
-                : null,
-            onTap: () => Navigator.pop(
-              context,
-              ThemeMode.system,
-            ),
+    BuildContext context,
+    WidgetRef ref,
+    ThemeMode selectedMode,
+  ) async {
+    final mode = await showModalBottomSheet<ThemeMode>(
+      context: context,
+      showDragHandle: true,
+      builder: (context) => SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.only(bottom: 12),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                'Choose theme',
+                style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                      fontWeight: FontWeight.w700,
+                    ),
+              ),
+              const SizedBox(height: 8),
+              RadioListTile<ThemeMode>(
+                value: ThemeMode.system,
+                groupValue: selectedMode,
+                title: const Text('System default'),
+                secondary: const Icon(Icons.settings_brightness_rounded),
+                onChanged: (value) => Navigator.pop(context, value),
+              ),
+              RadioListTile<ThemeMode>(
+                value: ThemeMode.light,
+                groupValue: selectedMode,
+                title: const Text('Light'),
+                secondary: const Icon(Icons.light_mode_rounded),
+                onChanged: (value) => Navigator.pop(context, value),
+              ),
+              RadioListTile<ThemeMode>(
+                value: ThemeMode.dark,
+                groupValue: selectedMode,
+                title: const Text('Dark'),
+                secondary: const Icon(Icons.dark_mode_rounded),
+                onChanged: (value) => Navigator.pop(context, value),
+              ),
+            ],
           ),
-
-          ListTile(
-            leading: const Icon(Icons.light_mode_rounded),
-            title: const Text('Light'),
-            trailing: selectedMode == ThemeMode.light
-                ? const Icon(Icons.check)
-                : null,
-            onTap: () => Navigator.pop(
-              context,
-              ThemeMode.light,
-            ),
-          ),
-
-          ListTile(
-            leading: const Icon(Icons.dark_mode_rounded),
-            title: const Text('Dark'),
-            trailing: selectedMode == ThemeMode.dark
-                ? const Icon(Icons.check)
-                : null,
-            onTap: () => Navigator.pop(
-              context,
-              ThemeMode.dark,
-            ),
-          ),
-
-          const SizedBox(height: 20),
-        ],
+        ),
       ),
-    ),
-  );
+    );
 
-  if (mode != null) {
-    await ref
-        .read(settingsProvider.notifier)
-        .setThemeMode(mode);
+    if (mode != null) {
+      await ref.read(settingsProvider.notifier).setThemeMode(mode);
+    }
   }
-}
-    
+
   Future<void> _confirmReset(BuildContext context, WidgetRef ref) async {
     final confirmed = await showDialog<bool>(
       context: context,

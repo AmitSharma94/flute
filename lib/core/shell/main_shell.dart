@@ -1,22 +1,24 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../features/player/presentation/widgets/mini_player.dart';
 import '../../features/home/presentation/pages/home_page.dart';
 import '../../features/library/presentation/pages/library_page.dart';
+import '../../features/player/presentation/widgets/mini_player.dart';
+import '../../features/player/providers/playback_controller.dart';
 import '../../features/search/presentation/pages/search_page.dart';
 import '../../features/settings/presentation/pages/settings_page.dart';
 
-class MainShell extends StatefulWidget {
+class MainShell extends ConsumerStatefulWidget {
   const MainShell({super.key});
 
   @override
-  State<MainShell> createState() => _MainShellState();
+  ConsumerState<MainShell> createState() => _MainShellState();
 }
 
-class _MainShellState extends State<MainShell> {
+class _MainShellState extends ConsumerState<MainShell> {
   int currentIndex = 0;
 
-  final pages = const [
+  static const pages = [
     HomePage(),
     LibraryPage(),
     SearchPage(),
@@ -25,40 +27,49 @@ class _MainShellState extends State<MainShell> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-  body: pages[currentIndex],
+    // Keeps the completion listener alive for the entire app shell.
+    ref.watch(playbackControllerProvider);
 
- bottomSheet: SafeArea(
-  child: const MiniPlayer(),
-),
+    ref.listen<String?>(playbackErrorProvider, (previous, next) {
+      if (next == null || next == previous || !mounted) return;
+      ScaffoldMessenger.of(context)
+        ..hideCurrentSnackBar()
+        ..showSnackBar(
+          SnackBar(
+            content: Text(next),
+            action: SnackBarAction(
+              label: 'Dismiss',
+              onPressed: () =>
+                  ref.read(playbackErrorProvider.notifier).clear(),
+            ),
+          ),
+        );
+    });
+
+    return Scaffold(
+      body: IndexedStack(index: currentIndex, children: pages),
+      bottomSheet: const SafeArea(child: MiniPlayer()),
       bottomNavigationBar: NavigationBar(
         selectedIndex: currentIndex,
-
         onDestinationSelected: (index) {
-          setState(() {
-            currentIndex = index;
-          });
+          setState(() => currentIndex = index);
         },
-
         destinations: const [
           NavigationDestination(
             icon: Icon(Icons.home_outlined),
             selectedIcon: Icon(Icons.home),
             label: 'Home',
           ),
-
           NavigationDestination(
             icon: Icon(Icons.library_music_outlined),
             selectedIcon: Icon(Icons.library_music),
             label: 'Library',
           ),
-
           NavigationDestination(
             icon: Icon(Icons.search_outlined),
             selectedIcon: Icon(Icons.search),
             label: 'Search',
           ),
-
           NavigationDestination(
             icon: Icon(Icons.settings_outlined),
             selectedIcon: Icon(Icons.settings),

@@ -1,5 +1,4 @@
 class FluteSong {
-
   final String id;
   final String title;
   final String artist;
@@ -7,91 +6,48 @@ class FluteSong {
   final String path;
   final int duration;
 
-
   const FluteSong({
-
     required this.id,
-
     required this.title,
-
     required this.artist,
-
     required this.album,
-
     required this.path,
-
     required this.duration,
-
   });
 
-
-
-  factory FluteSong.fromJson(
-    Map<String, dynamic> json,
-  ) {
-
+  factory FluteSong.fromJson(Map<String, dynamic> json) {
     return FluteSong(
-
-      id:
-          json['id'] ?? '',
-
-      title:
-          json['title'] ?? '',
-
-      artist:
-          json['artist'] ?? 'Unknown',
-
-      album:
-          json['album'] ?? 'Unknown',
-
-      path:
-          json['path'] ?? '',
-
-      duration:
-          json['duration'] ?? 0,
-
+      id: json['id']?.toString() ?? '',
+      title: _text(json['title'], 'Unknown Title'),
+      artist: _text(json['artist'], 'Unknown Artist'),
+      album: _text(json['album'], 'Unknown Album'),
+      path: json['path']?.toString() ?? '',
+      duration: _integer(json['duration']),
     );
-
   }
 
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'title': title,
+        'artist': artist,
+        'album': album,
+        'path': path,
+        'duration': duration,
+      };
 
-
-  Map<String, dynamic> toJson() {
-
-    return {
-
-      'id': id,
-
-      'title': title,
-
-      'artist': artist,
-
-      'album': album,
-
-      'path': path,
-
-      'duration': duration,
-
-    };
-
+  static String _text(dynamic value, String fallback) {
+    final text = value?.toString().trim();
+    return text == null || text.isEmpty ? fallback : text;
   }
 
-
+  static int _integer(dynamic value) {
+    if (value is int) return value;
+    return int.tryParse(value?.toString() ?? '') ?? 0;
+  }
 
   @override
-  bool operator ==(
-    Object other,
-  ) {
-
-    return other is FluteSong &&
-        other.id == id;
-
-  }
-
-
+  bool operator ==(Object other) => other is FluteSong && other.id == id;
 
   @override
-  int get hashCode =>
-      id.hashCode;
-
+  int get hashCode => id.hashCode;
 }

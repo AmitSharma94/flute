@@ -1,39 +1,29 @@
 import 'package:just_audio/just_audio.dart';
 
+import '../../features/player/data/services/audio_player_service.dart';
+
+/// Legacy compatibility adapter.
+///
+/// It delegates to Flute's single [AudioPlayerService] instead of creating a
+/// second AudioPlayer instance.
 class FluteAudioHandler {
-  final AudioPlayer player = AudioPlayer();
+  FluteAudioHandler(this._service);
+
+  final AudioPlayerService _service;
 
   Future<void> playSong(
     String path, {
     String? title,
     String? artist,
-  }) async {
-    await player.setFilePath(path);
-    await player.play();
-  }
+  }) =>
+      _service.loadAndPlay(path);
 
-  Future<void> play() async {
-    await player.play();
-  }
+  Future<void> play() => _service.resume();
+  Future<void> pause() => _service.pause();
+  Future<void> stop() => _service.stop();
+  Future<void> seek(Duration position) => _service.seek(position);
 
-  Future<void>pause() async {
-    await player.pause();
-  }
-
-  Future<void> stop() async {
-    await player.stop();
-  }
-
-  Future<void> seek(Duration position) async {
-    await player.seek(position);
-  }
-
-  Stream<PlayerState> get playerStateStream =>
-      player.playerStateStream;
-
-  Stream<Duration> get positionStream =>
-      player.positionStream;
-
-  Duration? get duration =>
-      player.duration;
+  Stream<PlayerState> get playerStateStream => _service.playerStateStream;
+  Stream<Duration> get positionStream => _service.positionStream;
+  Duration? get duration => _service.duration;
 }

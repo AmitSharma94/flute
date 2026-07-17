@@ -5,6 +5,7 @@ import 'router/app_router.dart';
 import 'theme/app_theme.dart';
 
 import '../features/settings/providers/settings_provider.dart';
+import '../features/player/providers/playback_controller.dart';
 
 class FluteApp extends ConsumerWidget {
   const FluteApp({super.key});
@@ -15,6 +16,7 @@ class FluteApp extends ConsumerWidget {
     WidgetRef ref,
   ) {
     final settings = ref.watch(settingsProvider);
+    ref.watch(playbackControllerProvider);
 
     return settings.when(
       loading: () => MaterialApp.router(

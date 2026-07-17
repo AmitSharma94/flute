@@ -58,7 +58,7 @@ class SettingsSwitchTile extends StatelessWidget {
 
       onChanged: onChanged,
 
-      activeThumbColor: colorScheme.primary,
+      activeColor: colorScheme.primary,
 
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(18),
