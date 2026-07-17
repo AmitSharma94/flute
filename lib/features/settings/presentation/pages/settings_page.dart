@@ -183,26 +183,33 @@ class SettingsPage extends ConsumerWidget {
                     ),
               ),
               const SizedBox(height: 8),
-              RadioListTile<ThemeMode>(
-                value: ThemeMode.system,
+              RadioGroup<ThemeMode>(
                 groupValue: selectedMode,
-                title: const Text('System default'),
-                secondary: const Icon(Icons.settings_brightness_rounded),
-                onChanged: (value) => Navigator.pop(context, value),
-              ),
-              RadioListTile<ThemeMode>(
-                value: ThemeMode.light,
-                groupValue: selectedMode,
-                title: const Text('Light'),
-                secondary: const Icon(Icons.light_mode_rounded),
-                onChanged: (value) => Navigator.pop(context, value),
-              ),
-              RadioListTile<ThemeMode>(
-                value: ThemeMode.dark,
-                groupValue: selectedMode,
-                title: const Text('Dark'),
-                secondary: const Icon(Icons.dark_mode_rounded),
-                onChanged: (value) => Navigator.pop(context, value),
+                onChanged: (value) {
+                  if (value != null) {
+                    Navigator.pop(context, value);
+                  }
+                },
+                child: const Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    RadioListTile<ThemeMode>(
+                      value: ThemeMode.system,
+                      title: Text('System default'),
+                      secondary: Icon(Icons.settings_brightness_rounded),
+                    ),
+                    RadioListTile<ThemeMode>(
+                      value: ThemeMode.light,
+                      title: Text('Light'),
+                      secondary: Icon(Icons.light_mode_rounded),
+                    ),
+                    RadioListTile<ThemeMode>(
+                      value: ThemeMode.dark,
+                      title: Text('Dark'),
+                      secondary: Icon(Icons.dark_mode_rounded),
+                    ),
+                  ],
+                ),
               ),
             ],
           ),
