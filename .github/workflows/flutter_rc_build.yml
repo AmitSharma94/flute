@@ -1,0 +1,100 @@
+name: Unsigned Flutter RC Build
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build RC APK and AAB
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Install dependencies
+        run: flutter pub get --enforce-lockfile
+
+      - name: Verify formatting
+        run: dart format --output=none --set-exit-if-changed lib test
+
+      - name: Analyze project
+        run: flutter analyze
+
+      - name: Run tests
+        run: flutter test
+
+      - name: Restore Gradle wrapper if missing
+        run: |
+          if [ ! -f android/gradlew ]; then
+            flutter create --platforms=android /tmp/flute_wrapper
+
+            cp /tmp/flute_wrapper/android/gradlew android/gradlew
+            cp /tmp/flute_wrapper/android/gradlew.bat android/gradlew.bat
+
+            mkdir -p android/gradle/wrapper
+
+            cp /tmp/flute_wrapper/android/gradle/wrapper/gradle-wrapper.jar \
+              android/gradle/wrapper/gradle-wrapper.jar
+
+            cp /tmp/flute_wrapper/android/gradle/wrapper/gradle-wrapper.properties \
+              android/gradle/wrapper/gradle-wrapper.properties
+          fi
+
+          chmod +x android/gradlew
+
+      - name: Build RC APK
+        run: flutter build apk --release
+
+      - name: Build RC App Bundle
+        run: flutter build appbundle --release
+
+      - name: Locate build artifacts
+        run: |
+          echo "Generated files:"
+          find build -type f \( -name "*.apk" -o -name "*.aab" \) -print
+
+          APK_PATH=$(find build -type f -name "app-release.apk" | head -n 1)
+          AAB_PATH=$(find build -type f -name "app-release.aab" | head -n 1)
+
+          if [ -z "$APK_PATH" ]; then
+            echo "Release APK not found."
+            exit 1
+          fi
+
+          if [ -z "$AAB_PATH" ]; then
+            echo "Release AAB not found."
+            exit 1
+          fi
+
+          mkdir -p release-artifacts
+
+          cp "$APK_PATH" release-artifacts/flute_rc_V1-rc.apk
+          cp "$AAB_PATH" release-artifacts/flute_rc_V1-rc.aab
+
+      - name: Upload RC APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: flute-rc-v1-rc-apk
+          path: release-artifacts/flute_rc_V1-rc.apk
+          retention-days: 30
+
+      - name: Upload RC App Bundle
+        uses: actions/upload-artifact@v4
+        with:
+          name: flute-rc-v1-rc-aab
+          path: release-artifacts/flute_rc_V1-rc.aab
+          retention-days: 30
