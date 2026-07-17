@@ -312,7 +312,7 @@ class PlaybackController {
       return '“${song.title}” is no longer available on this device.';
     }
     if (value.contains('permission')) {
-      return 'Flute does not have permission to play “${song.title}”.';
+      return 'flute_rc_V1 does not have permission to play “${song.title}”.';
     }
     return 'Unable to play “${song.title}”. The file may be unsupported or damaged.';
   }

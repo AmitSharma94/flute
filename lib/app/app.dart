@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'router/app_router.dart';
 import 'theme/app_theme.dart';
+import '../core/constants/app_info.dart';
 
 import '../features/settings/providers/settings_provider.dart';
 import '../features/player/providers/playback_controller.dart';
@@ -20,7 +21,7 @@ class FluteApp extends ConsumerWidget {
 
     return settings.when(
       loading: () => MaterialApp.router(
-        title: 'Flute',
+        title: AppInfo.displayName,
         debugShowCheckedModeBanner: false,
         theme: AppTheme.light,
         darkTheme: AppTheme.dark,
@@ -29,7 +30,7 @@ class FluteApp extends ConsumerWidget {
       ),
 
       error: (error, stackTrace) => MaterialApp.router(
-        title: 'Flute',
+        title: AppInfo.displayName,
         debugShowCheckedModeBanner: false,
         theme: AppTheme.light,
         darkTheme: AppTheme.dark,
@@ -39,7 +40,7 @@ class FluteApp extends ConsumerWidget {
 
       data: (state) {
         return MaterialApp.router(
-          title: 'Flute',
+          title: AppInfo.displayName,
           debugShowCheckedModeBanner: false,
 
           theme: AppTheme.light,

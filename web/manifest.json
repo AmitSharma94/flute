@@ -1,6 +1,6 @@
 {
-    "name": "flute",
-    "short_name": "flute",
+    "name": "flute_rc_V1",
+    "short_name": "flute_rc_V1",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",

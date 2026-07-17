@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:just_audio/just_audio.dart';
 
-/// The single audio engine used by Flute.
+/// The single audio engine used by flute_rc_V1.
 class AudioPlayerService {
   AudioPlayerService() : player = AudioPlayer();
 

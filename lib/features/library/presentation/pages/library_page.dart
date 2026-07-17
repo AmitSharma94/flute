@@ -56,7 +56,7 @@ class LibraryPage extends ConsumerWidget {
       body: library.when(
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (error, _) => _LibraryError(
-          message: 'Flute could not scan your music library.\n$error',
+          message: 'flute_rc_V1 could not scan your music library.\n$error',
           onRetry: () =>
               ref.read(musicLibraryProvider.notifier).refresh(),
         ),
@@ -163,7 +163,7 @@ class _PermissionRequired extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             const Text(
-              'Allow Flute to read audio files stored on this device. Flute does not upload your music.',
+              'Allow flute_rc_V1 to read audio files stored on this device. flute_rc_V1 does not upload your music.',
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 24),

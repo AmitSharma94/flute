@@ -1,152 +1,54 @@
-# \# 🎵 Flute v0.1.0 – Alpha Preview
+# flute_rc_V1™
 
-# 
+A private offline music player built with Flutter.
 
-# Welcome to the first public preview of \*\*Flute\*\*, a modern offline music player built with \*\*Flutter\*\*.
+**Release:** `1.0.0-rc.1`  
+**Owner:** Amit Sharma  
+**Copyright:** © 2026 Amit Sharma. All rights reserved.  
+**Trademark:** flute_rc_V1™ is a trademark of Amit Sharma.
 
-# 
+## Current functionality
 
-# \---
+- Local audio-library scanning and refresh
+- Unified playback engine
+- Play, pause, seek, next, and previous
+- Automatic queue progression
+- Shuffle and repeat modes
+- Favorites and listening history
+- Session and position restoration without automatic playback
+- Theme and playback settings
+- Android permission recovery
 
-# 
+## Development checks
 
-# \## ✨ Features
+```bash
+flutter clean
+flutter pub get
+dart format lib test
+flutter analyze
+flutter test
+flutter run
+```
 
-# 
+## Git CLI workflow
 
-# \- 🎵 Offline music playback
+See [`docs/GIT_CLI_FLOW.md`](docs/GIT_CLI_FLOW.md), or run:
 
-# \- 📂 Automatic device music scanning
+```bash
+./scripts/git-flow.sh
+```
 
-# \- ▶️ Play, ⏸ Pause, ⏭ Next, and ⏮ Previous controls
+## Release build
 
-# \- 📜 Queue management
+```bash
+flutter build apk --release
+flutter build appbundle --release
+```
 
-# \- 🌙 Modern dark interface
+Android signing instructions are described in `RELEASE_CHECKLIST.md` and
+`android/key.properties.example`.
 
-# \- ⚡ Fast and lightweight architecture powered by \*\*Riverpod\*\*
+## Legal
 
-# 
-
-# \---
-
-# 
-
-# \## 🚧 Known Limitations
-
-# 
-
-# \- Automatic playback of the next song after completion is under development.
-
-# \- Repeat mode is not yet available.
-
-# \- Search, playlists, and favorites are planned for upcoming releases.
-
-# 
-
-# \---
-
-# 
-
-# \## 💬 Feedback
-
-# 
-
-# This is an early preview release intended for testing.
-
-# 
-
-# If you encounter bugs or have feature suggestions, please open an issue or submit your feedback. Your input will help shape future versions of \*\*Flute\*\*.
-
-# 
-
-# \---
-
-# 
-
-# \## 🛣 Roadmap
-
-# 
-
-# \### Alpha Preview (Current)
-
-# \- \[x] Local music scanning
-
-# \- \[x] Offline playback
-
-# \- \[x] Queue management
-
-# \- \[x] Play/Pause
-
-# \- \[x] Next/Previous
-
-# \- \[ ] Auto next on song completion
-
-# \- \[ ] Repeat mode
-
-# 
-
-# \### Alpha 2
-
-# \- \[ ] Search
-
-# \- \[ ] Favorites
-
-# \- \[ ] Playlists
-
-# \- \[ ] Better artwork support
-
-# 
-
-# \### Beta
-
-# \- \[ ] UI animations
-
-# \- \[ ] Performance improvements
-
-# \- \[ ] Settings
-
-# \- \[ ] Equalizer
-
-# \- \[ ] Bug fixes
-
-# 
-
-# \---
-
-# 
-
-# \## 🛠 Built With
-
-# 
-
-# \- Flutter
-
-# \- Riverpod
-
-# \- just\_audio
-
-# \- on\_audio\_query
-
-# \- Hive
-
-# 
-
-# \---
-
-# 
-
-# \## 📜 License
-
-# 
-
-# This project is currently under development and is released as an \*\*Alpha Preview\*\* for testing purposes.
-
-# 
-
-# \---
-
-# 
-
-# \*\*Thank you for trying Flute! ❤️\*\*
-
+This repository is proprietary. See `LICENSE` and `COPYRIGHT`. Third-party
+packages retain their own licenses.

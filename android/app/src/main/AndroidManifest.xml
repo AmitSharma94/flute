@@ -8,7 +8,7 @@
 
     <application
         android:name="${applicationName}"
-        android:label="flute"
+        android:label="flute_rc_V1"
         android:icon="@mipmap/ic_launcher">
 
         <activity

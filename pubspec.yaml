@@ -1,8 +1,8 @@
-name: flute
-description: "A new Flutter project."
+name: flute_rc_v1
+description: "flute_rc_V1 - an offline music player by Amit Sharma."
 publish_to: 'none'
 
-version: 1.0.0+1
+version: 1.0.0-rc.1+1
 
 environment:
   sdk: ^3.12.2

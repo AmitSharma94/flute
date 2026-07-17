@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../../core/constants/app_info.dart';
+
 class SettingsHeader extends StatelessWidget {
   const SettingsHeader({
     super.key,
@@ -68,7 +70,7 @@ class SettingsHeader extends StatelessWidget {
             const SizedBox(height: 20),
 
             Text(
-              'Flute',
+              AppInfo.displayName,
               style: Theme.of(context)
                   .textTheme
                   .headlineMedium
@@ -99,7 +101,7 @@ class SettingsHeader extends StatelessWidget {
                 borderRadius: BorderRadius.circular(30),
               ),
               child: Text(
-                'Alpha Preview • v0.1.0',
+                'Release Candidate • ${AppInfo.version}',
                 style: TextStyle(
                   color: colorScheme.primary,
                   fontWeight: FontWeight.w700,
@@ -110,7 +112,8 @@ class SettingsHeader extends StatelessWidget {
             const SizedBox(height: 18),
 
             Text(
-              'Crafted with ❤️ by Amit Sharma',
+              '${AppInfo.trademarkNotice}\n${AppInfo.copyrightNotice}',
+              textAlign: TextAlign.center,
               style: Theme.of(context)
                   .textTheme
                   .labelLarge,

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../../core/constants/app_info.dart';
 import '../../../player/providers/repeat/repeat_provider.dart';
 import '../../../player/providers/shuffle/shuffle_provider.dart';
 import '../../providers/settings_provider.dart';
@@ -109,13 +110,13 @@ class SettingsPage extends ConsumerWidget {
                 children: [
                   SettingsTile(
                     icon: Icons.info_outline_rounded,
-                    title: 'About Flute',
-                    subtitle: 'Version 0.1.0',
+                    title: 'About ${AppInfo.displayName}',
+                    subtitle: 'Version ${AppInfo.version}',
                     onTap: () => showAboutDialog(
                       context: context,
-                      applicationName: 'Flute',
-                      applicationVersion: '0.1.0',
-                      applicationLegalese: 'Offline music player built with Flutter.',
+                      applicationName: AppInfo.displayName,
+                      applicationVersion: AppInfo.version,
+                      applicationLegalese: AppInfo.legalese,
                       applicationIcon: Icon(
                         Icons.music_note_rounded,
                         size: 46,
