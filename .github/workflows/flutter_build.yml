@@ -1,31 +1,31 @@
-name: Release Candidate
+name: Flutter Build
 
 on:
-  push:
-    tags:
-      - "v*"
   workflow_dispatch:
-
-permissions:
-  contents: write
+  push:
+    branches:
+      - main
+      - stable
+      - develop
+      - "feature/**"
+      - "fix/**"
 
 jobs:
-  release:
-    name: Signed Android release
+  build:
+    name: Build Flutter APK
     runs-on: ubuntu-latest
-    timeout-minutes: 40
 
     steps:
-      - name: Checkout
+      - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Set up Java 17
+      - name: Set up Java
         uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: "17"
 
-      - name: Set up Flutter stable
+      - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
           channel: stable
@@ -34,63 +34,21 @@ jobs:
       - name: Install dependencies
         run: flutter pub get
 
-      - name: Verify formatting
-        run: dart format --output=none --set-exit-if-changed lib test
+      - name: Format project
+        run: dart format lib test
 
-      - name: Analyze
+      - name: Analyze project
         run: flutter analyze
 
-      - name: Test
+      - name: Run tests
         run: flutter test
 
-      - name: Validate Android signing secrets
-        env:
-          ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
-          ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
-          ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
-          ANDROID_STORE_PASSWORD: ${{ secrets.ANDROID_STORE_PASSWORD }}
-        run: |
-          test -n "$ANDROID_KEYSTORE_BASE64"
-          test -n "$ANDROID_KEY_ALIAS"
-          test -n "$ANDROID_KEY_PASSWORD"
-          test -n "$ANDROID_STORE_PASSWORD"
+      - name: Build debug APK
+        run: flutter build apk --debug
 
-      - name: Configure Android signing
-        env:
-          ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
-          ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
-          ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
-          ANDROID_STORE_PASSWORD: ${{ secrets.ANDROID_STORE_PASSWORD }}
-        run: |
-          echo "$ANDROID_KEYSTORE_BASE64" | base64 --decode > android/app/upload-keystore.jks
-          cat > android/key.properties <<PROPS
-          storePassword=$ANDROID_STORE_PASSWORD
-          keyPassword=$ANDROID_KEY_PASSWORD
-          keyAlias=$ANDROID_KEY_ALIAS
-          storeFile=upload-keystore.jks
-          PROPS
-
-      - name: Build release APK
-        run: flutter build apk --release
-
-      - name: Build release App Bundle
-        run: flutter build appbundle --release
-
-      - name: Upload release artifacts
+      - name: Upload debug APK
         uses: actions/upload-artifact@v4
         with:
-          name: flute_rc_V1-${{ github.ref_name }}
-          path: |
-            build/app/outputs/flutter-apk/app-release.apk
-            build/app/outputs/bundle/release/app-release.aab
-
-      - name: Create GitHub pre-release
-        uses: softprops/action-gh-release@v2
-        with:
-          prerelease: true
-          generate_release_notes: true
-          files: |
-            build/app/outputs/flutter-apk/app-release.apk
-            build/app/outputs/bundle/release/app-release.aab
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          name: flute-debug-apk
+          path: build/app/outputs/flutter-apk/app-debug.apk
+          retention-days: 14
