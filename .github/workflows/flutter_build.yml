@@ -1,4 +1,4 @@
-name: Flutter Build
+name: Flutter Debug Build
 
 on:
   workflow_dispatch:
@@ -12,7 +12,7 @@ on:
 
 jobs:
   build:
-    name: Build Flutter APK
+    name: Build Debug APK
     runs-on: ubuntu-latest
 
     steps:
@@ -32,10 +32,7 @@ jobs:
           cache: true
 
       - name: Install dependencies
-        run: flutter pub get
-
-      - name: Format project
-        run: dart format lib test
+        run: flutter pub get --enforce-lockfile
 
       - name: Analyze project
         run: flutter analyze
@@ -43,12 +40,31 @@ jobs:
       - name: Run tests
         run: flutter test
 
-      - name: Build debug APK
-        run: flutter build apk --debug
+      - name: Build debug APK with Gradle
+        working-directory: android
+        run: |
+          chmod +x gradlew
+          ./gradlew assembleDebug --stacktrace
+
+      - name: Find generated APK
+        run: |
+          echo "Generated APK files:"
+          find . -type f -name "*.apk" -print
+
+          APK_PATH=$(find build android -type f -name "*debug*.apk" | head -n 1)
+
+          if [ -z "$APK_PATH" ]; then
+            echo "No debug APK was generated."
+            exit 1
+          fi
+
+          echo "APK found at: $APK_PATH"
+          mkdir -p release-artifacts
+          cp "$APK_PATH" release-artifacts/flute-debug.apk
 
       - name: Upload debug APK
         uses: actions/upload-artifact@v4
         with:
           name: flute-debug-apk
-          path: build/app/outputs/flutter-apk/app-debug.apk
+          path: release-artifacts/flute-debug.apk
           retention-days: 14
