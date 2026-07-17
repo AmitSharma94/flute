@@ -100,6 +100,26 @@ class SettingsNotifier extends AsyncNotifier<SettingsState> {
       ),
     );
   }
+
+  Future<void> resetToDefaults() async {
+    const defaults = SettingsState(
+      themeMode: ThemeMode.dark,
+      resumePlayback: true,
+      shuffleDefault: false,
+      repeatDefault: false,
+      keepScreenAwake: false,
+    );
+
+    await Future.wait([
+      _service.setThemeMode(defaults.themeMode),
+      _service.setResumePlayback(defaults.resumePlayback),
+      _service.setShuffleDefault(defaults.shuffleDefault),
+      _service.setRepeatDefault(defaults.repeatDefault),
+      _service.setKeepScreenAwake(defaults.keepScreenAwake),
+    ]);
+
+    state = const AsyncData(defaults);
+  }
 }
 
 final settingsProvider =
