@@ -33,6 +33,7 @@ class SongTile extends StatelessWidget {
       leading: SongArtwork(
 
         id: song.id,
+        imageUrl: song.artworkUrl,
 
         size: 55,
 

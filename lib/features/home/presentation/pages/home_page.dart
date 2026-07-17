@@ -35,7 +35,7 @@ class HomePage extends ConsumerWidget {
       appBar: AppBar(
 
         title: const Text(
-          "flute_rc_V1™",
+          "flute_rc_V1",
           style: TextStyle(
             fontWeight: FontWeight.bold,
           ),

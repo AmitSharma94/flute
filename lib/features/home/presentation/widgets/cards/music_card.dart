@@ -48,6 +48,7 @@ class MusicCard extends StatelessWidget {
             child: SongArtwork(
 
               id: song.id,
+              imageUrl: song.artworkUrl,
 
               size: size,
 

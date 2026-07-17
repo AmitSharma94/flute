@@ -3,9 +3,8 @@
 ## Identity and ownership
 
 - [ ] Launcher label is `flute_rc_V1`.
-- [ ] In-app branding shows `flute_rc_V1™`.
+- [ ] In-app branding shows `flute_rc_V1`.
 - [ ] Version matches `pubspec.yaml`.
-- [ ] Copyright and trademark notices are visible in About.
 - [ ] `COPYRIGHT` and proprietary `LICENSE` are included.
 
 ## Quality

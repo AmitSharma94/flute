@@ -16,42 +16,41 @@ class AudioPlayerService {
   Duration? get duration => player.duration;
   bool get isPlaying => player.playing;
 
-  Future<void> loadAndPlay(String path) async {
-    if (path.trim().isEmpty) {
-      throw const FileSystemException('The song has no file path.');
-    }
-
-    final file = File(path);
-    if (!await file.exists()) {
-      throw FileSystemException('The audio file no longer exists.', path);
-    }
-
-    await player.setFilePath(path);
+  Future<void> loadAndPlay(String source) async {
+    await _load(source);
     await player.play();
   }
 
-
   Future<void> loadPaused(
-    String path, {
+    String source, {
     Duration position = Duration.zero,
   }) async {
-    if (path.trim().isEmpty) {
-      throw const FileSystemException('The song has no file path.');
-    }
-
-    final file = File(path);
-    if (!await file.exists()) {
-      throw FileSystemException('The audio file no longer exists.', path);
-    }
-
-    await player.setFilePath(path);
+    await _load(source);
     await seek(position);
     await player.pause();
   }
 
-  /// Kept for compatibility with existing callers.
-  Future<void> play(String path) => loadAndPlay(path);
+  Future<void> _load(String source) async {
+    final value = source.trim();
+    if (value.isEmpty) {
+      throw const FileSystemException('The song has no audio source.');
+    }
 
+    final uri = Uri.tryParse(value);
+    final isRemote = uri != null && (uri.scheme == 'https' || uri.scheme == 'http');
+    if (isRemote) {
+      await player.setUrl(value);
+      return;
+    }
+
+    final file = File(value);
+    if (!await file.exists()) {
+      throw FileSystemException('The audio file no longer exists.', value);
+    }
+    await player.setFilePath(value);
+  }
+
+  Future<void> play(String path) => loadAndPlay(path);
   Future<void> pause() => player.pause();
   Future<void> resume() => player.play();
   Future<void> stop() => player.stop();
@@ -64,9 +63,7 @@ class AudioPlayerService {
 
   Future<void> restart({bool autoplay = true}) async {
     await player.seek(Duration.zero);
-    if (autoplay) {
-      await player.play();
-    }
+    if (autoplay) await player.play();
   }
 
   Future<void> dispose() => player.dispose();

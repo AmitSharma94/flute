@@ -311,6 +311,9 @@ class PlaybackController {
     if (value.contains('no longer exists') || value.contains('cannot find')) {
       return '“${song.title}” is no longer available on this device.';
     }
+    if (song.isOnline || value.contains('network') || value.contains('http')) {
+      return 'Unable to stream “${song.title}”. Check your internet connection or try another result.';
+    }
     if (value.contains('permission')) {
       return 'flute_rc_V1 does not have permission to play “${song.title}”.';
     }

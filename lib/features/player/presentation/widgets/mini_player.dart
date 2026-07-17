@@ -41,7 +41,7 @@ class MiniPlayer extends ConsumerWidget {
               children: [
                 ClipRRect(
                   borderRadius: BorderRadius.circular(12),
-                  child: SongArtwork(id: song.id, size: 52),
+                  child: SongArtwork(id: song.id, imageUrl: song.artworkUrl, size: 52),
                 ),
                 const SizedBox(width: 12),
                 Expanded(

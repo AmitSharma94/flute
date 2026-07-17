@@ -82,7 +82,7 @@ class SettingsHeader extends StatelessWidget {
             const SizedBox(height: 8),
 
             Text(
-              'Beautiful Offline Music Experience',
+              'Local and Online Music Experience',
               textAlign: TextAlign.center,
               style: Theme.of(context)
                   .textTheme
@@ -112,7 +112,7 @@ class SettingsHeader extends StatelessWidget {
             const SizedBox(height: 18),
 
             Text(
-              '${AppInfo.trademarkNotice}\n${AppInfo.copyrightNotice}',
+              '${AppInfo.copyrightNotice}\n${AppInfo.thirdPartyNotice}',
               textAlign: TextAlign.center,
               style: Theme.of(context)
                   .textTheme

@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../features/home/presentation/pages/home_page.dart';
 import '../../features/library/presentation/pages/library_page.dart';
+import '../../features/online_music/presentation/pages/online_music_page.dart';
 import '../../features/player/presentation/widgets/mini_player.dart';
 import '../../features/player/providers/playback_controller.dart';
 import '../../features/search/presentation/pages/search_page.dart';
@@ -22,6 +23,7 @@ class _MainShellState extends ConsumerState<MainShell> {
     HomePage(),
     LibraryPage(),
     SearchPage(),
+    OnlineMusicPage(),
     SettingsPage(),
   ];
 
@@ -69,6 +71,11 @@ class _MainShellState extends ConsumerState<MainShell> {
             icon: Icon(Icons.search_outlined),
             selectedIcon: Icon(Icons.search),
             label: 'Search',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.cloud_outlined),
+            selectedIcon: Icon(Icons.cloud),
+            label: 'Online',
           ),
           NavigationDestination(
             icon: Icon(Icons.settings_outlined),

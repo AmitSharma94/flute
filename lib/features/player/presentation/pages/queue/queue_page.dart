@@ -79,6 +79,7 @@ class QueuePage extends ConsumerWidget {
 
                         id:
                             song.id,
+                        imageUrl: song.artworkUrl,
 
                         size:
                             50,
