@@ -11,7 +11,6 @@ class QueueIndexNotifier extends Notifier<int> {
   }
 }
 
-final queueIndexProvider =
-    NotifierProvider<QueueIndexNotifier, int>(
+final queueIndexProvider = NotifierProvider<QueueIndexNotifier, int>(
   QueueIndexNotifier.new,
 );

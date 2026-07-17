@@ -37,7 +37,8 @@ class AudioPlayerService {
     }
 
     final uri = Uri.tryParse(value);
-    final isRemote = uri != null && (uri.scheme == 'https' || uri.scheme == 'http');
+    final isRemote =
+        uri != null && (uri.scheme == 'https' || uri.scheme == 'http');
     if (isRemote) {
       await player.setUrl(value);
       return;
@@ -58,7 +59,9 @@ class AudioPlayerService {
   Future<void> seek(Duration position) async {
     final total = player.duration;
     final safePosition = total == null || position <= total ? position : total;
-    await player.seek(safePosition < Duration.zero ? Duration.zero : safePosition);
+    await player.seek(
+      safePosition < Duration.zero ? Duration.zero : safePosition,
+    );
   }
 
   Future<void> restart({bool autoplay = true}) async {

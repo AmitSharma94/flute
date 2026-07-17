@@ -23,8 +23,9 @@ class PlaybackErrorNotifier extends Notifier<String?> {
   void clear() => state = null;
 }
 
-final playbackErrorProvider =
-    NotifierProvider<PlaybackErrorNotifier, String?>(PlaybackErrorNotifier.new);
+final playbackErrorProvider = NotifierProvider<PlaybackErrorNotifier, String?>(
+  PlaybackErrorNotifier.new,
+);
 
 class PlaybackBusyNotifier extends Notifier<bool> {
   @override
@@ -33,8 +34,9 @@ class PlaybackBusyNotifier extends Notifier<bool> {
   void setBusy(bool value) => state = value;
 }
 
-final playbackBusyProvider =
-    NotifierProvider<PlaybackBusyNotifier, bool>(PlaybackBusyNotifier.new);
+final playbackBusyProvider = NotifierProvider<PlaybackBusyNotifier, bool>(
+  PlaybackBusyNotifier.new,
+);
 
 class PlaybackController {
   PlaybackController(this.ref) {
@@ -207,13 +209,14 @@ class PlaybackController {
 
       final session = await _sessionService.load();
       if (session == null) return;
-      final safeIndex = session.index.clamp(0, session.queue.length - 1).toInt();
+      final safeIndex = session.index
+          .clamp(0, session.queue.length - 1)
+          .toInt();
       final song = session.queue[safeIndex];
 
-      await ref.read(audioPlayerProvider).loadPaused(
-            song.path,
-            position: session.position,
-          );
+      await ref
+          .read(audioPlayerProvider)
+          .loadPaused(song.path, position: session.position);
       ref.read(queueProvider.notifier).setQueue(session.queue);
       ref.read(queueIndexProvider.notifier).setIndex(safeIndex);
       ref.read(currentSongProvider.notifier).setSong(song);

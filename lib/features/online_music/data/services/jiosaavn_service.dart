@@ -18,10 +18,12 @@ class JioSaavnService {
     final trimmed = query.trim();
     if (trimmed.isEmpty) return const [];
 
-    final uri = Uri.parse('$_baseUrl/api/search/songs').replace(
-      queryParameters: {'query': trimmed, 'page': '1', 'limit': '30'},
-    );
-    final response = await _client.get(uri).timeout(const Duration(seconds: 20));
+    final uri = Uri.parse(
+      '$_baseUrl/api/search/songs',
+    ).replace(queryParameters: {'query': trimmed, 'page': '1', 'limit': '30'});
+    final response = await _client
+        .get(uri)
+        .timeout(const Duration(seconds: 20));
     if (response.statusCode < 200 || response.statusCode >= 300) {
       throw Exception('Online search failed (${response.statusCode}).');
     }
@@ -54,10 +56,10 @@ class JioSaavnService {
     final primaryArtists = artists is Map ? artists['primary'] : null;
     final artist = primaryArtists is List
         ? primaryArtists
-            .whereType<Map>()
-            .map((e) => _string(e['name']))
-            .where((e) => e.isNotEmpty)
-            .join(', ')
+              .whereType<Map>()
+              .map((e) => _string(e['name']))
+              .where((e) => e.isNotEmpty)
+              .join(', ')
         : '';
 
     final albumData = json['album'];
@@ -79,9 +81,16 @@ class JioSaavnService {
     if (value is String && value.startsWith('http')) return value;
     if (value is! List) return null;
     final entries = value.whereType<Map>().toList();
-    for (final preferred in ['160kbps', '96kbps', '320kbps', '48kbps', '12kbps']) {
+    for (final preferred in [
+      '160kbps',
+      '96kbps',
+      '320kbps',
+      '48kbps',
+      '12kbps',
+    ]) {
       for (final entry in entries.reversed) {
-        if (_string(entry['quality']).toLowerCase() == preferred.toLowerCase()) {
+        if (_string(entry['quality']).toLowerCase() ==
+            preferred.toLowerCase()) {
           final url = _string(entry['url']);
           if (url.startsWith('http')) return url;
         }

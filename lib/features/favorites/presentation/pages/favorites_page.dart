@@ -8,43 +8,25 @@ class FavoritesPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-
-    final favorites =
-        ref.watch(favoriteProvider);
+    final favorites = ref.watch(favoriteProvider);
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Favorites'),
-      ),
+      appBar: AppBar(title: const Text('Favorites')),
 
       body: favorites.isEmpty
-          ? const Center(
-              child: Text(
-                'No favorites yet',
-              ),
-            )
-
+          ? const Center(child: Text('No favorites yet'))
           : ListView.builder(
               itemCount: favorites.length,
 
               itemBuilder: (context, index) {
-
-                final song =
-                    favorites[index];
+                final song = favorites[index];
 
                 return ListTile(
+                  leading: const Icon(Icons.favorite),
 
-                  leading: const Icon(
-                    Icons.favorite,
-                  ),
+                  title: Text(song.title),
 
-                  title: Text(
-                    song.title,
-                  ),
-
-                  subtitle: Text(
-                    song.artist,
-                  ),
+                  subtitle: Text(song.artist),
                 );
               },
             ),

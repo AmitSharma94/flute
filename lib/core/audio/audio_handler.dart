@@ -11,11 +11,7 @@ class FluteAudioHandler {
 
   final AudioPlayerService _service;
 
-  Future<void> playSong(
-    String path, {
-    String? title,
-    String? artist,
-  }) =>
+  Future<void> playSong(String path, {String? title, String? artist}) =>
       _service.loadAndPlay(path);
 
   Future<void> play() => _service.resume();

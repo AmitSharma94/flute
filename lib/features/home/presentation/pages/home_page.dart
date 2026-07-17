@@ -12,306 +12,102 @@ import '../widgets/cards/music_card.dart';
 import '../../../../shared/widgets/section_title.dart';
 import '../../../../shared/widgets/song_tile.dart';
 
-
 class HomePage extends ConsumerWidget {
-
-  const HomePage({
-    super.key,
-  });
-
+  const HomePage({super.key});
 
   @override
-  Widget build(
-    BuildContext context,
-    WidgetRef ref,
-  ) {
-
-    final songsAsync =
-        ref.watch(songsProvider);
-
+  Widget build(BuildContext context, WidgetRef ref) {
+    final songsAsync = ref.watch(songsProvider);
 
     return Scaffold(
-
       appBar: AppBar(
-
         title: const Text(
           "flute_rc_V1",
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-          ),
+          style: TextStyle(fontWeight: FontWeight.bold),
         ),
 
-
-        actions: [
-
-          IconButton(
-
-            icon:
-                const Icon(
-                  Icons.search,
-                ),
-
-            onPressed: () {},
-
-          ),
-
-        ],
-
+        actions: [IconButton(icon: const Icon(Icons.search), onPressed: () {})],
       ),
 
-
-
       body: songsAsync.when(
+        loading: () => const Center(child: CircularProgressIndicator()),
 
-        loading: () =>
-            const Center(
-              child:
-                  CircularProgressIndicator(),
-            ),
-
-
-
-        error: (e, _) =>
-            Center(
-              child:
-                  Text(
-                    "Error: $e",
-                  ),
-            ),
-
-
+        error: (e, _) => Center(child: Text("Error: $e")),
 
         data: (songs) {
-
-
           return ListView(
-
-            padding:
-                const EdgeInsets.only(
-                  bottom: 120,
-                ),
-
+            padding: const EdgeInsets.only(bottom: 120),
 
             children: [
-
-
-              GreetingHeader(
-                songCount: songs.length,
-              ),
-
-
+              GreetingHeader(songCount: songs.length),
 
               const QuickAccessSection(),
 
-
-
-              const SectionTitle(
-                title:
-                    "Continue Listening",
-              ),
-
-
+              const SectionTitle(title: "Continue Listening"),
 
               SizedBox(
+                height: 200,
 
-                height:
-                    200,
+                child: ListView.builder(
+                  scrollDirection: Axis.horizontal,
 
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
 
-                child:
-                    ListView.builder(
+                  itemCount: songs.length > 6 ? 6 : songs.length,
 
-                  scrollDirection:
-                      Axis.horizontal,
-
-
-                  padding:
-                      const EdgeInsets.symmetric(
-                        horizontal: 16,
-                      ),
-
-
-                  itemCount:
-                      songs.length > 6
-                          ? 6
-                          : songs.length,
-
-
-                  itemBuilder:
-                      (context, index) {
-
-
-                    final song =
-                        songs[index];
-
+                  itemBuilder: (context, index) {
+                    final song = songs[index];
 
                     return Padding(
+                      padding: const EdgeInsets.only(right: 14),
 
-                      padding:
-                          const EdgeInsets.only(
-                            right: 14,
-                          ),
-
-
-                      child:
-                          MusicCard(
-
-                            song: song,
-
-                            size: 150,
-
-                          ),
-
+                      child: MusicCard(song: song, size: 150),
                     );
-
                   },
-
                 ),
-
               ),
 
-
-
-
-              const SectionTitle(
-
-                title:
-                    "Recently Played",
-
-              ),
-
-
-
+              const SectionTitle(title: "Recently Played"),
 
               SizedBox(
+                height: 170,
 
-                height:
-                    170,
+                child: ListView.builder(
+                  scrollDirection: Axis.horizontal,
 
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
 
-                child:
-                    ListView.builder(
+                  itemCount: songs.length > 5 ? 5 : songs.length,
 
-                  scrollDirection:
-                      Axis.horizontal,
-
-
-                  padding:
-                      const EdgeInsets.symmetric(
-                        horizontal: 16,
-                      ),
-
-
-
-                  itemCount:
-                      songs.length > 5
-                          ? 5
-                          : songs.length,
-
-
-
-                  itemBuilder:
-                      (context, index) {
-
-
-                    final song =
-                        songs[index];
-
-
+                  itemBuilder: (context, index) {
+                    final song = songs[index];
 
                     return Padding(
+                      padding: const EdgeInsets.only(right: 12),
 
-                      padding:
-                          const EdgeInsets.only(
-                            right: 12,
-                          ),
-
-
-                      child:
-                          MusicCard(
-
-                            song: song,
-
-                            size: 120,
-
-                          ),
-
+                      child: MusicCard(song: song, size: 120),
                     );
-
                   },
-
                 ),
-
               ),
 
+              const SectionTitle(title: "All Songs"),
 
+              ...List.generate(songs.length, (index) {
+                final song = songs[index];
 
+                return SongTile(
+                  song: song,
 
-
-              const SectionTitle(
-
-                title:
-                    "All Songs",
-
-              ),
-
-
-
-
-              ...List.generate(
-
-                songs.length,
-
-
-                (index) {
-
-
-                  final song =
-                      songs[index];
-
-
-
-                  return SongTile(
-
-                    song: song,
-
-
-                    onTap: () async {
-
-
-                      await playSong(
-
-                        ref,
-
-                        songs,
-
-                        index,
-
-                      );
-
-
-                    },
-
-                  );
-
-
-                },
-
-              ),
-
-
-
+                  onTap: () async {
+                    await playSong(ref, songs, index);
+                  },
+                );
+              }),
             ],
-
           );
-
-
         },
-
       ),
-
     );
-
   }
-
 }
