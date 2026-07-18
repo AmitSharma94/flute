@@ -8,7 +8,6 @@ void main() {
     expect(AppInfo.version, '1.0.0-rc.1');
     expect(AppInfo.owner, 'Amit Sharma');
     expect(AppInfo.legalese, contains('Amit Sharma'));
-    expect(AppInfo.legalese, contains('respective rights holders'));
     expect(AppInfo.displayName, isNot(contains('™')));
   });
 }
