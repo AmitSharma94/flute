@@ -14,11 +14,7 @@ class QuickAccessSection extends StatelessWidget {
   Widget build(BuildContext context) {
     final items = [
       (icon: Icons.favorite, title: 'Favorites', onTap: onFavorites),
-      (
-        icon: Icons.history,
-        title: 'Recently Played',
-        onTap: onRecentlyPlayed,
-      ),
+      (icon: Icons.history, title: 'Recently Played', onTap: onRecentlyPlayed),
     ];
 
     return SizedBox(

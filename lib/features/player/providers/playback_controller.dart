@@ -26,8 +26,9 @@ class PlaybackErrorNotifier extends Notifier<String?> {
   void clear() => state = null;
 }
 
-final playbackErrorProvider =
-    NotifierProvider<PlaybackErrorNotifier, String?>(PlaybackErrorNotifier.new);
+final playbackErrorProvider = NotifierProvider<PlaybackErrorNotifier, String?>(
+  PlaybackErrorNotifier.new,
+);
 
 class PlaybackBusyNotifier extends Notifier<bool> {
   @override
@@ -36,8 +37,9 @@ class PlaybackBusyNotifier extends Notifier<bool> {
   void setBusy(bool value) => state = value;
 }
 
-final playbackBusyProvider =
-    NotifierProvider<PlaybackBusyNotifier, bool>(PlaybackBusyNotifier.new);
+final playbackBusyProvider = NotifierProvider<PlaybackBusyNotifier, bool>(
+  PlaybackBusyNotifier.new,
+);
 
 class PlaybackController {
   PlaybackController(this.ref) {
@@ -66,13 +68,11 @@ class PlaybackController {
     ref.listen<FluteRepeatMode>(repeatProvider, (_, next) {
       unawaited(service.setRepeatOne(next == FluteRepeatMode.one));
       unawaited(
-        handler.setRepeatState(
-          switch (next) {
-            FluteRepeatMode.off => AudioServiceRepeatMode.none,
-            FluteRepeatMode.one => AudioServiceRepeatMode.one,
-            FluteRepeatMode.all => AudioServiceRepeatMode.all,
-          },
-        ),
+        handler.setRepeatState(switch (next) {
+          FluteRepeatMode.off => AudioServiceRepeatMode.none,
+          FluteRepeatMode.one => AudioServiceRepeatMode.one,
+          FluteRepeatMode.all => AudioServiceRepeatMode.all,
+        }),
       );
     });
 
@@ -130,7 +130,9 @@ class PlaybackController {
               .resolveStreamUrl(song);
           song = song.copyWith(path: streamUrl);
           final updatedQueue = [...queue]..[index] = song;
-          ref.read(queueProvider.notifier).setQueue(List.unmodifiable(updatedQueue));
+          ref
+              .read(queueProvider.notifier)
+              .setQueue(List.unmodifiable(updatedQueue));
         }
 
         try {
@@ -143,16 +145,17 @@ class PlaybackController {
               .resolveStreamUrl(song, forceRefresh: true);
           song = song.copyWith(path: refreshedUrl);
           final updatedQueue = [...ref.read(queueProvider)]..[index] = song;
-          ref.read(queueProvider.notifier).setQueue(List.unmodifiable(updatedQueue));
+          ref
+              .read(queueProvider.notifier)
+              .setQueue(List.unmodifiable(updatedQueue));
           await ref.read(audioPlayerProvider).loadAndPlay(song.path);
         }
 
         ref.read(queueIndexProvider.notifier).setIndex(index);
         ref.read(currentSongProvider.notifier).setSong(song);
-        await ref.read(audioHandlerProvider).setFluteQueue(
-              ref.read(queueProvider),
-              currentIndex: index,
-            );
+        await ref
+            .read(audioHandlerProvider)
+            .setFluteQueue(ref.read(queueProvider), currentIndex: index);
         await ref.read(audioHandlerProvider).setCurrentSong(song, index);
         await ref.read(historyProvider.notifier).addSong(song);
         await _saveSession(position: Duration.zero);
@@ -195,10 +198,9 @@ class PlaybackController {
             await service.loadAndPlay(song.path);
             ref.read(queueIndexProvider.notifier).setIndex(index);
             ref.read(currentSongProvider.notifier).setSong(song);
-            await ref.read(audioHandlerProvider).setFluteQueue(
-                  ref.read(queueProvider),
-                  currentIndex: index,
-                );
+            await ref
+                .read(audioHandlerProvider)
+                .setFluteQueue(ref.read(queueProvider), currentIndex: index);
             await ref.read(audioHandlerProvider).setCurrentSong(song, index);
             await ref.read(historyProvider.notifier).addSong(song);
             await _saveSession(position: Duration.zero);
@@ -315,8 +317,8 @@ class PlaybackController {
   Future<void> _setSystemRepeat(AudioServiceRepeatMode mode) async {
     final mapped = switch (mode) {
       AudioServiceRepeatMode.one => FluteRepeatMode.one,
-      AudioServiceRepeatMode.all || AudioServiceRepeatMode.group =>
-        FluteRepeatMode.all,
+      AudioServiceRepeatMode.all ||
+      AudioServiceRepeatMode.group => FluteRepeatMode.all,
       _ => FluteRepeatMode.off,
     };
     ref.read(repeatProvider.notifier).setMode(mapped);
@@ -334,30 +336,30 @@ class PlaybackController {
     try {
       final settings = await ref.read(settingsProvider.future);
       ref.read(shuffleProvider.notifier).setEnabled(settings.shuffleDefault);
-      ref.read(repeatProvider.notifier).setMode(
-            settings.repeatDefault
-                ? FluteRepeatMode.all
-                : FluteRepeatMode.off,
+      ref
+          .read(repeatProvider.notifier)
+          .setMode(
+            settings.repeatDefault ? FluteRepeatMode.all : FluteRepeatMode.off,
           );
 
       if (!settings.resumePlayback) return;
 
       final session = await _sessionService.load();
       if (session == null || session.queue.isEmpty) return;
-      final safeIndex = session.index.clamp(0, session.queue.length - 1).toInt();
+      final safeIndex = session.index
+          .clamp(0, session.queue.length - 1)
+          .toInt();
       final song = session.queue[safeIndex];
 
-      await ref.read(audioPlayerProvider).loadPaused(
-            song.path,
-            position: session.position,
-          );
+      await ref
+          .read(audioPlayerProvider)
+          .loadPaused(song.path, position: session.position);
       ref.read(queueProvider.notifier).setQueue(session.queue);
       ref.read(queueIndexProvider.notifier).setIndex(safeIndex);
       ref.read(currentSongProvider.notifier).setSong(song);
-      await ref.read(audioHandlerProvider).setFluteQueue(
-            session.queue,
-            currentIndex: safeIndex,
-          );
+      await ref
+          .read(audioHandlerProvider)
+          .setFluteQueue(session.queue, currentIndex: safeIndex);
       await ref.read(audioHandlerProvider).setCurrentSong(song, safeIndex);
     } catch (_) {
       await _sessionService.clear();

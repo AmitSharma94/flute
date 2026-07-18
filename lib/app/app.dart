@@ -12,10 +12,7 @@ class FluteApp extends ConsumerWidget {
   const FluteApp({super.key});
 
   @override
-  Widget build(
-    BuildContext context,
-    WidgetRef ref,
-  ) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final settings = ref.watch(settingsProvider);
     ref.watch(playbackControllerProvider);
 

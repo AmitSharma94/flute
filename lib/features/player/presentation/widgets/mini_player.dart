@@ -41,7 +41,11 @@ class MiniPlayer extends ConsumerWidget {
               children: [
                 ClipRRect(
                   borderRadius: BorderRadius.circular(12),
-                  child: SongArtwork(id: song.id, imageUrl: song.artworkUrl, size: 52),
+                  child: SongArtwork(
+                    id: song.id,
+                    imageUrl: song.artworkUrl,
+                    size: 52,
+                  ),
                 ),
                 const SizedBox(width: 12),
                 Expanded(
@@ -65,9 +69,7 @@ class MiniPlayer extends ConsumerWidget {
                         overflow: TextOverflow.ellipsis,
                         style: TextStyle(
                           fontSize: 13,
-                          color: Theme.of(context)
-                              .colorScheme
-                              .onSurfaceVariant,
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
                         ),
                       ),
                     ],
@@ -90,9 +92,8 @@ class MiniPlayer extends ConsumerWidget {
                           : Icons.play_circle_fill,
                       size: 42,
                     ),
-                    onPressed: () => ref
-                        .read(playbackControllerProvider)
-                        .togglePlayPause(),
+                    onPressed: () =>
+                        ref.read(playbackControllerProvider).togglePlayPause(),
                   ),
               ],
             ),

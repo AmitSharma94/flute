@@ -41,8 +41,7 @@ class _MainShellState extends ConsumerState<MainShell> {
             content: Text(next),
             action: SnackBarAction(
               label: 'Dismiss',
-              onPressed: () =>
-                  ref.read(playbackErrorProvider.notifier).clear(),
+              onPressed: () => ref.read(playbackErrorProvider.notifier).clear(),
             ),
           ),
         );
