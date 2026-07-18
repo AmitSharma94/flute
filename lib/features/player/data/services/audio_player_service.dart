@@ -38,30 +38,11 @@ class AudioPlayerService {
       throw const FileSystemException('The song has no audio source.');
     }
 
-    final uri = Uri.tryParse(value);
-    final isRemote =
-        uri != null && (uri.scheme == 'https' || uri.scheme == 'http');
-
-    if (isRemote) {
-      await player.setAudioSource(
-        AudioSource.uri(
-          Uri.parse(value),
-          headers: const <String, String>{
-            'User-Agent':
-                'Mozilla/5.0 (Linux; Android 13) AppleWebKit/537.36 '
-                'Chrome/120.0 Mobile Safari/537.36',
-            'Accept': 'audio/*,*/*;q=0.8',
-            'Referer': 'https://hqaudio.suvojeetsengupta.in/',
-          },
-        ),
-      );
-      return;
-    }
-
     final file = File(value);
     if (!await file.exists()) {
       throw FileSystemException('The audio file no longer exists.', value);
     }
+
     await player.setFilePath(value);
   }
 

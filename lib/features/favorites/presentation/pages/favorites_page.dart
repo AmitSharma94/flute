@@ -15,7 +15,9 @@ class FavoritesPage extends ConsumerWidget {
     return Scaffold(
       appBar: AppBar(title: const Text('Favorites')),
       body: favorites.isEmpty
-          ? const Center(child: Text('No favorites yet'))
+          ? const Center(
+              child: Text('No favorites yet'),
+            )
           : ListView.builder(
               padding: const EdgeInsets.only(bottom: 120),
               itemCount: favorites.length,

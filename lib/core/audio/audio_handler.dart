@@ -192,7 +192,10 @@ class FluteAudioHandler extends BaseAudioHandler
           ? Duration(milliseconds: song.duration)
           : null,
       artUri: artwork,
-      extras: <String, dynamic>{'path': song.path, 'source': song.source.name},
+      extras: <String, dynamic>{
+        'path': song.path,
+        'source': song.source.name,
+      },
     );
   }
 

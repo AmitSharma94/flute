@@ -8,14 +8,16 @@ class SettingsService {
   static const _repeatDefaultKey = 'repeat_default';
   static const _keepScreenAwakeKey = 'keep_screen_awake';
 
-  Future<SharedPreferences> get _prefs async => SharedPreferences.getInstance();
+  Future<SharedPreferences> get _prefs async =>
+      SharedPreferences.getInstance();
 
   // Theme
 
   Future<ThemeMode> getThemeMode() async {
     final prefs = await _prefs;
 
-    final value = prefs.getString(_themeModeKey) ?? 'dark';
+    final value =
+        prefs.getString(_themeModeKey) ?? 'dark';
 
     switch (value) {
       case 'light':
@@ -29,7 +31,9 @@ class SettingsService {
     }
   }
 
-  Future<void> setThemeMode(ThemeMode mode) async {
+  Future<void> setThemeMode(
+    ThemeMode mode,
+  ) async {
     final prefs = await _prefs;
 
     String value = 'dark';
@@ -48,7 +52,10 @@ class SettingsService {
         break;
     }
 
-    await prefs.setString(_themeModeKey, value);
+    await prefs.setString(
+      _themeModeKey,
+      value,
+    );
   }
 
   // Resume Playback
@@ -56,13 +63,21 @@ class SettingsService {
   Future<bool> getResumePlayback() async {
     final prefs = await _prefs;
 
-    return prefs.getBool(_resumePlaybackKey) ?? true;
+    return prefs.getBool(
+          _resumePlaybackKey,
+        ) ??
+        true;
   }
 
-  Future<void> setResumePlayback(bool value) async {
+  Future<void> setResumePlayback(
+    bool value,
+  ) async {
     final prefs = await _prefs;
 
-    await prefs.setBool(_resumePlaybackKey, value);
+    await prefs.setBool(
+      _resumePlaybackKey,
+      value,
+    );
   }
 
   // Shuffle
@@ -70,13 +85,21 @@ class SettingsService {
   Future<bool> getShuffleDefault() async {
     final prefs = await _prefs;
 
-    return prefs.getBool(_shuffleDefaultKey) ?? false;
+    return prefs.getBool(
+          _shuffleDefaultKey,
+        ) ??
+        false;
   }
 
-  Future<void> setShuffleDefault(bool value) async {
+  Future<void> setShuffleDefault(
+    bool value,
+  ) async {
     final prefs = await _prefs;
 
-    await prefs.setBool(_shuffleDefaultKey, value);
+    await prefs.setBool(
+      _shuffleDefaultKey,
+      value,
+    );
   }
 
   // Repeat
@@ -84,13 +107,21 @@ class SettingsService {
   Future<bool> getRepeatDefault() async {
     final prefs = await _prefs;
 
-    return prefs.getBool(_repeatDefaultKey) ?? false;
+    return prefs.getBool(
+          _repeatDefaultKey,
+        ) ??
+        false;
   }
 
-  Future<void> setRepeatDefault(bool value) async {
+  Future<void> setRepeatDefault(
+    bool value,
+  ) async {
     final prefs = await _prefs;
 
-    await prefs.setBool(_repeatDefaultKey, value);
+    await prefs.setBool(
+      _repeatDefaultKey,
+      value,
+    );
   }
 
   // Keep Screen Awake
@@ -98,12 +129,20 @@ class SettingsService {
   Future<bool> getKeepScreenAwake() async {
     final prefs = await _prefs;
 
-    return prefs.getBool(_keepScreenAwakeKey) ?? false;
+    return prefs.getBool(
+          _keepScreenAwakeKey,
+        ) ??
+        false;
   }
 
-  Future<void> setKeepScreenAwake(bool value) async {
+  Future<void> setKeepScreenAwake(
+    bool value,
+  ) async {
     final prefs = await _prefs;
 
-    await prefs.setBool(_keepScreenAwakeKey, value);
+    await prefs.setBool(
+      _keepScreenAwakeKey,
+      value,
+    );
   }
 }

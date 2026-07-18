@@ -3,8 +3,12 @@ import 'package:just_audio/just_audio.dart';
 
 import 'player_provider.dart';
 
-final playerStateProvider = StreamProvider<PlayerState>((ref) {
-  final player = ref.watch(audioPlayerProvider);
+final playerStateProvider =
+    StreamProvider<PlayerState>((ref) {
+
+  final player =
+      ref.watch(audioPlayerProvider);
 
   return player.playerStateStream;
+
 });

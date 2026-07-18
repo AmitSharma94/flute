@@ -109,8 +109,8 @@ class MusicLibraryNotifier extends AsyncNotifier<MusicLibraryState> {
 
 final musicLibraryProvider =
     AsyncNotifierProvider<MusicLibraryNotifier, MusicLibraryState>(
-      MusicLibraryNotifier.new,
-    );
+  MusicLibraryNotifier.new,
+);
 
 final songsProvider = Provider<AsyncValue<List<FluteSong>>>((ref) {
   return ref.watch(musicLibraryProvider).whenData((state) => state.songs);

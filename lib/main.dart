@@ -14,36 +14,31 @@ import 'features/player/providers/player_provider.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  final audioHandler = await AudioService.init(
+  final handler = await AudioService.init(
     builder: FluteAudioHandler.new,
-    config: AudioServiceConfig(
-      androidNotificationChannelId: 'com.amitsharma.flute.channel.audio',
+    config: const AudioServiceConfig(
+      androidNotificationChannelId: 'com.amitsharma.flute.audio',
       androidNotificationChannelName: 'Flute playback',
       androidNotificationChannelDescription:
           'Playback controls for music playing in Flute.',
-      androidNotificationOngoing: false,
+      androidNotificationOngoing: true,
       androidStopForegroundOnPause: false,
       androidShowNotificationBadge: false,
     ),
   );
 
-  final audioSession = await AudioSession.instance;
-
-  await audioSession.configure(AudioSessionConfiguration.music());
+  final session = await AudioSession.instance;
+  await session.configure(AudioSessionConfiguration.music());
 
   if (Platform.isAndroid) {
-    final status = await Permission.notification.status;
-
-    if (!status.isGranted) {
-      await Permission.notification.request();
-    }
+    await Permission.notification.request();
   }
 
   runApp(
     ProviderScope(
       overrides: [
-        audioHandlerProvider.overrideWithValue(audioHandler),
-        audioPlayerProvider.overrideWithValue(audioHandler.service),
+        audioHandlerProvider.overrideWithValue(handler),
+        audioPlayerProvider.overrideWithValue(handler.service),
       ],
       child: const FluteApp(),
     ),

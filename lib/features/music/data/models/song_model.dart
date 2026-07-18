@@ -1,4 +1,4 @@
-enum FluteSongSource { local, online }
+enum FluteSongSource { local }
 
 class FluteSong {
   final String id;
@@ -21,7 +21,6 @@ class FluteSong {
     this.artworkUrl,
   });
 
-  bool get isOnline => source == FluteSongSource.online;
 
   FluteSong copyWith({
     String? id,
@@ -46,7 +45,6 @@ class FluteSong {
   }
 
   factory FluteSong.fromJson(Map<String, dynamic> json) {
-    final sourceName = json['source']?.toString();
     return FluteSong(
       id: json['id']?.toString() ?? '',
       title: _text(json['title'], 'Unknown Title'),
@@ -54,23 +52,21 @@ class FluteSong {
       album: _text(json['album'], 'Unknown Album'),
       path: json['path']?.toString() ?? '',
       duration: _integer(json['duration']),
-      source: sourceName == FluteSongSource.online.name
-          ? FluteSongSource.online
-          : FluteSongSource.local,
+      source: FluteSongSource.local,
       artworkUrl: _nullableText(json['artworkUrl']),
     );
   }
 
   Map<String, dynamic> toJson() => {
-    'id': id,
-    'title': title,
-    'artist': artist,
-    'album': album,
-    'path': path,
-    'duration': duration,
-    'source': source.name,
-    'artworkUrl': artworkUrl,
-  };
+        'id': id,
+        'title': title,
+        'artist': artist,
+        'album': album,
+        'path': path,
+        'duration': duration,
+        'source': source.name,
+        'artworkUrl': artworkUrl,
+      };
 
   static String _text(dynamic value, String fallback) {
     final text = value?.toString().trim();

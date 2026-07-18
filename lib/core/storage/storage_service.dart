@@ -7,7 +7,10 @@ class StorageService {
   static const String historyKey = 'history';
   static const String playbackSessionKey = 'playback_session_v1';
 
-  static Future<void> save(String key, List<Map<String, dynamic>> data) async {
+  static Future<void> save(
+    String key,
+    List<Map<String, dynamic>> data,
+  ) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(key, jsonEncode(data));
   }
@@ -26,7 +29,10 @@ class StorageService {
     }
   }
 
-  static Future<void> saveObject(String key, Map<String, dynamic> data) async {
+  static Future<void> saveObject(
+    String key,
+    Map<String, dynamic> data,
+  ) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(key, jsonEncode(data));
   }

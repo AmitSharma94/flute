@@ -1,6 +1,10 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-enum FluteRepeatMode { off, one, all }
+enum FluteRepeatMode {
+  off,
+  one,
+  all,
+}
 
 class RepeatNotifier extends Notifier<FluteRepeatMode> {
   @override
