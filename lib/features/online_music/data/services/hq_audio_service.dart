@@ -30,25 +30,41 @@ class HqAudioService {
 
   Future<List<FluteSong>> searchSongs(String query) async {
     final trimmed = query.trim();
-    if (trimmed.isEmpty) return const [];
+
+    if (trimmed.isEmpty) {
+      return const [];
+    }
 
     Object? lastError;
 
-    final candidates = <String>[
+    final candidates = <String>{
       _searchPath,
-      '/search',
+      if (_searchPath != '/search') '/search',
       '/api/search',
       '/api/v1/search',
       '/api/search/songs',
-    ].toSet();
+    };
 
     for (final path in candidates) {
       for (final parameterName in const ['q', 'query']) {
         try {
+<<<<<<< HEAD
           final uri = _uri(path, {parameterName: trimmed, 'limit': '30'});
+=======
+          final uri = _uri(
+            path,
+            {
+              parameterName: trimmed,
+              'limit': '30',
+            },
+          );
+>>>>>>> a148a15 (Fix HQAudio collection literal analyzer warnings)
 
           final response = await _client
-              .get(uri, headers: _jsonHeaders)
+              .get(
+                uri,
+                headers: _jsonHeaders,
+              )
               .timeout(const Duration(seconds: 20));
 
           if (response.statusCode == 404 || response.statusCode == 405) {
@@ -106,7 +122,7 @@ class HqAudioService {
 
     final encodedId = Uri.encodeComponent(providerId);
 
-    final paths = <String>[
+    final paths = <String>{
       '/stream/$encodedId',
       '/api/stream/$encodedId',
       '/api/v1/stream/$encodedId',
@@ -115,7 +131,7 @@ class HqAudioService {
       '/api/v1/song/$encodedId',
       '/download/$encodedId',
       '/api/download/$encodedId',
-    ].toSet();
+    };
 
     for (final path in paths) {
       try {
@@ -152,7 +168,13 @@ class HqAudioService {
           return finalUri.toString();
         }
 
+<<<<<<< HEAD
         final response = await http.Response.fromStream(streamedResponse);
+=======
+        final response = await http.Response.fromStream(
+          streamedResponse,
+        );
+>>>>>>> a148a15 (Fix HQAudio collection literal analyzer warnings)
 
         if (response.body.trim().isEmpty) {
           lastError = 'Empty response from $path';
@@ -187,25 +209,50 @@ class HqAudioService {
   }
 
   FluteSong? _toSong(Map<String, dynamic> json) {
-    final id = _firstText(json, const [
-      'id',
-      'video_id',
-      'videoId',
-      'song_id',
-      'songId',
-      'track_id',
-      'trackId',
-      'token',
-    ]);
+    final id = _firstText(
+      json,
+      const [
+        'id',
+        'video_id',
+        'videoId',
+        'song_id',
+        'songId',
+        'track_id',
+        'trackId',
+        'token',
+      ],
+    );
 
+<<<<<<< HEAD
     final title = _firstText(json, const ['title', 'name', 'song']);
+=======
+    final title = _firstText(
+      json,
+      const [
+        'title',
+        'name',
+        'song',
+      ],
+    );
+>>>>>>> a148a15 (Fix HQAudio collection literal analyzer warnings)
 
     if (id.isEmpty || title.isEmpty) {
       return null;
     }
 
     final artist = _artistText(json);
+<<<<<<< HEAD
     final album = _nestedText(json['album'], const ['name', 'title']);
+=======
+
+    final album = _nestedText(
+      json['album'],
+      const [
+        'name',
+        'title',
+      ],
+    );
+>>>>>>> a148a15 (Fix HQAudio collection literal analyzer warnings)
 
     final directAudioUrl = _findAudioUrl(json);
     final artwork = _findArtwork(json);
@@ -252,14 +299,17 @@ class HqAudioService {
   }
 
   String _artistText(Map<String, dynamic> json) {
-    final direct = _firstText(json, const [
-      'artist',
-      'artist_name',
-      'artistName',
-      'author',
-      'uploader',
-      'channel',
-    ]);
+    final direct = _firstText(
+      json,
+      const [
+        'artist',
+        'artist_name',
+        'artistName',
+        'author',
+        'uploader',
+        'channel',
+      ],
+    );
 
     if (direct.isNotEmpty) {
       return direct;
@@ -271,10 +321,20 @@ class HqAudioService {
       return artists
           .map(
             (item) => item is Map
+<<<<<<< HEAD
                 ? _firstText(Map<String, dynamic>.from(item), const [
                     'name',
                     'title',
                   ])
+=======
+                ? _firstText(
+                    Map<String, dynamic>.from(item),
+                    const [
+                      'name',
+                      'title',
+                    ],
+                  )
+>>>>>>> a148a15 (Fix HQAudio collection literal analyzer warnings)
                 : item.toString(),
           )
           .where((name) => name.trim().isNotEmpty)
@@ -289,10 +349,20 @@ class HqAudioService {
           final names = list
               .whereType<Map>()
               .map(
+<<<<<<< HEAD
                 (item) => _firstText(Map<String, dynamic>.from(item), const [
                   'name',
                   'title',
                 ]),
+=======
+                (item) => _firstText(
+                  Map<String, dynamic>.from(item),
+                  const [
+                    'name',
+                    'title',
+                  ],
+                ),
+>>>>>>> a148a15 (Fix HQAudio collection literal analyzer warnings)
               )
               .where((name) => name.isNotEmpty)
               .join(', ');
@@ -324,7 +394,9 @@ class HqAudioService {
         return value.round();
       }
 
-      final parsed = int.tryParse(value?.toString() ?? '');
+      final parsed = int.tryParse(
+        value?.toString() ?? '',
+      );
 
       if (parsed != null) {
         return parsed;
@@ -368,7 +440,9 @@ class HqAudioService {
     }
 
     if (value is String) {
-      return _looksLikeAudioUrl(value) ? value.trim() : null;
+      return _looksLikeAudioUrl(value)
+          ? value.trim()
+          : null;
     }
 
     if (value is List) {
@@ -396,7 +470,6 @@ class HqAudioService {
       'media',
     ]) {
       final candidate = value[key];
-
       final url = _audioUrlFromKnownField(candidate);
 
       if (url != null) {
@@ -415,7 +488,8 @@ class HqAudioService {
         continue;
       }
 
-      if (entry.value is Map || entry.value is List) {
+      if (entry.value is Map ||
+          entry.value is List) {
         final nested = _findAudioUrl(entry.value);
 
         if (nested != null) {
@@ -429,7 +503,9 @@ class HqAudioService {
 
   String? _audioUrlFromKnownField(dynamic value) {
     if (value is String) {
-      return _isHttpUrl(value) ? value.trim() : null;
+      return _isHttpUrl(value)
+          ? value.trim()
+          : null;
     }
 
     if (value is List) {
@@ -440,7 +516,8 @@ class HqAudioService {
       for (final key in const ['url', 'link', 'src', 'value']) {
         final candidate = value[key];
 
-        if (candidate is String && _isHttpUrl(candidate)) {
+        if (candidate is String &&
+            _isHttpUrl(candidate)) {
           return candidate.trim();
         }
       }
@@ -453,7 +530,9 @@ class HqAudioService {
 
   String? _bestAudioUrl(dynamic value) {
     if (value is String) {
-      return _isHttpUrl(value) ? value.trim() : null;
+      return _isHttpUrl(value)
+          ? value.trim()
+          : null;
     }
 
     if (value is Map) {
@@ -510,7 +589,8 @@ class HqAudioService {
     }
 
     for (final item in value.reversed) {
-      if (item is String && _isHttpUrl(item)) {
+      if (item is String &&
+          _isHttpUrl(item)) {
         return item.trim();
       }
     }
@@ -520,7 +600,9 @@ class HqAudioService {
 
   String? _findAnyHttpUrl(dynamic value) {
     if (value is String) {
-      return _isHttpUrl(value) ? value.trim() : null;
+      return _isHttpUrl(value)
+          ? value.trim()
+          : null;
     }
 
     if (value is List) {
@@ -550,9 +632,11 @@ class HqAudioService {
 
   String _firstText(Map<String, dynamic> json, List<String> keys) {
     for (final key in keys) {
-      final value = json[key]?.toString().trim() ?? '';
+      final value =
+          json[key]?.toString().trim() ?? '';
 
-      if (value.isNotEmpty && value != 'null') {
+      if (value.isNotEmpty &&
+          value != 'null') {
         return value;
       }
     }
@@ -574,9 +658,15 @@ class HqAudioService {
 
   bool _isAudioContentType(String contentType) {
     return contentType.startsWith('audio/') ||
-        contentType.contains('application/octet-stream') ||
-        contentType.contains('application/vnd.apple.mpegurl') ||
-        contentType.contains('application/x-mpegurl');
+        contentType.contains(
+          'application/octet-stream',
+        ) ||
+        contentType.contains(
+          'application/vnd.apple.mpegurl',
+        ) ||
+        contentType.contains(
+          'application/x-mpegurl',
+        );
   }
 
   bool _looksLikeAudioUrl(String value) {
@@ -604,7 +694,13 @@ class HqAudioService {
   bool _isHttpUrl(String value) {
     final uri = Uri.tryParse(value.trim());
 
+<<<<<<< HEAD
     return uri != null && (uri.scheme == 'http' || uri.scheme == 'https');
+=======
+    return uri != null &&
+        (uri.scheme == 'http' ||
+            uri.scheme == 'https');
+>>>>>>> a148a15 (Fix HQAudio collection literal analyzer warnings)
   }
 
   Uri _uri(String path, [Map<String, String>? queryParameters]) {
@@ -612,7 +708,9 @@ class HqAudioService {
 
     return Uri.parse(
       '$_baseUrl$normalizedPath',
-    ).replace(queryParameters: queryParameters);
+    ).replace(
+      queryParameters: queryParameters,
+    );
   }
 
   void dispose() {
@@ -620,7 +718,8 @@ class HqAudioService {
   }
 }
 
-final hqAudioServiceProvider = Provider<HqAudioService>((ref) {
+final hqAudioServiceProvider =
+    Provider<HqAudioService>((ref) {
   final service = HqAudioService();
 
   ref.onDispose(service.dispose);
