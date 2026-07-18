@@ -7,7 +7,7 @@ class AppInfo {
   static const String owner = 'Amit Sharma';
 
   static const String copyrightNotice =
-      'Original application code and interface © 2026 $owner.';
+      'Original application code and interface © 2026 Amit Sharma.';
 
   static const String thirdPartyNotice =
       'Music, artwork, metadata, and online services belong to '
