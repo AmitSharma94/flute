@@ -41,10 +41,7 @@ class HqAudioService {
     for (final path in candidates) {
       for (final parameterName in const ['q', 'query']) {
         try {
-          final uri = _uri(path, {
-            parameterName: trimmed,
-            'limit': '30',
-          });
+          final uri = _uri(path, {parameterName: trimmed, 'limit': '30'});
           final response = await _client
               .get(uri, headers: const {'Accept': 'application/json'})
               .timeout(const Duration(seconds: 18));
@@ -165,13 +162,7 @@ class HqAudioService {
     if (value is List) return value;
     if (value is! Map) return const [];
 
-    for (final key in const [
-      'results',
-      'songs',
-      'tracks',
-      'items',
-      'data',
-    ]) {
+    for (final key in const ['results', 'songs', 'tracks', 'items', 'data']) {
       final candidate = value[key];
       if (candidate is List) return candidate;
       if (candidate is Map) {
@@ -196,9 +187,11 @@ class HqAudioService {
     final artists = json['artists'];
     if (artists is List) {
       return artists
-          .map((item) => item is Map
-              ? _firstText(Map<String, dynamic>.from(item), const ['name'])
-              : item.toString())
+          .map(
+            (item) => item is Map
+                ? _firstText(Map<String, dynamic>.from(item), const ['name'])
+                : item.toString(),
+          )
           .where((name) => name.trim().isNotEmpty)
           .join(', ');
     }
@@ -207,10 +200,10 @@ class HqAudioService {
       if (primary is List) {
         return primary
             .whereType<Map>()
-            .map((item) => _firstText(
-                  Map<String, dynamic>.from(item),
-                  const ['name'],
-                ))
+            .map(
+              (item) =>
+                  _firstText(Map<String, dynamic>.from(item), const ['name']),
+            )
             .where((name) => name.isNotEmpty)
             .join(', ');
       }
@@ -360,9 +353,9 @@ class HqAudioService {
 
   Uri _uri(String path, [Map<String, String>? queryParameters]) {
     final normalizedPath = path.startsWith('/') ? path : '/$path';
-    return Uri.parse('$_baseUrl$normalizedPath').replace(
-      queryParameters: queryParameters,
-    );
+    return Uri.parse(
+      '$_baseUrl$normalizedPath',
+    ).replace(queryParameters: queryParameters);
   }
 }
 

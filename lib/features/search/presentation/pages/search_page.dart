@@ -10,231 +10,89 @@ import '../../../player/helpers/play_song.dart';
 
 import '../../../../shared/widgets/song_tile.dart';
 
-
 class SearchPage extends ConsumerWidget {
   const SearchPage({super.key});
 
-
   @override
-  Widget build(
-    BuildContext context,
-    WidgetRef ref,
-  ) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final songsAsync = ref.watch(songsProvider);
 
-    final songsAsync =
-        ref.watch(songsProvider);
-
-
-    final query =
-        ref.watch(searchQueryProvider);
+    final query = ref.watch(searchQueryProvider);
 
     final favorites = ref.watch(favoriteProvider);
 
-
-
     return Scaffold(
-
-      appBar: AppBar(
-
-        title:
-            const Text(
-              "Search",
-            ),
-
-      ),
-
-
+      appBar: AppBar(title: const Text("Search")),
 
       body: songsAsync.when(
+        loading: () => const Center(child: CircularProgressIndicator()),
 
-        loading: () =>
-            const Center(
-              child:
-                  CircularProgressIndicator(),
-            ),
-
-
-        error: (e, _) =>
-            Center(
-              child:
-                  Text(
-                    "Error: $e",
-                  ),
-            ),
-
-
+        error: (e, _) => Center(child: Text("Error: $e")),
 
         data: (songs) {
-
-
-          final results =
-              ref.watch(
-                filteredSongsProvider(
-                  songs,
-                ),
-              );
-
-
+          final results = ref.watch(filteredSongsProvider(songs));
 
           return Column(
-
             children: [
-
-
               Padding(
-
-                padding:
-                    const EdgeInsets.all(12),
-
+                padding: const EdgeInsets.all(12),
 
                 child: TextField(
+                  autofocus: true,
 
-                  autofocus:
-                      true,
+                  decoration: InputDecoration(
+                    hintText: "Search songs or artists",
 
+                    prefixIcon: const Icon(Icons.search),
 
-                  decoration:
-                      InputDecoration(
+                    suffixIcon: query.isNotEmpty
+                        ? IconButton(
+                            icon: const Icon(Icons.clear),
 
-                    hintText:
-                        "Search songs or artists",
+                            onPressed: () {
+                              ref.read(searchQueryProvider.notifier).clear();
+                            },
+                          )
+                        : null,
 
-
-                    prefixIcon:
-                        const Icon(
-                          Icons.search,
-                        ),
-
-
-                    suffixIcon:
-                        query.isNotEmpty
-
-                            ? IconButton(
-
-                                icon:
-                                    const Icon(
-                                      Icons.clear,
-                                    ),
-
-                                onPressed: () {
-
-                                  ref
-                                      .read(
-                                        searchQueryProvider
-                                            .notifier,
-                                      )
-                                      .clear();
-
-                                },
-
-                              )
-
-                            : null,
-
-
-                    border:
-                        const OutlineInputBorder(),
-
+                    border: const OutlineInputBorder(),
                   ),
 
-
-
                   onChanged: (value) {
-
-                    ref
-                        .read(
-                          searchQueryProvider
-                              .notifier,
-                        )
-                        .updateQuery(
-                          value,
-                        );
-
+                    ref.read(searchQueryProvider.notifier).updateQuery(value);
                   },
-
                 ),
-
               ),
-
-
 
               Expanded(
+                child: results.isEmpty
+                    ? const Center(child: Text("No songs found"))
+                    : ListView.builder(
+                        itemCount: results.length,
 
-                child:
+                        itemBuilder: (context, index) {
+                          final song = results[index];
 
-                    results.isEmpty
+                          return SongTile(
+                            song: song,
 
-                        ? const Center(
+                            isFavorite: favorites.contains(song),
 
-                            child:
-                                Text(
-                                  "No songs found",
-                                ),
+                            onFavorite: () => ref
+                                .read(favoriteProvider.notifier)
+                                .toggle(song),
 
-                          )
-
-
-                        :
-
-                    ListView.builder(
-
-                      itemCount:
-                          results.length,
-
-
-                      itemBuilder:
-                          (context, index) {
-
-
-                        final song =
-                            results[index];
-
-
-                        return SongTile(
-
-                          song:
-                              song,
-
-                          isFavorite: favorites.contains(song),
-
-                          onFavorite: () => ref
-                              .read(favoriteProvider.notifier)
-                              .toggle(song),
-
-                          onTap: () async {
-
-
-                            await playSong(
-
-                              ref,
-
-                              results,
-
-                              index,
-
-                            );
-
-
-                          },
-
-                        );
-
-                      },
-
-                    ),
-
+                            onTap: () async {
+                              await playSong(ref, results, index);
+                            },
+                          );
+                        },
+                      ),
               ),
-
             ],
-
           );
-
         },
-
       ),
-
     );
-
   }
-
 }

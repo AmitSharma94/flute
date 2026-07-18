@@ -21,10 +21,7 @@ class SettingsSwitchTile extends StatelessWidget {
     final colorScheme = Theme.of(context).colorScheme;
 
     return SwitchListTile(
-      contentPadding: const EdgeInsets.symmetric(
-        horizontal: 20,
-        vertical: 4,
-      ),
+      contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
 
       secondary: Container(
         width: 44,
@@ -33,18 +30,12 @@ class SettingsSwitchTile extends StatelessWidget {
           color: colorScheme.primary.withValues(alpha: 0.12),
           borderRadius: BorderRadius.circular(14),
         ),
-        child: Icon(
-          icon,
-          color: colorScheme.primary,
-        ),
+        child: Icon(icon, color: colorScheme.primary),
       ),
 
       title: Text(
         title,
-        style: const TextStyle(
-          fontSize: 16,
-          fontWeight: FontWeight.w600,
-        ),
+        style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
       ),
 
       subtitle: subtitle == null
@@ -60,9 +51,7 @@ class SettingsSwitchTile extends StatelessWidget {
 
       activeThumbColor: colorScheme.primary,
 
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(18),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
     );
   }
 }

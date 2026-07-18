@@ -149,8 +149,7 @@ class _OnlineMusicPageState extends ConsumerState<OnlineMusicPage> {
         return SongTile(
           song: song,
           isFavorite: favorites.contains(song),
-          onFavorite: () =>
-              ref.read(favoriteProvider.notifier).toggle(song),
+          onFavorite: () => ref.read(favoriteProvider.notifier).toggle(song),
           onTap: () => ref
               .read(playbackControllerProvider)
               .setQueueAndPlay(_results, index),

@@ -8,147 +8,54 @@ import '../../../../music/presentation/widgets/song_artwork.dart';
 
 import '../../../helpers/play_song.dart';
 
-
 class QueuePage extends ConsumerWidget {
-
-  const QueuePage({
-    super.key,
-  });
-
+  const QueuePage({super.key});
 
   @override
-  Widget build(
-    BuildContext context,
-    WidgetRef ref,
-  ) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final queue = ref.watch(queueProvider);
 
-
-    final queue =
-        ref.watch(queueProvider);
-
-
-    final currentIndex =
-        ref.watch(queueIndexProvider);
-
-
+    final currentIndex = ref.watch(queueIndexProvider);
 
     return Scaffold(
-
-      appBar: AppBar(
-
-        title:
-            const Text(
-              "Queue",
-            ),
-
-      ),
-
+      appBar: AppBar(title: const Text("Queue")),
 
       body: queue.isEmpty
-
-          ? const Center(
-
-              child:
-                  Text(
-                    "Queue is empty",
-                  ),
-
-            )
-
-
+          ? const Center(child: Text("Queue is empty"))
           : ListView.builder(
+              itemCount: queue.length,
 
-              itemCount:
-                  queue.length,
-
-
-              itemBuilder:
-                  (context, index) {
-
-
-                final song =
-                    queue[index];
-
-
+              itemBuilder: (context, index) {
+                final song = queue[index];
 
                 return ListTile(
+                  leading: SongArtwork(
+                    id: song.id,
+                    imageUrl: song.artworkUrl,
 
+                    size: 50,
+                  ),
 
-                  leading:
-                      SongArtwork(
+                  title: Text(
+                    song.title,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
 
-                        id:
-                            song.id,
-                        imageUrl: song.artworkUrl,
+                  subtitle: Text(song.artist),
 
-                        size:
-                            50,
-
-                      ),
-
-
-
-                  title:
-                      Text(
-                        song.title,
-                        maxLines: 1,
-                        overflow:
-                            TextOverflow.ellipsis,
-                      ),
-
-
-
-                  subtitle:
-                      Text(
-                        song.artist,
-                      ),
-
-
-
-                  trailing:
-                      index == currentIndex
-
-                          ? const Icon(
-                              Icons.play_arrow,
-                            )
-
-                          : null,
-
-
+                  trailing: index == currentIndex
+                      ? const Icon(Icons.play_arrow)
+                      : null,
 
                   onTap: () {
+                    playSong(ref, queue, index);
 
-
-                    playSong(
-
-                      ref,
-
-                      queue,
-
-                      index,
-
-                    );
-
-
-                    Navigator.pop(
-                      context,
-                    );
-
-
+                    Navigator.pop(context);
                   },
-
-
                 );
-
-
               },
-
-
             ),
-
     );
-
-
   }
-
 }
