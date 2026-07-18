@@ -46,9 +46,7 @@ class HistoryNotifier extends Notifier<List<FluteSong>> {
   }
 
   Future<void> removeUnavailable(Set<String> availableIds) async {
-    final cleaned = state
-        .where((song) => song.isOnline || availableIds.contains(song.id))
-        .toList();
+    final cleaned = state.where((song) => song.isOnline || availableIds.contains(song.id)).toList();
     if (cleaned.length == state.length) return;
     state = cleaned;
     await StorageService.save(
@@ -63,6 +61,5 @@ class HistoryNotifier extends Notifier<List<FluteSong>> {
   }
 }
 
-final historyProvider = NotifierProvider<HistoryNotifier, List<FluteSong>>(
-  HistoryNotifier.new,
-);
+final historyProvider =
+    NotifierProvider<HistoryNotifier, List<FluteSong>>(HistoryNotifier.new);

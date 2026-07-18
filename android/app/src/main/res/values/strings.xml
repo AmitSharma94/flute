@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">flute</string>
+    <string name="flute_widget_description">Control Flute playback from your home screen</string>
+</resources>

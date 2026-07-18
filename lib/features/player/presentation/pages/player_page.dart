@@ -88,11 +88,7 @@ class PlayerPage extends ConsumerWidget {
                       tag: song.id,
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(24),
-                        child: SongArtwork(
-                          id: song.id,
-                          imageUrl: song.artworkUrl,
-                          size: 320,
-                        ),
+                        child: SongArtwork(id: song.id, imageUrl: song.artworkUrl, size: 320),
                       ),
                     ),
                   ),

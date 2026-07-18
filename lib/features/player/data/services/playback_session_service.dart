@@ -13,21 +13,19 @@ class PlaybackSession {
   final Duration position;
 
   Map<String, dynamic> toJson() => {
-    'queue': queue.map((song) => song.toJson()).toList(),
-    'index': index,
-    'positionMs': position.inMilliseconds,
-  };
+        'queue': queue.map((song) => song.toJson()).toList(),
+        'index': index,
+        'positionMs': position.inMilliseconds,
+      };
 
   factory PlaybackSession.fromJson(Map<String, dynamic> json) {
     final rawQueue = json['queue'];
     final queue = rawQueue is List
         ? rawQueue
-              .whereType<Map>()
-              .map(
-                (item) => FluteSong.fromJson(Map<String, dynamic>.from(item)),
-              )
-              .where((song) => song.id.isNotEmpty && song.path.isNotEmpty)
-              .toList()
+            .whereType<Map>()
+            .map((item) => FluteSong.fromJson(Map<String, dynamic>.from(item)))
+            .where((song) => song.id.isNotEmpty && song.path.isNotEmpty)
+            .toList()
         : <FluteSong>[];
 
     final rawIndex = json['index'];
@@ -49,14 +47,13 @@ class PlaybackSession {
 
 class PlaybackSessionService {
   Future<void> save(PlaybackSession session) => StorageService.saveObject(
-    StorageService.playbackSessionKey,
-    session.toJson(),
-  );
+        StorageService.playbackSessionKey,
+        session.toJson(),
+      );
 
   Future<PlaybackSession?> load() async {
-    final data = await StorageService.loadObject(
-      StorageService.playbackSessionKey,
-    );
+    final data =
+        await StorageService.loadObject(StorageService.playbackSessionKey);
     if (data == null) return null;
     final session = PlaybackSession.fromJson(data);
     return session.queue.isEmpty ? null : session;

@@ -6,5 +6,6 @@ class AppInfo {
       'Original application code and interface © 2026 Amit Sharma.';
   static const String thirdPartyNotice =
       'Music, artwork, metadata, and online services belong to their respective rights holders.';
-  static const String legalese = '$copyrightNotice\n\n$thirdPartyNotice';
+  static const String legalese =
+      '$copyrightNotice\n\n$thirdPartyNotice';
 }

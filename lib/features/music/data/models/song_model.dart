@@ -62,15 +62,15 @@ class FluteSong {
   }
 
   Map<String, dynamic> toJson() => {
-    'id': id,
-    'title': title,
-    'artist': artist,
-    'album': album,
-    'path': path,
-    'duration': duration,
-    'source': source.name,
-    'artworkUrl': artworkUrl,
-  };
+        'id': id,
+        'title': title,
+        'artist': artist,
+        'album': album,
+        'path': path,
+        'duration': duration,
+        'source': source.name,
+        'artworkUrl': artworkUrl,
+      };
 
   static String _text(dynamic value, String fallback) {
     final text = value?.toString().trim();

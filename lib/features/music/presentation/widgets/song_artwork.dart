@@ -30,7 +30,7 @@ class SongArtwork extends StatelessWidget {
               width: size,
               height: size,
               fit: BoxFit.cover,
-              errorBuilder: (_, _, _) => placeholder,
+              errorBuilder: (_, __, ___) => placeholder,
             )
           : QueryArtworkWidget(
               id: int.tryParse(id) ?? 0,

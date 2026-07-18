@@ -1,9 +1,11 @@
 import 'dart:async';
 import 'dart:math';
 
+import 'package:audio_service/audio_service.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:just_audio/just_audio.dart';
 
+import '../../../core/audio/providers/audio_handler_provider.dart';
 import '../../history/providers/history_provider.dart';
 import '../../music/data/models/song_model.dart';
 import '../../online_music/data/services/hq_audio_service.dart';
@@ -24,9 +26,8 @@ class PlaybackErrorNotifier extends Notifier<String?> {
   void clear() => state = null;
 }
 
-final playbackErrorProvider = NotifierProvider<PlaybackErrorNotifier, String?>(
-  PlaybackErrorNotifier.new,
-);
+final playbackErrorProvider =
+    NotifierProvider<PlaybackErrorNotifier, String?>(PlaybackErrorNotifier.new);
 
 class PlaybackBusyNotifier extends Notifier<bool> {
   @override
@@ -35,13 +36,26 @@ class PlaybackBusyNotifier extends Notifier<bool> {
   void setBusy(bool value) => state = value;
 }
 
-final playbackBusyProvider = NotifierProvider<PlaybackBusyNotifier, bool>(
-  PlaybackBusyNotifier.new,
-);
+final playbackBusyProvider =
+    NotifierProvider<PlaybackBusyNotifier, bool>(PlaybackBusyNotifier.new);
 
 class PlaybackController {
   PlaybackController(this.ref) {
     final service = ref.read(audioPlayerProvider);
+    final handler = ref.read(audioHandlerProvider);
+
+    handler.bind(
+      play: _systemPlay,
+      pause: pause,
+      stop: stop,
+      next: next,
+      previous: previous,
+      seek: seek,
+      repeat: _setSystemRepeat,
+      shuffle: _setSystemShuffle,
+      queueItem: playIndex,
+    );
+
     _playerSubscription = service.playerStateStream.listen(_onPlayerState);
     _positionSubscription = service.positionStream.listen(_onPositionChanged);
     _eventSubscription = service.playbackEventStream.listen(
@@ -51,6 +65,23 @@ class PlaybackController {
 
     ref.listen<FluteRepeatMode>(repeatProvider, (_, next) {
       unawaited(service.setRepeatOne(next == FluteRepeatMode.one));
+      unawaited(
+        handler.setRepeatState(
+          switch (next) {
+            FluteRepeatMode.off => AudioServiceRepeatMode.none,
+            FluteRepeatMode.one => AudioServiceRepeatMode.one,
+            FluteRepeatMode.all => AudioServiceRepeatMode.all,
+          },
+        ),
+      );
+    });
+
+    ref.listen<bool>(shuffleProvider, (_, next) {
+      unawaited(
+        handler.setShuffleState(
+          next ? AudioServiceShuffleMode.all : AudioServiceShuffleMode.none,
+        ),
+      );
     });
 
     unawaited(_restoreSession());
@@ -71,6 +102,7 @@ class PlaybackController {
   int _lastSavedSecond = -1;
 
   Future<void> dispose() async {
+    ref.read(audioHandlerProvider).unbind();
     await _saveSession();
     await _playerSubscription.cancel();
     await _positionSubscription.cancel();
@@ -98,9 +130,7 @@ class PlaybackController {
               .resolveStreamUrl(song);
           song = song.copyWith(path: streamUrl);
           final updatedQueue = [...queue]..[index] = song;
-          ref
-              .read(queueProvider.notifier)
-              .setQueue(List.unmodifiable(updatedQueue));
+          ref.read(queueProvider.notifier).setQueue(List.unmodifiable(updatedQueue));
         }
 
         try {
@@ -113,14 +143,17 @@ class PlaybackController {
               .resolveStreamUrl(song, forceRefresh: true);
           song = song.copyWith(path: refreshedUrl);
           final updatedQueue = [...ref.read(queueProvider)]..[index] = song;
-          ref
-              .read(queueProvider.notifier)
-              .setQueue(List.unmodifiable(updatedQueue));
+          ref.read(queueProvider.notifier).setQueue(List.unmodifiable(updatedQueue));
           await ref.read(audioPlayerProvider).loadAndPlay(song.path);
         }
 
         ref.read(queueIndexProvider.notifier).setIndex(index);
         ref.read(currentSongProvider.notifier).setSong(song);
+        await ref.read(audioHandlerProvider).setFluteQueue(
+              ref.read(queueProvider),
+              currentIndex: index,
+            );
+        await ref.read(audioHandlerProvider).setCurrentSong(song, index);
         await ref.read(historyProvider.notifier).addSong(song);
         await _saveSession(position: Duration.zero);
       } catch (error) {
@@ -162,6 +195,11 @@ class PlaybackController {
             await service.loadAndPlay(song.path);
             ref.read(queueIndexProvider.notifier).setIndex(index);
             ref.read(currentSongProvider.notifier).setSong(song);
+            await ref.read(audioHandlerProvider).setFluteQueue(
+                  ref.read(queueProvider),
+                  currentIndex: index,
+                );
+            await ref.read(audioHandlerProvider).setCurrentSong(song, index);
             await ref.read(historyProvider.notifier).addSong(song);
             await _saveSession(position: Duration.zero);
             return;
@@ -268,33 +306,59 @@ class PlaybackController {
     }
   }
 
+  Future<void> _systemPlay() async {
+    if (!ref.read(audioPlayerProvider).isPlaying) {
+      await togglePlayPause();
+    }
+  }
+
+  Future<void> _setSystemRepeat(AudioServiceRepeatMode mode) async {
+    final mapped = switch (mode) {
+      AudioServiceRepeatMode.one => FluteRepeatMode.one,
+      AudioServiceRepeatMode.all || AudioServiceRepeatMode.group =>
+        FluteRepeatMode.all,
+      _ => FluteRepeatMode.off,
+    };
+    ref.read(repeatProvider.notifier).setMode(mapped);
+  }
+
+  Future<void> _setSystemShuffle(AudioServiceShuffleMode mode) async {
+    ref
+        .read(shuffleProvider.notifier)
+        .setEnabled(mode != AudioServiceShuffleMode.none);
+  }
+
   Future<void> _restoreSession() async {
     if (_restoring) return;
     _restoring = true;
     try {
       final settings = await ref.read(settingsProvider.future);
       ref.read(shuffleProvider.notifier).setEnabled(settings.shuffleDefault);
-      ref
-          .read(repeatProvider.notifier)
-          .setMode(
-            settings.repeatDefault ? FluteRepeatMode.all : FluteRepeatMode.off,
+      ref.read(repeatProvider.notifier).setMode(
+            settings.repeatDefault
+                ? FluteRepeatMode.all
+                : FluteRepeatMode.off,
           );
 
       if (!settings.resumePlayback) return;
 
       final session = await _sessionService.load();
       if (session == null || session.queue.isEmpty) return;
-      final safeIndex = session.index
-          .clamp(0, session.queue.length - 1)
-          .toInt();
+      final safeIndex = session.index.clamp(0, session.queue.length - 1).toInt();
       final song = session.queue[safeIndex];
 
-      await ref
-          .read(audioPlayerProvider)
-          .loadPaused(song.path, position: session.position);
+      await ref.read(audioPlayerProvider).loadPaused(
+            song.path,
+            position: session.position,
+          );
       ref.read(queueProvider.notifier).setQueue(session.queue);
       ref.read(queueIndexProvider.notifier).setIndex(safeIndex);
       ref.read(currentSongProvider.notifier).setSong(song);
+      await ref.read(audioHandlerProvider).setFluteQueue(
+            session.queue,
+            currentIndex: safeIndex,
+          );
+      await ref.read(audioHandlerProvider).setCurrentSong(song, safeIndex);
     } catch (_) {
       await _sessionService.clear();
     } finally {

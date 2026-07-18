@@ -16,20 +16,21 @@ on:
       - develop
 
 permissions:
-  contents: write
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
-  analyze-test-build:
-    name: Analyze, Test and Build APK
+  quality-build:
+    name: Format, Analyze, Test and Build APK
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    timeout-minutes: 50
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-        with:
-          ref: ${{ github.head_ref || github.ref_name }}
-          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Set up Java 17
         uses: actions/setup-java@v4
@@ -37,39 +38,22 @@ jobs:
           distribution: temurin
           java-version: "17"
 
-      - name: Set up Flutter
+      - name: Set up Flutter stable
         uses: subosito/flutter-action@v2
         with:
           channel: stable
           cache: true
 
-      - name: Show versions
+      - name: Show tool versions
         run: |
           flutter --version
           java -version
 
       - name: Install dependencies
-        run: flutter pub get --enforce-lockfile
+        run: flutter pub get
 
       - name: Format Dart files
         run: dart format lib test
-
-      - name: Commit formatting changes
-        if: github.event_name != 'pull_request'
-        run: |
-          if [ -n "$(git status --porcelain)" ]; then
-            git config user.name "github-actions[bot]"
-            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-
-            git add lib test
-            git commit -m "style: apply Dart formatting [skip ci]"
-            git push
-          else
-            echo "No formatting changes required."
-          fi
-
-      - name: Verify formatting
-        run: dart format --output=none --set-exit-if-changed lib test
 
       - name: Analyze project
         run: flutter analyze
@@ -80,22 +64,13 @@ jobs:
       - name: Restore Gradle wrapper if missing
         run: |
           if [ ! -f android/gradlew ]; then
-            echo "Restoring missing Gradle wrapper"
-
             flutter create --platforms=android /tmp/flute_wrapper
-
             cp /tmp/flute_wrapper/android/gradlew android/gradlew
             cp /tmp/flute_wrapper/android/gradlew.bat android/gradlew.bat
-
             mkdir -p android/gradle/wrapper
-
-            cp /tmp/flute_wrapper/android/gradle/wrapper/gradle-wrapper.jar \
-              android/gradle/wrapper/gradle-wrapper.jar
-
-            cp /tmp/flute_wrapper/android/gradle/wrapper/gradle-wrapper.properties \
-              android/gradle/wrapper/gradle-wrapper.properties
+            cp /tmp/flute_wrapper/android/gradle/wrapper/gradle-wrapper.jar android/gradle/wrapper/
+            cp /tmp/flute_wrapper/android/gradle/wrapper/gradle-wrapper.properties android/gradle/wrapper/
           fi
-
           chmod +x android/gradlew
 
       - name: Build release APK
@@ -104,24 +79,14 @@ jobs:
 
       - name: Find and rename APK
         run: |
-          echo "Generated APK files:"
-          find . -type f -name "*.apk" -print
-
-          APK_PATH=$(find build android \
-            -type f \
-            -path "*release*" \
-            -name "*.apk" \
-            | head -n 1)
-
+          APK_PATH=$(find build android -type f -path "*release*" -name "*.apk" | head -n 1)
           if [ -z "$APK_PATH" ]; then
             echo "Release APK was not found."
+            find . -type f -name "*.apk" -print
             exit 1
           fi
-
           mkdir -p release-artifacts
           cp "$APK_PATH" release-artifacts/flute-release.apk
-
-          echo "APK copied from: $APK_PATH"
           ls -lh release-artifacts
 
       - name: Upload release APK

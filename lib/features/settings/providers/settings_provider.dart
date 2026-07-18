@@ -54,31 +54,51 @@ class SettingsNotifier extends AsyncNotifier<SettingsState> {
   Future<void> setThemeMode(ThemeMode mode) async {
     await _service.setThemeMode(mode);
 
-    state = AsyncData(state.requireValue.copyWith(themeMode: mode));
+    state = AsyncData(
+      state.requireValue.copyWith(
+        themeMode: mode,
+      ),
+    );
   }
 
   Future<void> setResumePlayback(bool value) async {
     await _service.setResumePlayback(value);
 
-    state = AsyncData(state.requireValue.copyWith(resumePlayback: value));
+    state = AsyncData(
+      state.requireValue.copyWith(
+        resumePlayback: value,
+      ),
+    );
   }
 
   Future<void> setShuffleDefault(bool value) async {
     await _service.setShuffleDefault(value);
 
-    state = AsyncData(state.requireValue.copyWith(shuffleDefault: value));
+    state = AsyncData(
+      state.requireValue.copyWith(
+        shuffleDefault: value,
+      ),
+    );
   }
 
   Future<void> setRepeatDefault(bool value) async {
     await _service.setRepeatDefault(value);
 
-    state = AsyncData(state.requireValue.copyWith(repeatDefault: value));
+    state = AsyncData(
+      state.requireValue.copyWith(
+        repeatDefault: value,
+      ),
+    );
   }
 
   Future<void> setKeepScreenAwake(bool value) async {
     await _service.setKeepScreenAwake(value);
 
-    state = AsyncData(state.requireValue.copyWith(keepScreenAwake: value));
+    state = AsyncData(
+      state.requireValue.copyWith(
+        keepScreenAwake: value,
+      ),
+    );
   }
 
   Future<void> resetToDefaults() async {
@@ -102,6 +122,7 @@ class SettingsNotifier extends AsyncNotifier<SettingsState> {
   }
 }
 
-final settingsProvider = AsyncNotifierProvider<SettingsNotifier, SettingsState>(
+final settingsProvider =
+    AsyncNotifierProvider<SettingsNotifier, SettingsState>(
   SettingsNotifier.new,
 );

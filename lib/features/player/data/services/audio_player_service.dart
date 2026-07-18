@@ -43,7 +43,18 @@ class AudioPlayerService {
         uri != null && (uri.scheme == 'https' || uri.scheme == 'http');
 
     if (isRemote) {
-      await player.setUrl(value);
+      await player.setAudioSource(
+        AudioSource.uri(
+          Uri.parse(value),
+          headers: const <String, String>{
+            'User-Agent':
+                'Mozilla/5.0 (Linux; Android 13) AppleWebKit/537.36 '
+                'Chrome/120.0 Mobile Safari/537.36',
+            'Accept': 'audio/*,*/*;q=0.8',
+            'Referer': 'https://hqaudio.suvojeetsengupta.in/',
+          },
+        ),
+      );
       return;
     }
 
