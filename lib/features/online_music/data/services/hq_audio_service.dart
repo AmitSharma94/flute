@@ -48,19 +48,10 @@ class HqAudioService {
     for (final path in candidates) {
       for (final parameterName in const ['q', 'query']) {
         try {
-          final uri = _uri(
-            path,
-            {
-              parameterName: trimmed,
-              'limit': '30',
-            },
-          );
+          final uri = _uri(path, {parameterName: trimmed, 'limit': '30'});
 
           final response = await _client
-              .get(
-                uri,
-                headers: _jsonHeaders,
-              )
+              .get(uri, headers: _jsonHeaders)
               .timeout(const Duration(seconds: 20));
 
           if (response.statusCode == 404 || response.statusCode == 405) {
@@ -163,9 +154,7 @@ class HqAudioService {
           return finalUri.toString();
         }
 
-        final response = await http.Response.fromStream(
-          streamedResponse,
-        );
+        final response = await http.Response.fromStream(streamedResponse);
 
         if (response.body.trim().isEmpty) {
           lastError = 'Empty response from $path';
@@ -200,28 +189,18 @@ class HqAudioService {
   }
 
   FluteSong? _toSong(Map<String, dynamic> json) {
-    final id = _firstText(
-      json,
-      const [
-        'id',
-        'video_id',
-        'videoId',
-        'song_id',
-        'songId',
-        'track_id',
-        'trackId',
-        'token',
-      ],
-    );
+    final id = _firstText(json, const [
+      'id',
+      'video_id',
+      'videoId',
+      'song_id',
+      'songId',
+      'track_id',
+      'trackId',
+      'token',
+    ]);
 
-    final title = _firstText(
-      json,
-      const [
-        'title',
-        'name',
-        'song',
-      ],
-    );
+    final title = _firstText(json, const ['title', 'name', 'song']);
 
     if (id.isEmpty || title.isEmpty) {
       return null;
@@ -229,13 +208,7 @@ class HqAudioService {
 
     final artist = _artistText(json);
 
-    final album = _nestedText(
-      json['album'],
-      const [
-        'name',
-        'title',
-      ],
-    );
+    final album = _nestedText(json['album'], const ['name', 'title']);
 
     final directAudioUrl = _findAudioUrl(json);
     final artwork = _findArtwork(json);
@@ -262,13 +235,7 @@ class HqAudioService {
       return const [];
     }
 
-    for (final key in const [
-      'results',
-      'songs',
-      'tracks',
-      'items',
-      'data',
-    ]) {
+    for (final key in const ['results', 'songs', 'tracks', 'items', 'data']) {
       final candidate = value[key];
 
       if (candidate is List) {
@@ -288,17 +255,14 @@ class HqAudioService {
   }
 
   String _artistText(Map<String, dynamic> json) {
-    final direct = _firstText(
-      json,
-      const [
-        'artist',
-        'artist_name',
-        'artistName',
-        'author',
-        'uploader',
-        'channel',
-      ],
-    );
+    final direct = _firstText(json, const [
+      'artist',
+      'artist_name',
+      'artistName',
+      'author',
+      'uploader',
+      'channel',
+    ]);
 
     if (direct.isNotEmpty) {
       return direct;
@@ -310,13 +274,10 @@ class HqAudioService {
       return artists
           .map(
             (item) => item is Map
-                ? _firstText(
-                    Map<String, dynamic>.from(item),
-                    const [
-                      'name',
-                      'title',
-                    ],
-                  )
+                ? _firstText(Map<String, dynamic>.from(item), const [
+                    'name',
+                    'title',
+                  ])
                 : item.toString(),
           )
           .where((name) => name.trim().isNotEmpty)
@@ -324,24 +285,17 @@ class HqAudioService {
     }
 
     if (artists is Map) {
-      for (final key in const [
-        'primary',
-        'all',
-        'featured',
-      ]) {
+      for (final key in const ['primary', 'all', 'featured']) {
         final list = artists[key];
 
         if (list is List) {
           final names = list
               .whereType<Map>()
               .map(
-                (item) => _firstText(
-                  Map<String, dynamic>.from(item),
-                  const [
-                    'name',
-                    'title',
-                  ],
-                ),
+                (item) => _firstText(Map<String, dynamic>.from(item), const [
+                  'name',
+                  'title',
+                ]),
               )
               .where((name) => name.isNotEmpty)
               .join(', ');
@@ -373,9 +327,7 @@ class HqAudioService {
         return value.round();
       }
 
-      final parsed = int.tryParse(
-        value?.toString() ?? '',
-      );
+      final parsed = int.tryParse(value?.toString() ?? '');
 
       if (parsed != null) {
         return parsed;
@@ -487,12 +439,7 @@ class HqAudioService {
     }
 
     if (value is Map) {
-      for (final key in const [
-        'url',
-        'link',
-        'src',
-        'value',
-      ]) {
+      for (final key in const ['url', 'link', 'src', 'value']) {
         final candidate = value[key];
 
         if (candidate is String && _isHttpUrl(candidate)) {
@@ -540,14 +487,11 @@ class HqAudioService {
       'low',
     ]) {
       for (final entry in entries.reversed) {
-        final entryQuality = _firstText(
-          entry,
-          const [
-            'quality',
-            'bitrate',
-            'label',
-          ],
-        ).toLowerCase();
+        final entryQuality = _firstText(entry, const [
+          'quality',
+          'bitrate',
+          'label',
+        ]).toLowerCase();
 
         if (entryQuality == quality) {
           final url = _audioUrlFromKnownField(entry);
@@ -594,12 +538,7 @@ class HqAudioService {
     }
 
     if (value is Map) {
-      for (final key in const [
-        'url',
-        'link',
-        'src',
-        'value',
-      ]) {
+      for (final key in const ['url', 'link', 'src', 'value']) {
         final url = _findAnyHttpUrl(value[key]);
 
         if (url != null) {
@@ -611,10 +550,7 @@ class HqAudioService {
     return null;
   }
 
-  String _firstText(
-    Map<String, dynamic> json,
-    List<String> keys,
-  ) {
+  String _firstText(Map<String, dynamic> json, List<String> keys) {
     for (final key in keys) {
       final value = json[key]?.toString().trim() ?? '';
 
@@ -626,19 +562,13 @@ class HqAudioService {
     return '';
   }
 
-  String _nestedText(
-    dynamic value,
-    List<String> keys,
-  ) {
+  String _nestedText(dynamic value, List<String> keys) {
     if (value is String) {
       return value.trim();
     }
 
     if (value is Map) {
-      return _firstText(
-        Map<String, dynamic>.from(value),
-        keys,
-      );
+      return _firstText(Map<String, dynamic>.from(value), keys);
     }
 
     return '';
@@ -676,21 +606,15 @@ class HqAudioService {
   bool _isHttpUrl(String value) {
     final uri = Uri.tryParse(value.trim());
 
-    return uri != null &&
-        (uri.scheme == 'http' || uri.scheme == 'https');
+    return uri != null && (uri.scheme == 'http' || uri.scheme == 'https');
   }
 
-  Uri _uri(
-    String path, [
-    Map<String, String>? queryParameters,
-  ]) {
+  Uri _uri(String path, [Map<String, String>? queryParameters]) {
     final normalizedPath = path.startsWith('/') ? path : '/$path';
 
     return Uri.parse(
       '$_baseUrl$normalizedPath',
-    ).replace(
-      queryParameters: queryParameters,
-    );
+    ).replace(queryParameters: queryParameters);
   }
 
   void dispose() {
