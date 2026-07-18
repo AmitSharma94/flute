@@ -1,8 +1,9 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:just_audio/just_audio.dart';
 
-/// The single audio engine used by flute_rc_V1.
+/// The single audio engine used by Flute.
 class AudioPlayerService {
   AudioPlayerService() : player = AudioPlayer();
 
@@ -11,6 +12,7 @@ class AudioPlayerService {
   Stream<PlayerState> get playerStateStream => player.playerStateStream;
   Stream<Duration> get positionStream => player.positionStream;
   Stream<Duration?> get durationStream => player.durationStream;
+  Stream<PlaybackEvent> get playbackEventStream => player.playbackEventStream;
 
   Duration get position => player.position;
   Duration? get duration => player.duration;
@@ -18,7 +20,7 @@ class AudioPlayerService {
 
   Future<void> loadAndPlay(String source) async {
     await _load(source);
-    await player.play();
+    _startPlayback();
   }
 
   Future<void> loadPaused(
@@ -39,6 +41,7 @@ class AudioPlayerService {
     final uri = Uri.tryParse(value);
     final isRemote =
         uri != null && (uri.scheme == 'https' || uri.scheme == 'http');
+
     if (isRemote) {
       await player.setUrl(value);
       return;
@@ -51,9 +54,19 @@ class AudioPlayerService {
     await player.setFilePath(value);
   }
 
+  /// Starts playback without awaiting the entire track duration.
+  void _startPlayback() {
+    // Do not await play(): its Future completes when playback stops or ends.
+    unawaited(player.play());
+  }
+
   Future<void> play(String path) => loadAndPlay(path);
   Future<void> pause() => player.pause();
-  Future<void> resume() => player.play();
+
+  Future<void> resume() async {
+    _startPlayback();
+  }
+
   Future<void> stop() => player.stop();
 
   Future<void> seek(Duration position) async {
@@ -66,7 +79,13 @@ class AudioPlayerService {
 
   Future<void> restart({bool autoplay = true}) async {
     await player.seek(Duration.zero);
-    if (autoplay) await player.play();
+    if (autoplay) {
+      _startPlayback();
+    }
+  }
+
+  Future<void> setRepeatOne(bool enabled) {
+    return player.setLoopMode(enabled ? LoopMode.one : LoopMode.off);
   }
 
   Future<void> dispose() => player.dispose();

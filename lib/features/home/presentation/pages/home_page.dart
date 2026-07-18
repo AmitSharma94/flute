@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../player/helpers/play_song.dart';
-
+import '../../../favorites/presentation/pages/favorites_page.dart';
+import '../../../history/presentation/pages/history_page.dart';
+import '../../../history/providers/history_provider.dart';
 import '../../../music/providers/music_provider.dart';
-
-import '../widgets/greeting_header.dart';
-import '../widgets/quick_access_section.dart';
-import '../widgets/cards/music_card.dart';
-
+import '../../../player/helpers/play_song.dart';
 import '../../../../shared/widgets/section_title.dart';
 import '../../../../shared/widgets/song_tile.dart';
+import '../widgets/cards/music_card.dart';
+import '../widgets/greeting_header.dart';
+import '../widgets/quick_access_section.dart';
 
 class HomePage extends ConsumerWidget {
   const HomePage({super.key});
@@ -18,95 +18,88 @@ class HomePage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final songsAsync = ref.watch(songsProvider);
+    final history = ref.watch(historyProvider);
 
     return Scaffold(
       appBar: AppBar(
         title: const Text(
-          "flute_rc_V1",
+          'flute',
           style: TextStyle(fontWeight: FontWeight.bold),
         ),
-
-        actions: [IconButton(icon: const Icon(Icons.search), onPressed: () {})],
       ),
-
       body: songsAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
-
-        error: (e, _) => Center(child: Text("Error: $e")),
-
-        data: (songs) {
-          return ListView(
-            padding: const EdgeInsets.only(bottom: 120),
-
-            children: [
-              GreetingHeader(songCount: songs.length),
-
-              const QuickAccessSection(),
-
-              const SectionTitle(title: "Continue Listening"),
-
-              SizedBox(
-                height: 200,
-
-                child: ListView.builder(
-                  scrollDirection: Axis.horizontal,
-
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-
-                  itemCount: songs.length > 6 ? 6 : songs.length,
-
-                  itemBuilder: (context, index) {
-                    final song = songs[index];
-
-                    return Padding(
-                      padding: const EdgeInsets.only(right: 14),
-
-                      child: MusicCard(song: song, size: 150),
-                    );
-                  },
-                ),
+        error: (error, _) => Center(child: Text('Error: $error')),
+        data: (songs) => ListView(
+          padding: const EdgeInsets.only(bottom: 180),
+          children: [
+            GreetingHeader(songCount: songs.length),
+            QuickAccessSection(
+              onFavorites: () => Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const FavoritesPage()),
               ),
-
-              const SectionTitle(title: "Recently Played"),
-
+              onRecentlyPlayed: () => Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const HistoryPage()),
+              ),
+            ),
+            const SectionTitle(title: 'Continue Listening'),
+            SizedBox(
+              height: 205,
+              child: ListView.builder(
+                scrollDirection: Axis.horizontal,
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                itemCount: songs.length > 6 ? 6 : songs.length,
+                itemBuilder: (context, index) {
+                  final song = songs[index];
+                  return Padding(
+                    padding: const EdgeInsets.only(right: 14),
+                    child: MusicCard(
+                      song: song,
+                      size: 150,
+                      onTap: () => playSong(ref, songs, index),
+                    ),
+                  );
+                },
+              ),
+            ),
+            const SectionTitle(title: 'Recently Played'),
+            if (history.isEmpty)
+              const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+                child: Text('Your recently played songs will appear here.'),
+              )
+            else
               SizedBox(
-                height: 170,
-
+                height: 180,
                 child: ListView.builder(
                   scrollDirection: Axis.horizontal,
-
                   padding: const EdgeInsets.symmetric(horizontal: 16),
-
-                  itemCount: songs.length > 5 ? 5 : songs.length,
-
+                  itemCount: history.length > 5 ? 5 : history.length,
                   itemBuilder: (context, index) {
-                    final song = songs[index];
-
+                    final song = history[index];
                     return Padding(
                       padding: const EdgeInsets.only(right: 12),
-
-                      child: MusicCard(song: song, size: 120),
+                      child: MusicCard(
+                        song: song,
+                        size: 125,
+                        onTap: () => playSong(ref, history, index),
+                      ),
                     );
                   },
                 ),
               ),
-
-              const SectionTitle(title: "All Songs"),
-
-              ...List.generate(songs.length, (index) {
-                final song = songs[index];
-
-                return SongTile(
-                  song: song,
-
-                  onTap: () async {
-                    await playSong(ref, songs, index);
-                  },
-                );
-              }),
-            ],
-          );
-        },
+            const SectionTitle(title: 'All Songs'),
+            ...List.generate(
+              songs.length,
+              (index) => SongTile(
+                song: songs[index],
+                onTap: () => playSong(ref, songs, index),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

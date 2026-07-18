@@ -24,12 +24,18 @@ class LibraryPage extends ConsumerWidget {
               initialValue: state.sortMode,
               onSelected: ref.read(musicLibraryProvider.notifier).setSortMode,
               itemBuilder: (context) => const [
-                PopupMenuItem(value: MusicSortMode.title, child: Text('Title')),
+                PopupMenuItem(
+                  value: MusicSortMode.title,
+                  child: Text('Title'),
+                ),
                 PopupMenuItem(
                   value: MusicSortMode.artist,
                   child: Text('Artist'),
                 ),
-                PopupMenuItem(value: MusicSortMode.album, child: Text('Album')),
+                PopupMenuItem(
+                  value: MusicSortMode.album,
+                  child: Text('Album'),
+                ),
                 PopupMenuItem(
                   value: MusicSortMode.duration,
                   child: Text('Duration'),
@@ -42,15 +48,17 @@ class LibraryPage extends ConsumerWidget {
           IconButton(
             tooltip: 'Refresh music',
             icon: const Icon(Icons.refresh),
-            onPressed: () => ref.read(musicLibraryProvider.notifier).refresh(),
+            onPressed: () =>
+                ref.read(musicLibraryProvider.notifier).refresh(),
           ),
         ],
       ),
       body: library.when(
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (error, _) => _LibraryError(
-          message: 'flute_rc_V1 could not scan your music library.\n$error',
-          onRetry: () => ref.read(musicLibraryProvider.notifier).refresh(),
+          message: 'Flute could not scan your music library.\n$error',
+          onRetry: () =>
+              ref.read(musicLibraryProvider.notifier).refresh(),
         ),
         data: (state) {
           if (state.permission == MusicPermissionState.denied) {
@@ -81,7 +89,8 @@ class LibraryPage extends ConsumerWidget {
           });
 
           return RefreshIndicator(
-            onRefresh: () => ref.read(musicLibraryProvider.notifier).refresh(),
+            onRefresh: () =>
+                ref.read(musicLibraryProvider.notifier).refresh(),
             child: ListView.builder(
               physics: const AlwaysScrollableScrollPhysics(),
               padding: const EdgeInsets.only(bottom: 96),
@@ -91,10 +100,8 @@ class LibraryPage extends ConsumerWidget {
                 final isFavorite = favorites.contains(song);
 
                 return Card(
-                  margin: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 4,
-                  ),
+                  margin:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                   child: ListTile(
                     leading: const Icon(Icons.music_note),
                     title: Text(
@@ -115,8 +122,9 @@ class LibraryPage extends ConsumerWidget {
                       icon: Icon(
                         isFavorite ? Icons.favorite : Icons.favorite_border,
                       ),
-                      onPressed: () =>
-                          ref.read(favoriteProvider.notifier).toggle(song),
+                      onPressed: () => ref
+                          .read(favoriteProvider.notifier)
+                          .toggle(song),
                     ),
                   ),
                 );
@@ -155,7 +163,7 @@ class _PermissionRequired extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             const Text(
-              'Allow flute_rc_V1 to read audio files stored on this device. flute_rc_V1 does not upload your music.',
+              'Allow Flute to read audio files stored on this device. Flute does not upload your music.',
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 24),

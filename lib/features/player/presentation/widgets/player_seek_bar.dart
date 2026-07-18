@@ -24,12 +24,15 @@ class PlayerSeekBar extends ConsumerWidget {
           onChanged: duration == Duration.zero
               ? null
               : (value) => ref
-                    .read(playbackControllerProvider)
-                    .seek(Duration(milliseconds: value.round())),
+                  .read(playbackControllerProvider)
+                  .seek(Duration(milliseconds: value.round())),
         ),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [Text(_format(position)), Text(_format(duration))],
+          children: [
+            Text(_format(position)),
+            Text(_format(duration)),
+          ],
         ),
       ],
     );

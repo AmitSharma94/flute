@@ -1,5 +1,5 @@
 name: flute_rc_v1
-description: "flute_rc_V1 - an offline music player by Amit Sharma."
+description: "flute - a local and online music player."
 publish_to: 'none'
 
 version: 1.0.0-rc.1+1

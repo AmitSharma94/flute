@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../../shared/widgets/song_tile.dart';
+import '../../../player/providers/playback_controller.dart';
 import '../../providers/favorite_provider.dart';
 
 class FavoritesPage extends ConsumerWidget {
@@ -12,21 +14,23 @@ class FavoritesPage extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(title: const Text('Favorites')),
-
       body: favorites.isEmpty
-          ? const Center(child: Text('No favorites yet'))
+          ? const Center(
+              child: Text('No favorites yet'),
+            )
           : ListView.builder(
+              padding: const EdgeInsets.only(bottom: 120),
               itemCount: favorites.length,
-
               itemBuilder: (context, index) {
                 final song = favorites[index];
-
-                return ListTile(
-                  leading: const Icon(Icons.favorite),
-
-                  title: Text(song.title),
-
-                  subtitle: Text(song.artist),
+                return SongTile(
+                  song: song,
+                  isFavorite: true,
+                  onFavorite: () =>
+                      ref.read(favoriteProvider.notifier).toggle(song),
+                  onTap: () => ref
+                      .read(playbackControllerProvider)
+                      .setQueueAndPlay(favorites, index),
                 );
               },
             ),

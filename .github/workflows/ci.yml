@@ -1,75 +1,42 @@
 name: Flutter CI
 
 on:
-  push:
-    branches:
-      - main
-      - develop
-      - stable
-      - "feature/**"
-      - "fix/**"
-      - "release/**"
   pull_request:
-    branches:
-      - main
-      - develop
-      - stable
+    branches: [main, develop]
+  push:
+    branches: [main, develop, "feature/**", "fix/**", "release/**"]
 
 permissions:
-  contents: write
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
-  format:
-    name: Format Dart code
+  quality:
+    name: Analyze, Test, Build
     runs-on: ubuntu-latest
+    timeout-minutes: 30
 
     steps:
-      - name: Checkout repository
+      - name: Checkout
         uses: actions/checkout@v4
-        with:
-          ref: ${{ github.head_ref || github.ref_name }}
-          token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Set up Flutter
+      - name: Set up Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Set up Flutter stable
         uses: subosito/flutter-action@v2
         with:
           channel: stable
           cache: true
 
-      - name: Install dependencies
-        run: flutter pub get
-
-      - name: Format project
-        run: dart format lib test
-
-      - name: Commit formatting changes
-        run: |
-          if [[ -n "$(git status --porcelain)" ]]; then
-            git config user.name "github-actions[bot]"
-            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-            git add lib test
-            git commit -m "style: apply Dart formatting [skip ci]"
-            git push
-          else
-            echo "No formatting changes required."
-          fi
-
-  analyze-and-test:
-    name: Analyze and test
-    needs: format
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout updated repository
-        uses: actions/checkout@v4
-        with:
-          ref: ${{ github.head_ref || github.ref_name }}
-
-      - name: Set up Flutter
-        uses: subosito/flutter-action@v2
-        with:
-          channel: stable
-          cache: true
+      - name: Flutter version
+        run: flutter --version
 
       - name: Install dependencies
         run: flutter pub get
@@ -77,11 +44,11 @@ jobs:
       - name: Verify formatting
         run: dart format --output=none --set-exit-if-changed lib test
 
-      - name: Analyze project
+      - name: Analyze
         run: flutter analyze
 
-      - name: Run tests
-        run: flutter test
+      - name: Test
+        run: flutter test --coverage
 
       - name: Build debug APK
         run: flutter build apk --debug
@@ -89,5 +56,6 @@ jobs:
       - name: Upload debug APK
         uses: actions/upload-artifact@v4
         with:
-          name: flute-rc-v1-debug-apk
+          name: flute-debug-apk
           path: build/app/outputs/flutter-apk/app-debug.apk
+          retention-days: 7

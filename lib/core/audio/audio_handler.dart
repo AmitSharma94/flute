@@ -4,14 +4,18 @@ import '../../features/player/data/services/audio_player_service.dart';
 
 /// Legacy compatibility adapter.
 ///
-/// It delegates to flute_rc_V1's single [AudioPlayerService] instead of creating a
+/// It delegates to Flute's single [AudioPlayerService] instead of creating a
 /// second AudioPlayer instance.
 class FluteAudioHandler {
   FluteAudioHandler(this._service);
 
   final AudioPlayerService _service;
 
-  Future<void> playSong(String path, {String? title, String? artist}) =>
+  Future<void> playSong(
+    String path, {
+    String? title,
+    String? artist,
+  }) =>
       _service.loadAndPlay(path);
 
   Future<void> play() => _service.resume();

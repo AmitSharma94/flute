@@ -1,15 +1,22 @@
-# Online music integration
+# HQ Audio integration
 
-This build adds a private-use JioSaavn-compatible search and stream page.
-The configured default endpoint is an unofficial API and can stop working or
-change without notice. No offline downloading is implemented.
+The online tab uses the HQ Audio service at:
 
-Override the endpoint when running or building:
+- API base: `https://hqaudio.suvojeetsengupta.in`
+- Interactive documentation: `https://hqaudio.suvojeetsengupta.in/docs/`
+
+The client accepts `HQAUDIO_API_BASE_URL` and `HQAUDIO_SEARCH_PATH` through
+`--dart-define` so the endpoint can be changed without editing Dart source.
+
+Example:
 
 ```bash
-flutter run --dart-define=JIOSAAVN_API_BASE_URL=https://your-endpoint.example
+flutter run \
+  --dart-define=HQAUDIO_API_BASE_URL=https://hqaudio.suvojeetsengupta.in \
+  --dart-define=HQAUDIO_SEARCH_PATH=/search
 ```
 
-The app code and original interface may belong to the app owner. Music,
-artwork, metadata, artist names, and third-party services remain the property
-of their respective rights holders.
+The response parser supports common list wrappers (`data`, `results`, `songs`,
+`tracks`, and `items`) and common stream URL fields in both camelCase and
+snake_case. Online tracks are resolved again if a previously saved stream URL
+has expired.

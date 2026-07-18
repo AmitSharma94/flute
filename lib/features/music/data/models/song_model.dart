@@ -23,6 +23,28 @@ class FluteSong {
 
   bool get isOnline => source == FluteSongSource.online;
 
+  FluteSong copyWith({
+    String? id,
+    String? title,
+    String? artist,
+    String? album,
+    String? path,
+    int? duration,
+    FluteSongSource? source,
+    String? artworkUrl,
+  }) {
+    return FluteSong(
+      id: id ?? this.id,
+      title: title ?? this.title,
+      artist: artist ?? this.artist,
+      album: album ?? this.album,
+      path: path ?? this.path,
+      duration: duration ?? this.duration,
+      source: source ?? this.source,
+      artworkUrl: artworkUrl ?? this.artworkUrl,
+    );
+  }
+
   factory FluteSong.fromJson(Map<String, dynamic> json) {
     final sourceName = json['source']?.toString();
     return FluteSong(
@@ -40,15 +62,15 @@ class FluteSong {
   }
 
   Map<String, dynamic> toJson() => {
-    'id': id,
-    'title': title,
-    'artist': artist,
-    'album': album,
-    'path': path,
-    'duration': duration,
-    'source': source.name,
-    'artworkUrl': artworkUrl,
-  };
+        'id': id,
+        'title': title,
+        'artist': artist,
+        'album': album,
+        'path': path,
+        'duration': duration,
+        'source': source.name,
+        'artworkUrl': artworkUrl,
+      };
 
   static String _text(dynamic value, String fallback) {
     final text = value?.toString().trim();

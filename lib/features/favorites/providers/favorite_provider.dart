@@ -27,7 +27,7 @@ class FavoriteNotifier extends Notifier<List<FluteSong>> {
       final current = state;
       state = [
         ...current,
-        ...loaded.where((song) => current.every((item) => item.id != song.id)),
+        ...loaded.where((song) => current.every((item) => item != song)),
       ];
     } catch (_) {
       // Keep any in-memory changes if stored data is unavailable.
@@ -44,20 +44,17 @@ class FavoriteNotifier extends Notifier<List<FluteSong>> {
   }
 
   Future<void> removeUnavailable(Set<String> availableIds) async {
-    final cleaned = state
-        .where((song) => song.isOnline || availableIds.contains(song.id))
-        .toList();
+    final cleaned = state.where((song) => song.isOnline || availableIds.contains(song.id)).toList();
     if (cleaned.length == state.length) return;
     state = cleaned;
     await _persist();
   }
 
   Future<void> _persist() => StorageService.save(
-    StorageService.favoritesKey,
-    state.map((song) => song.toJson()).toList(),
-  );
+        StorageService.favoritesKey,
+        state.map((song) => song.toJson()).toList(),
+      );
 }
 
-final favoriteProvider = NotifierProvider<FavoriteNotifier, List<FluteSong>>(
-  FavoriteNotifier.new,
-);
+final favoriteProvider =
+    NotifierProvider<FavoriteNotifier, List<FluteSong>>(FavoriteNotifier.new);

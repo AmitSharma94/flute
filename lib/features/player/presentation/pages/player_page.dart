@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../favorites/providers/favorite_provider.dart';
 import '../../../music/presentation/widgets/song_artwork.dart';
 import '../../providers/current_song_provider.dart';
 import '../../providers/playback_controller.dart';
@@ -25,6 +26,8 @@ class PlayerPage extends ConsumerWidget {
     final shuffle = ref.watch(shuffleProvider);
     final repeat = ref.watch(repeatProvider);
     final controller = ref.read(playbackControllerProvider);
+    final favorites = ref.watch(favoriteProvider);
+    final isFavorite = favorites.contains(song);
 
     return Scaffold(
       body: SafeArea(
@@ -54,6 +57,16 @@ class PlayerPage extends ConsumerWidget {
                       ),
                     ),
                     IconButton(
+                      tooltip: isFavorite
+                          ? 'Remove from favorites'
+                          : 'Add to favorites',
+                      icon: Icon(
+                        isFavorite ? Icons.favorite : Icons.favorite_border,
+                      ),
+                      onPressed: () =>
+                          ref.read(favoriteProvider.notifier).toggle(song),
+                    ),
+                    IconButton(
                       tooltip: 'Queue',
                       icon: const Icon(Icons.queue_music),
                       onPressed: () => Navigator.push(
@@ -75,11 +88,7 @@ class PlayerPage extends ConsumerWidget {
                       tag: song.id,
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(24),
-                        child: SongArtwork(
-                          id: song.id,
-                          imageUrl: song.artworkUrl,
-                          size: 320,
-                        ),
+                        child: SongArtwork(id: song.id, imageUrl: song.artworkUrl, size: 320),
                       ),
                     ),
                   ),
@@ -132,8 +141,7 @@ class PlayerPage extends ConsumerWidget {
                             ? Theme.of(context).colorScheme.primary
                             : Theme.of(context).colorScheme.onSurfaceVariant,
                       ),
-                      onPressed: () =>
-                          ref.read(shuffleProvider.notifier).toggle(),
+                      onPressed: controller.toggleShuffle,
                     ),
                     IconButton(
                       tooltip: 'Previous',
@@ -173,8 +181,7 @@ class PlayerPage extends ConsumerWidget {
                             ? Theme.of(context).colorScheme.onSurfaceVariant
                             : Theme.of(context).colorScheme.primary,
                       ),
-                      onPressed: () =>
-                          ref.read(repeatProvider.notifier).toggle(),
+                      onPressed: controller.toggleRepeat,
                     ),
                   ],
                 ),

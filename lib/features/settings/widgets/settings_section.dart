@@ -3,12 +3,20 @@ import 'package:flutter/material.dart';
 class SettingsSection extends StatelessWidget {
   final String title;
 
-  const SettingsSection({super.key, required this.title});
+  const SettingsSection({
+    super.key,
+    required this.title,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(20, 28, 20, 12),
+      padding: const EdgeInsets.fromLTRB(
+        20,
+        28,
+        20,
+        12,
+      ),
       child: Row(
         children: [
           Container(
@@ -22,10 +30,13 @@ class SettingsSection extends StatelessWidget {
           const SizedBox(width: 10),
           Text(
             title,
-            style: Theme.of(context).textTheme.titleLarge?.copyWith(
-              fontWeight: FontWeight.w700,
-              letterSpacing: 0.2,
-            ),
+            style: Theme.of(context)
+                .textTheme
+                .titleLarge
+                ?.copyWith(
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: 0.2,
+                ),
           ),
         ],
       ),

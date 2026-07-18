@@ -1,79 +1,40 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../../shared/widgets/song_tile.dart';
+import '../../../player/providers/playback_controller.dart';
 import '../../providers/history_provider.dart';
 
 class RecentlyPlayed extends ConsumerWidget {
-  const RecentlyPlayed({super.key});
+  const RecentlyPlayed({super.key, this.limit});
+
+  final int? limit;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final history = ref.watch(historyProvider);
+    final songs = limit == null ? history : history.take(limit!).toList();
 
-    if (history.isEmpty) {
-      return const SizedBox.shrink();
+    if (songs.isEmpty) {
+      return const Padding(
+        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 24),
+        child: Center(child: Text('Play a song to build your history.')),
+      );
     }
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-
-      children: [
-        const Padding(
-          padding: EdgeInsets.all(16),
-
-          child: Text(
-            'Recently Played',
-
-            style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-          ),
-        ),
-
-        SizedBox(
-          height: 120,
-
-          child: ListView.builder(
-            scrollDirection: Axis.horizontal,
-
-            itemCount: history.length,
-
-            itemBuilder: (context, index) {
-              final song = history[index];
-
-              return Card(
-                child: Container(
-                  width: 150,
-
-                  padding: const EdgeInsets.all(12),
-
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-
-                    children: [
-                      const Icon(Icons.music_note, size: 40),
-
-                      Text(
-                        song.title,
-
-                        maxLines: 1,
-
-                        overflow: TextOverflow.ellipsis,
-                      ),
-
-                      Text(
-                        song.artist,
-
-                        maxLines: 1,
-
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ],
-                  ),
-                ),
-              );
-            },
-          ),
-        ),
-      ],
+    return ListView.builder(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      itemCount: songs.length,
+      itemBuilder: (context, index) {
+        final song = songs[index];
+        return SongTile(
+          song: song,
+          onTap: () => ref
+              .read(playbackControllerProvider)
+              .setQueueAndPlay(songs, index),
+        );
+      },
     );
   }
 }

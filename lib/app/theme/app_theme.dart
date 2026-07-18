@@ -31,7 +31,9 @@ class AppTheme {
     cardTheme: CardThemeData(
       elevation: 0,
       color: const Color(0xFFF5F5F5),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(20),
+      ),
     ),
 
     listTileTheme: const ListTileThemeData(
@@ -43,7 +45,9 @@ class AppTheme {
       backgroundColor: Colors.white,
       indicatorColor: _seed.withValues(alpha: 0.15),
       labelTextStyle: const WidgetStatePropertyAll(
-        TextStyle(fontWeight: FontWeight.w600),
+        TextStyle(
+          fontWeight: FontWeight.w600,
+        ),
       ),
     ),
 
@@ -58,7 +62,9 @@ class AppTheme {
 
     snackBarTheme: SnackBarThemeData(
       behavior: SnackBarBehavior.floating,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+      ),
     ),
   );
 
@@ -88,7 +94,9 @@ class AppTheme {
     cardTheme: CardThemeData(
       elevation: 0,
       color: const Color(0xFF1F1F1F),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(20),
+      ),
     ),
 
     listTileTheme: const ListTileThemeData(
@@ -100,7 +108,9 @@ class AppTheme {
       backgroundColor: const Color(0xFF181818),
       indicatorColor: _seed.withValues(alpha: 0.30),
       labelTextStyle: const WidgetStatePropertyAll(
-        TextStyle(fontWeight: FontWeight.w600),
+        TextStyle(
+          fontWeight: FontWeight.w600,
+        ),
       ),
     ),
 
@@ -115,7 +125,9 @@ class AppTheme {
 
     snackBarTheme: SnackBarThemeData(
       behavior: SnackBarBehavior.floating,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+      ),
     ),
   );
 }

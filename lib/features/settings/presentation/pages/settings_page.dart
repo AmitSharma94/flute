@@ -43,8 +43,11 @@ class SettingsPage extends ConsumerWidget {
                     icon: _themeIcon(settings.themeMode),
                     title: 'Theme',
                     subtitle: _themeLabel(settings.themeMode),
-                    onTap: () =>
-                        _showThemePicker(context, ref, settings.themeMode),
+                    onTap: () => _showThemePicker(
+                      context,
+                      ref,
+                      settings.themeMode,
+                    ),
                   ),
                 ],
               ),
@@ -83,10 +86,10 @@ class SettingsPage extends ConsumerWidget {
                       await ref
                           .read(settingsProvider.notifier)
                           .setRepeatDefault(value);
-                      ref
-                          .read(repeatProvider.notifier)
-                          .setMode(
-                            value ? FluteRepeatMode.all : FluteRepeatMode.off,
+                      ref.read(repeatProvider.notifier).setMode(
+                            value
+                                ? FluteRepeatMode.all
+                                : FluteRepeatMode.off,
                           );
                     },
                   ),
@@ -175,9 +178,9 @@ class SettingsPage extends ConsumerWidget {
             children: [
               Text(
                 'Choose theme',
-                style: Theme.of(
-                  context,
-                ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700),
+                style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                      fontWeight: FontWeight.w700,
+                    ),
               ),
               const SizedBox(height: 8),
               RadioGroup<ThemeMode>(
@@ -247,9 +250,9 @@ class SettingsPage extends ConsumerWidget {
     ref.read(repeatProvider.notifier).setMode(FluteRepeatMode.off);
 
     if (context.mounted) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('Settings reset')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Settings reset')),
+      );
     }
   }
 }

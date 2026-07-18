@@ -1,4 +1,4 @@
-# flute_rc_V1
+# flute
 
 A private offline music player built with Flutter.
 
