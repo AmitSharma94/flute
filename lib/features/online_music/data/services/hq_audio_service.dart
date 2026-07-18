@@ -31,12 +31,11 @@ class HqAudioService {
 
     Object? lastError;
     final candidates = <String>{
-      _searchPath,
-      '/search',
-      '/api/search',
-      '/api/v1/search',
-      '/api/search/songs',
-    };
+  _searchPath,
+  '/api/search',
+  '/api/v1/search',
+  '/api/search/songs',
+};
 
     for (final path in candidates) {
       for (final parameterName in const ['q', 'query']) {
