@@ -11,6 +11,12 @@ class QueueNotifier extends Notifier<List<FluteSong>> {
   void setQueue(List<FluteSong> songs) {
     state = songs;
   }
+
+  void removeSong(String songId) {
+    state = List.unmodifiable(
+      state.where((song) => song.id != songId),
+    );
+  }
 }
 
 final queueProvider = NotifierProvider<QueueNotifier, List<FluteSong>>(

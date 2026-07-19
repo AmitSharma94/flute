@@ -8,6 +8,7 @@ import '../../providers/playback_controller.dart';
 import '../../providers/player_state_provider.dart';
 import '../../providers/repeat/repeat_provider.dart';
 import '../../providers/shuffle/shuffle_provider.dart';
+import '../../../../shared/widgets/delete_song_action.dart';
 import '../widgets/player_seek_bar.dart';
 import 'queue/queue_page.dart';
 
@@ -73,6 +74,42 @@ class PlayerPage extends ConsumerWidget {
                         context,
                         MaterialPageRoute(builder: (_) => const QueuePage()),
                       ),
+                    ),
+                    PopupMenuButton<String>(
+                      tooltip: 'More actions',
+                      onSelected: (value) async {
+                        if (value != 'delete') {
+                          return;
+                        }
+                        final deleted = await confirmAndDeleteSong(
+                          context: context,
+                          ref: ref,
+                          song: song,
+                        );
+                        if (deleted && context.mounted) {
+                          Navigator.maybePop(context);
+                        }
+                      },
+                      itemBuilder: (context) => [
+                        PopupMenuItem<String>(
+                          value: 'delete',
+                          child: Row(
+                            children: [
+                              Icon(
+                                Icons.delete_outline_rounded,
+                                color: Theme.of(context).colorScheme.error,
+                              ),
+                              const SizedBox(width: 12),
+                              Text(
+                                'Delete from device',
+                                style: TextStyle(
+                                  color: Theme.of(context).colorScheme.error,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 ),

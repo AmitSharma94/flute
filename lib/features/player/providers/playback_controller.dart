@@ -273,6 +273,43 @@ class PlaybackController {
     }
   }
 
+  Future<void> handleDeletedSong(FluteSong deletedSong) async {
+    final oldQueue = ref.read(queueProvider);
+    final oldIndex = oldQueue.indexWhere((song) => song.id == deletedSong.id);
+    final wasCurrent = ref.read(currentSongProvider)?.id == deletedSong.id;
+
+    ref.read(queueProvider.notifier).removeSong(deletedSong.id);
+    final updatedQueue = ref.read(queueProvider);
+
+    if (!wasCurrent) {
+      final current = ref.read(currentSongProvider);
+      final currentIndex = current == null
+          ? -1
+          : updatedQueue.indexWhere((song) => song.id == current.id);
+      ref.read(queueIndexProvider.notifier).setIndex(currentIndex);
+      await ref
+          .read(audioHandlerProvider)
+          .setFluteQueue(updatedQueue, currentIndex: currentIndex);
+      return;
+    }
+
+    await ref.read(audioPlayerProvider).stop();
+
+    if (updatedQueue.isEmpty) {
+      ref.read(currentSongProvider.notifier).clear();
+      ref.read(queueIndexProvider.notifier).setIndex(-1);
+      await ref
+          .read(audioHandlerProvider)
+          .setFluteQueue(const <FluteSong>[], currentIndex: -1);
+      return;
+    }
+
+    final nextIndex = oldIndex < 0
+        ? 0
+        : oldIndex.clamp(0, updatedQueue.length - 1).toInt();
+    await playIndex(nextIndex);
+  }
+
   Future<void> _playMediaId(String mediaId) async {
     final library = ref.read(queueProvider);
     var songs = library;

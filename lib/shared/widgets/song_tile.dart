@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../features/music/data/models/song_model.dart';
 import '../../features/music/presentation/widgets/song_artwork.dart';
 import '../../features/ringtone/data/ringtone_service.dart';
+import '../../features/ringtone/presentation/pages/ringtone_crop_page.dart';
+import 'delete_song_action.dart';
 
-class SongTile extends StatelessWidget {
+class SongTile extends ConsumerWidget {
   const SongTile({
     super.key,
     required this.song,
@@ -21,10 +24,10 @@ class SongTile extends StatelessWidget {
   final Widget? trailing;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return ListTile(
       onTap: onTap,
-      onLongPress: () => _showSongActions(context),
+      onLongPress: () => _showSongActions(context, ref),
       leading: ClipRRect(
         borderRadius: BorderRadius.circular(10),
         child: SongArtwork(id: song.id, size: 55),
@@ -36,7 +39,7 @@ class SongTile extends StatelessWidget {
           (onFavorite == null
               ? IconButton(
                   tooltip: 'More actions',
-                  onPressed: () => _showSongActions(context),
+                  onPressed: () => _showSongActions(context, ref),
                   icon: const Icon(Icons.more_vert_rounded),
                 )
               : Row(
@@ -53,7 +56,7 @@ class SongTile extends StatelessWidget {
                     ),
                     IconButton(
                       tooltip: 'More actions',
-                      onPressed: () => _showSongActions(context),
+                      onPressed: () => _showSongActions(context, ref),
                       icon: const Icon(Icons.more_vert_rounded),
                     ),
                   ],
@@ -61,7 +64,7 @@ class SongTile extends StatelessWidget {
     );
   }
 
-  Future<void> _showSongActions(BuildContext context) async {
+  Future<void> _showSongActions(BuildContext context, WidgetRef ref) async {
     final type = await showModalBottomSheet<String>(
       context: context,
       showDragHandle: true,
@@ -70,8 +73,14 @@ class SongTile extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             ListTile(
+              leading: const Icon(Icons.content_cut_rounded),
+              title: const Text('Create 30s ringtone'),
+              subtitle: const Text('Choose and preview a 30-second section'),
+              onTap: () => Navigator.pop(context, 'crop_ringtone'),
+            ),
+            ListTile(
               leading: const Icon(Icons.phone_in_talk_rounded),
-              title: const Text('Set as ringtone'),
+              title: const Text('Set full song as ringtone'),
               onTap: () => Navigator.pop(context, 'ringtone'),
             ),
             ListTile(
@@ -84,11 +93,39 @@ class SongTile extends StatelessWidget {
               title: const Text('Set as alarm sound'),
               onTap: () => Navigator.pop(context, 'alarm'),
             ),
+            ListTile(
+              leading: Icon(
+                Icons.delete_outline_rounded,
+                color: Theme.of(context).colorScheme.error,
+              ),
+              title: Text(
+                'Delete from device',
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.error,
+                ),
+              ),
+              subtitle: const Text('Permanently removes the local audio file'),
+              onTap: () => Navigator.pop(context, 'delete'),
+            ),
           ],
         ),
       ),
     );
     if (type == null || !context.mounted) return;
+
+    if (type == 'delete') {
+      await confirmAndDeleteSong(context: context, ref: ref, song: song);
+      return;
+    }
+
+    if (type == 'crop_ringtone') {
+      await Navigator.of(context).push<void>(
+        MaterialPageRoute<void>(
+          builder: (_) => RingtoneCropPage(song: song),
+        ),
+      );
+      return;
+    }
 
     final service = RingtoneService();
     if (!await service.canWriteSettings()) {

@@ -11,6 +11,10 @@ class CurrentSongNotifier extends Notifier<FluteSong?> {
   void setSong(FluteSong song) {
     state = song;
   }
+
+  void clear() {
+    state = null;
+  }
 }
 
 final currentSongProvider = NotifierProvider<CurrentSongNotifier, FluteSong?>(
