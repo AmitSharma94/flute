@@ -1,23 +1,23 @@
-name: Flute Release Candidate Build
+```yaml
+name: Flute Release Build
 
 on:
   workflow_dispatch:
   push:
-    branches:
-      - stable
-      - "release/**"
+    tags:
+      - "v*"
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   build:
-    name: Build release APK and AAB
+    name: Build and publish Flute
     runs-on: ubuntu-latest
     timeout-minutes: 45
 
     steps:
-      - name: Checkout repository
+      - name: Checkout tagged commit
         uses: actions/checkout@v4
 
       - name: Set up Java 17
@@ -32,28 +32,50 @@ jobs:
           channel: stable
           cache: true
 
+      - name: Display tool versions
+        run: |
+          flutter --version
+          dart --version
+          java -version
+
       - name: Install dependencies
         run: flutter pub get
 
-      - name: Format Dart files
-        run: dart format lib test
+      - name: Verify Dart formatting
+        run: dart format --output=none --set-exit-if-changed lib test
 
-      - name: Analyze
+      - name: Analyze project
         run: flutter analyze
 
-      - name: Test
+      - name: Run tests
         run: flutter test
 
       - name: Restore Gradle wrapper if missing
+        shell: bash
         run: |
-          if [ ! -f android/gradlew ] || [ ! -f android/gradle/wrapper/gradle-wrapper.jar ]; then
-            flutter create --platforms=android /tmp/flute_wrapper
+          if [ ! -f android/gradlew ] || \
+             [ ! -f android/gradle/wrapper/gradle-wrapper.jar ]; then
+            echo "Gradle wrapper is missing. Restoring it from a temporary Flutter project."
+
+            flutter create \
+              --platforms=android \
+              --project-name=flute_wrapper \
+              /tmp/flute_wrapper
+
             cp /tmp/flute_wrapper/android/gradlew android/gradlew
             cp /tmp/flute_wrapper/android/gradlew.bat android/gradlew.bat
+
             mkdir -p android/gradle/wrapper
-            cp /tmp/flute_wrapper/android/gradle/wrapper/gradle-wrapper.jar android/gradle/wrapper/
-            cp /tmp/flute_wrapper/android/gradle/wrapper/gradle-wrapper.properties android/gradle/wrapper/
+
+            cp \
+              /tmp/flute_wrapper/android/gradle/wrapper/gradle-wrapper.jar \
+              android/gradle/wrapper/gradle-wrapper.jar
+
+            cp \
+              /tmp/flute_wrapper/android/gradle/wrapper/gradle-wrapper.properties \
+              android/gradle/wrapper/gradle-wrapper.properties
           fi
+
           chmod +x android/gradlew
 
       - name: Build release APK
@@ -62,27 +84,59 @@ jobs:
       - name: Build release App Bundle
         run: flutter build appbundle --release
 
-      - name: Rename build artifacts
+      - name: Prepare release artifacts
+        shell: bash
         run: |
           mkdir -p release-artifacts
-          cp build/app/outputs/flutter-apk/app-release.apk \
-            release-artifacts/flute-release.apk
-          cp build/app/outputs/bundle/release/app-release.aab \
-            release-artifacts/flute-release.aab
-          ls -lh release-artifacts
 
-      - name: Upload release APK
+          VERSION="${GITHUB_REF_NAME:-manual-build}"
+
+          cp \
+            build/app/outputs/flutter-apk/app-release.apk \
+            "release-artifacts/flute-${VERSION}.apk"
+
+          cp \
+            build/app/outputs/bundle/release/app-release.aab \
+            "release-artifacts/flute-${VERSION}.aab"
+
+          cd release-artifacts
+          sha256sum "flute-${VERSION}.apk" > "flute-${VERSION}.apk.sha256"
+          sha256sum "flute-${VERSION}.aab" > "flute-${VERSION}.aab.sha256"
+
+          ls -lh
+
+      - name: Upload APK workflow artifact
         uses: actions/upload-artifact@v4
         with:
-          name: flute-release-apk
-          path: release-artifacts/flute-release.apk
+          name: flute-${{ github.ref_name }}-apk
+          path: |
+            release-artifacts/*.apk
+            release-artifacts/*.apk.sha256
           if-no-files-found: error
           retention-days: 30
 
-      - name: Upload release App Bundle
+      - name: Upload AAB workflow artifact
         uses: actions/upload-artifact@v4
         with:
-          name: flute-release-aab
-          path: release-artifacts/flute-release.aab
+          name: flute-${{ github.ref_name }}-aab
+          path: |
+            release-artifacts/*.aab
+            release-artifacts/*.aab.sha256
           if-no-files-found: error
           retention-days: 30
+
+      - name: Create GitHub Release
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v3
+        with:
+          name: Flute ${{ github.ref_name }}
+          tag_name: ${{ github.ref_name }}
+          generate_release_notes: true
+          make_latest: true
+          prerelease: false
+          fail_on_unmatched_files: true
+          files: |
+            release-artifacts/*.apk
+            release-artifacts/*.aab
+            release-artifacts/*.sha256
+```
