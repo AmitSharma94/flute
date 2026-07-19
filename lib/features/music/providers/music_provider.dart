@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../core/audio/providers/audio_handler_provider.dart';
 import '../data/models/song_model.dart';
 import '../data/services/audio_scanner_service.dart';
 
@@ -61,6 +62,7 @@ class MusicLibraryNotifier extends AsyncNotifier<MusicLibraryState> {
     }
 
     final songs = await _scanner.getSongs();
+    await ref.read(audioHandlerProvider).setLibrary(songs);
     return MusicLibraryState(
       songs: _sortSongs(songs, sortMode),
       permission: MusicPermissionState.granted,

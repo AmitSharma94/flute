@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/constants/app_info.dart';
+import '../../../equalizer/presentation/pages/equalizer_page.dart';
 import '../../../player/providers/repeat/repeat_provider.dart';
 import '../../../player/providers/shuffle/shuffle_provider.dart';
 import '../../providers/settings_provider.dart';
@@ -99,6 +100,27 @@ class SettingsPage extends ConsumerWidget {
                     onChanged: (value) => ref
                         .read(settingsProvider.notifier)
                         .setKeepScreenAwake(value),
+                  ),
+                ],
+              ),
+              const SettingsSection(title: 'Audio'),
+              SettingsCard(
+                children: [
+                  SettingsTile(
+                    icon: Icons.equalizer_rounded,
+                    title: 'Equalizer',
+                    subtitle: 'Presets and custom frequency bands',
+                    onTap: () => Navigator.of(context).push(
+                      MaterialPageRoute<void>(
+                        builder: (_) => const EqualizerPage(),
+                      ),
+                    ),
+                  ),
+                  const Divider(height: 1, indent: 76),
+                  const SettingsTile(
+                    icon: Icons.directions_car_filled_rounded,
+                    title: 'Android Auto',
+                    subtitle: 'Browse and control your offline library in the car',
                   ),
                 ],
               ),

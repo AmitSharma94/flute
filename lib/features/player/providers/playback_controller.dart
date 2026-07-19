@@ -8,6 +8,7 @@ import 'package:just_audio/just_audio.dart';
 import '../../../core/audio/providers/audio_handler_provider.dart';
 import '../../history/providers/history_provider.dart';
 import '../../music/data/models/song_model.dart';
+import '../../music/providers/music_provider.dart';
 import '../../settings/providers/settings_provider.dart';
 import '../data/services/playback_session_service.dart';
 import 'current_song_provider.dart';
@@ -55,6 +56,7 @@ class PlaybackController {
       repeat: _setSystemRepeat,
       shuffle: _setSystemShuffle,
       queueItem: playIndex,
+      mediaId: _playMediaId,
     );
 
     _playerSubscription = service.playerStateStream.listen(_onPlayerState);
@@ -269,6 +271,18 @@ class PlaybackController {
       await service.restart();
       await _saveSession(position: Duration.zero);
     }
+  }
+
+  Future<void> _playMediaId(String mediaId) async {
+    final library = ref.read(queueProvider);
+    var songs = library;
+    if (songs.isEmpty) {
+      final libraryState = ref.read(musicLibraryProvider).asData?.value;
+      songs = libraryState?.songs ?? const <FluteSong>[];
+    }
+    final index = songs.indexWhere((song) => song.id == mediaId);
+    if (index < 0) return;
+    await setQueueAndPlay(songs, index);
   }
 
   Future<void> _systemPlay() async {

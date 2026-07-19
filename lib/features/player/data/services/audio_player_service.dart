@@ -13,6 +13,9 @@ class AudioPlayerService {
   Stream<Duration> get positionStream => player.positionStream;
   Stream<Duration?> get durationStream => player.durationStream;
   Stream<PlaybackEvent> get playbackEventStream => player.playbackEventStream;
+  Stream<int?> get audioSessionIdStream => player.androidAudioSessionIdStream;
+
+  int? get audioSessionId => player.androidAudioSessionId;
 
   Duration get position => player.position;
   Duration? get duration => player.duration;

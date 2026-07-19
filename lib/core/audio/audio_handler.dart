@@ -39,10 +39,17 @@ class FluteAudioHandler extends BaseAudioHandler
   Future<void> Function(AudioServiceRepeatMode mode)? onRepeatRequested;
   Future<void> Function(AudioServiceShuffleMode mode)? onShuffleRequested;
   Future<void> Function(int index)? onQueueItemRequested;
+  Future<void> Function(String mediaId)? onMediaIdRequested;
 
   late final StreamSubscription<PlaybackEvent> _eventSubscription;
   late final StreamSubscription<PlayerState> _stateSubscription;
   int _queueIndex = 0;
+  List<FluteSong> _library = const [];
+
+  static const String _rootId = 'flute_root';
+  static const String _songsId = 'flute_songs';
+  static const String _albumsId = 'flute_albums';
+  static const String _artistsId = 'flute_artists';
 
   void bind({
     required Future<void> Function() play,
@@ -54,6 +61,7 @@ class FluteAudioHandler extends BaseAudioHandler
     required Future<void> Function(AudioServiceRepeatMode mode) repeat,
     required Future<void> Function(AudioServiceShuffleMode mode) shuffle,
     required Future<void> Function(int index) queueItem,
+    required Future<void> Function(String mediaId) mediaId,
   }) {
     onPlayRequested = play;
     onPauseRequested = pause;
@@ -64,6 +72,7 @@ class FluteAudioHandler extends BaseAudioHandler
     onRepeatRequested = repeat;
     onShuffleRequested = shuffle;
     onQueueItemRequested = queueItem;
+    onMediaIdRequested = mediaId;
   }
 
   void unbind() {
@@ -76,6 +85,117 @@ class FluteAudioHandler extends BaseAudioHandler
     onRepeatRequested = null;
     onShuffleRequested = null;
     onQueueItemRequested = null;
+    onMediaIdRequested = null;
+  }
+
+
+  Future<void> setLibrary(List<FluteSong> songs) async {
+    _library = List.unmodifiable(songs);
+    await notifyChildrenChanged(_rootId);
+    await notifyChildrenChanged(_songsId);
+    await notifyChildrenChanged(_albumsId);
+    await notifyChildrenChanged(_artistsId);
+  }
+
+  @override
+  Future<List<MediaItem>> getChildren(
+    String parentMediaId, [
+    Map<String, dynamic>? options,
+  ]) async {
+    switch (parentMediaId) {
+      case AudioService.browsableRootId:
+      case _rootId:
+        return const <MediaItem>[
+          MediaItem(id: _songsId, title: 'Songs', playable: false),
+          MediaItem(id: _albumsId, title: 'Albums', playable: false),
+          MediaItem(id: _artistsId, title: 'Artists', playable: false),
+        ];
+      case _songsId:
+        return _library.map(_toMediaItem).toList(growable: false);
+      case _albumsId:
+        final albums = <String, List<FluteSong>>{};
+        for (final song in _library) {
+          albums.putIfAbsent(song.album, () => <FluteSong>[]).add(song);
+        }
+        return albums.entries
+            .map(
+              (entry) => MediaItem(
+                id: 'album:${Uri.encodeComponent(entry.key)}',
+                title: entry.key,
+                displaySubtitle: '${entry.value.length} songs',
+                playable: false,
+              ),
+            )
+            .toList(growable: false);
+      case _artistsId:
+        final artists = <String, List<FluteSong>>{};
+        for (final song in _library) {
+          artists.putIfAbsent(song.artist, () => <FluteSong>[]).add(song);
+        }
+        return artists.entries
+            .map(
+              (entry) => MediaItem(
+                id: 'artist:${Uri.encodeComponent(entry.key)}',
+                title: entry.key,
+                displaySubtitle: '${entry.value.length} songs',
+                playable: false,
+              ),
+            )
+            .toList(growable: false);
+      default:
+        if (parentMediaId.startsWith('album:')) {
+          final album = Uri.decodeComponent(parentMediaId.substring(6));
+          return _library
+              .where((song) => song.album == album)
+              .map(_toMediaItem)
+              .toList(growable: false);
+        }
+        if (parentMediaId.startsWith('artist:')) {
+          final artist = Uri.decodeComponent(parentMediaId.substring(7));
+          return _library
+              .where((song) => song.artist == artist)
+              .map(_toMediaItem)
+              .toList(growable: false);
+        }
+        return const <MediaItem>[];
+    }
+  }
+
+  @override
+  Future<void> playFromMediaId(
+    String mediaId, [
+    Map<String, dynamic>? extras,
+  ]) async {
+    if (onMediaIdRequested != null) {
+      await onMediaIdRequested!(mediaId);
+      return;
+    }
+    for (final song in _library) {
+      if (song.id == mediaId) {
+        await service.loadAndPlay(song.path);
+        mediaItem.add(_toMediaItem(song));
+        return;
+      }
+    }
+  }
+
+  @override
+  Future<List<MediaItem>> search(
+    String query, [
+    Map<String, dynamic>? extras,
+  ]) async {
+    final normalized = query.trim().toLowerCase();
+    if (normalized.isEmpty) return const <MediaItem>[];
+    return _library
+        .where(
+          (song) =>
+              song.title.toLowerCase().contains(normalized) ||
+              song.artist.toLowerCase().contains(normalized) ||
+              song.album.toLowerCase().contains(normalized),
+        )
+        .map(_toMediaItem)
+        .take(100)
+        .toList(growable: false);
   }
 
   Future<void> setFluteQueue(
