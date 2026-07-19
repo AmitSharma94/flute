@@ -29,7 +29,6 @@ class MusicCard extends StatelessWidget {
               borderRadius: BorderRadius.circular(18),
               child: SongArtwork(
                 id: song.id,
-                imageUrl: song.artworkUrl,
                 size: size,
               ),
             ),

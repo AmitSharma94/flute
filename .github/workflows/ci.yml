@@ -63,7 +63,7 @@ jobs:
 
       - name: Restore Gradle wrapper if missing
         run: |
-          if [ ! -f android/gradlew ]; then
+          if [ ! -f android/gradlew ] || [ ! -f android/gradle/wrapper/gradle-wrapper.jar ]; then
             flutter create --platforms=android /tmp/flute_wrapper
             cp /tmp/flute_wrapper/android/gradlew android/gradlew
             cp /tmp/flute_wrapper/android/gradlew.bat android/gradlew.bat
@@ -74,8 +74,7 @@ jobs:
           chmod +x android/gradlew
 
       - name: Build release APK
-        working-directory: android
-        run: ./gradlew assembleRelease --stacktrace
+        run: flutter build apk --release
 
       - name: Find and rename APK
         run: |

@@ -70,7 +70,7 @@ class SettingsHeader extends StatelessWidget {
             const SizedBox(height: 8),
 
             Text(
-              'Local and Online Music Experience',
+              'Offline Music Player',
               textAlign: TextAlign.center,
               style: Theme.of(context).textTheme.bodyLarge,
             ),

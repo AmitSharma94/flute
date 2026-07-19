@@ -8,7 +8,6 @@ import 'package:just_audio/just_audio.dart';
 import '../../../core/audio/providers/audio_handler_provider.dart';
 import '../../history/providers/history_provider.dart';
 import '../../music/data/models/song_model.dart';
-import '../../online_music/data/services/hq_audio_service.dart';
 import '../../settings/providers/settings_provider.dart';
 import '../data/services/playback_session_service.dart';
 import 'current_song_provider.dart';
@@ -120,36 +119,11 @@ class PlaybackController {
     if (queue.isEmpty || index < 0 || index >= queue.length) return;
 
     await _runLocked(() async {
-      var song = queue[index];
+      final song = queue[index];
       ref.read(playbackErrorProvider.notifier).clear();
 
       try {
-        if (song.isOnline && !song.path.startsWith('http')) {
-          final streamUrl = await ref
-              .read(hqAudioServiceProvider)
-              .resolveStreamUrl(song);
-          song = song.copyWith(path: streamUrl);
-          final updatedQueue = [...queue]..[index] = song;
-          ref
-              .read(queueProvider.notifier)
-              .setQueue(List.unmodifiable(updatedQueue));
-        }
-
-        try {
-          await ref.read(audioPlayerProvider).loadAndPlay(song.path);
-        } catch (firstError) {
-          if (!song.isOnline) rethrow;
-
-          final refreshedUrl = await ref
-              .read(hqAudioServiceProvider)
-              .resolveStreamUrl(song, forceRefresh: true);
-          song = song.copyWith(path: refreshedUrl);
-          final updatedQueue = [...ref.read(queueProvider)]..[index] = song;
-          ref
-              .read(queueProvider.notifier)
-              .setQueue(List.unmodifiable(updatedQueue));
-          await ref.read(audioPlayerProvider).loadAndPlay(song.path);
-        }
+        await ref.read(audioPlayerProvider).loadAndPlay(song.path);
 
         ref.read(queueIndexProvider.notifier).setIndex(index);
         ref.read(currentSongProvider.notifier).setSong(song);
@@ -183,18 +157,7 @@ class PlaybackController {
             if (queue.isEmpty) return;
 
             final index = _safeCurrentIndex(queue);
-            var song = queue[index];
-            if (song.isOnline && !song.path.startsWith('http')) {
-              final streamUrl = await ref
-                  .read(hqAudioServiceProvider)
-                  .resolveStreamUrl(song);
-              song = song.copyWith(path: streamUrl);
-              final updatedQueue = [...queue]..[index] = song;
-              ref
-                  .read(queueProvider.notifier)
-                  .setQueue(List.unmodifiable(updatedQueue));
-            }
-
+            final song = queue[index];
             await service.loadAndPlay(song.path);
             ref.read(queueIndexProvider.notifier).setIndex(index);
             ref.read(currentSongProvider.notifier).setSong(song);
@@ -444,9 +407,6 @@ class PlaybackController {
     final value = error.toString().toLowerCase();
     if (value.contains('no longer exists') || value.contains('cannot find')) {
       return '“${song.title}” is no longer available on this device.';
-    }
-    if (song.isOnline || value.contains('network') || value.contains('http')) {
-      return 'Unable to stream “${song.title}”. Check your internet connection or try another result.';
     }
     if (value.contains('permission')) {
       return 'flute does not have permission to play “${song.title}”.';

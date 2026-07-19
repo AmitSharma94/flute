@@ -25,7 +25,7 @@ class SongTile extends StatelessWidget {
       onTap: onTap,
       leading: ClipRRect(
         borderRadius: BorderRadius.circular(10),
-        child: SongArtwork(id: song.id, imageUrl: song.artworkUrl, size: 55),
+        child: SongArtwork(id: song.id, size: 55),
       ),
       title: Text(song.title, maxLines: 1, overflow: TextOverflow.ellipsis),
       subtitle: Text(song.artist, maxLines: 1, overflow: TextOverflow.ellipsis),

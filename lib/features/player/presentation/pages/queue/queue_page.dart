@@ -31,7 +31,6 @@ class QueuePage extends ConsumerWidget {
                 return ListTile(
                   leading: SongArtwork(
                     id: song.id,
-                    imageUrl: song.artworkUrl,
 
                     size: 50,
                   ),

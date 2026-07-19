@@ -1,5 +1,5 @@
 name: flute_rc_v1
-description: "flute - a local and online music player."
+description: "flute - a private, offline music player for audio stored on your device."
 publish_to: 'none'
 
 version: 1.0.0-rc.1+1
@@ -14,7 +14,6 @@ dependencies:
   cupertino_icons: ^1.0.8
   flutter_riverpod: ^3.3.2
   go_router: ^17.3.0
-  google_fonts: ^8.1.0
   flutter_native_splash: ^2.4.8
 
   on_audio_query: ^2.9.0
@@ -28,7 +27,6 @@ dependencies:
   hive_flutter: ^1.1.0
   path_provider: ^2.1.6
   shared_preferences: ^2.5.5
-  http: ^1.5.0
 
 dev_dependencies:
   flutter_test:

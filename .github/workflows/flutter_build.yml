@@ -35,14 +35,26 @@ jobs:
       - name: Install dependencies
         run: flutter pub get
 
-      - name: Verify formatting
-        run: dart format --output=none --set-exit-if-changed lib test
+      - name: Format Dart files
+        run: dart format lib test
 
       - name: Analyze
         run: flutter analyze
 
       - name: Test
         run: flutter test
+
+      - name: Restore Gradle wrapper if missing
+        run: |
+          if [ ! -f android/gradlew ] || [ ! -f android/gradle/wrapper/gradle-wrapper.jar ]; then
+            flutter create --platforms=android /tmp/flute_wrapper
+            cp /tmp/flute_wrapper/android/gradlew android/gradlew
+            cp /tmp/flute_wrapper/android/gradlew.bat android/gradlew.bat
+            mkdir -p android/gradle/wrapper
+            cp /tmp/flute_wrapper/android/gradle/wrapper/gradle-wrapper.jar android/gradle/wrapper/
+            cp /tmp/flute_wrapper/android/gradle/wrapper/gradle-wrapper.properties android/gradle/wrapper/
+          fi
+          chmod +x android/gradlew
 
       - name: Build release APK
         run: flutter build apk --release

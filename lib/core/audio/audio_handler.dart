@@ -180,9 +180,6 @@ class FluteAudioHandler extends BaseAudioHandler
   }
 
   MediaItem _toMediaItem(FluteSong song) {
-    final artwork = song.artworkUrl == null
-        ? null
-        : Uri.tryParse(song.artworkUrl!);
     return MediaItem(
       id: song.id,
       title: song.title,
@@ -191,8 +188,7 @@ class FluteAudioHandler extends BaseAudioHandler
       duration: song.duration > 0
           ? Duration(milliseconds: song.duration)
           : null,
-      artUri: artwork,
-      extras: <String, dynamic>{'path': song.path, 'source': song.source.name},
+      extras: <String, dynamic>{'path': song.path},
     );
   }
 

@@ -43,7 +43,6 @@ class MiniPlayer extends ConsumerWidget {
                   borderRadius: BorderRadius.circular(12),
                   child: SongArtwork(
                     id: song.id,
-                    imageUrl: song.artworkUrl,
                     size: 52,
                   ),
                 ),

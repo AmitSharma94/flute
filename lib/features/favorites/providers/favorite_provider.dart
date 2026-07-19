@@ -21,7 +21,7 @@ class FavoriteNotifier extends Notifier<List<FluteSong>> {
       final loaded = data
           .whereType<Map>()
           .map((item) => FluteSong.fromJson(Map<String, dynamic>.from(item)))
-          .where((song) => song.id.isNotEmpty)
+          .where((song) => song.id.isNotEmpty && !_isRemotePath(song.path))
           .toList();
 
       final current = state;
@@ -45,7 +45,7 @@ class FavoriteNotifier extends Notifier<List<FluteSong>> {
 
   Future<void> removeUnavailable(Set<String> availableIds) async {
     final cleaned = state
-        .where((song) => song.isOnline || availableIds.contains(song.id))
+        .where((song) => availableIds.contains(song.id))
         .toList();
     if (cleaned.length == state.length) return;
     state = cleaned;
@@ -56,6 +56,11 @@ class FavoriteNotifier extends Notifier<List<FluteSong>> {
     StorageService.favoritesKey,
     state.map((song) => song.toJson()).toList(),
   );
+
+  static bool _isRemotePath(String path) {
+    final uri = Uri.tryParse(path);
+    return uri != null && (uri.scheme == 'http' || uri.scheme == 'https');
+  }
 }
 
 final favoriteProvider = NotifierProvider<FavoriteNotifier, List<FluteSong>>(

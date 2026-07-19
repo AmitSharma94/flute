@@ -90,7 +90,6 @@ class PlayerPage extends ConsumerWidget {
                         borderRadius: BorderRadius.circular(24),
                         child: SongArtwork(
                           id: song.id,
-                          imageUrl: song.artworkUrl,
                           size: 320,
                         ),
                       ),
