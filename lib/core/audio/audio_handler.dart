@@ -91,10 +91,7 @@ class FluteAudioHandler extends BaseAudioHandler
 
   Future<void> setLibrary(List<FluteSong> songs) async {
     _library = List.unmodifiable(songs);
-    await notifyChildrenChanged(_rootId);
-    await notifyChildrenChanged(_songsId);
-    await notifyChildrenChanged(_albumsId);
-    await notifyChildrenChanged(_artistsId);
+    
   }
 
   @override
