@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+
+<meta
+name="viewport"
+content="width=device-width, initial-scale=1.0"
+
+>
+
+<meta
+name="description"
+content="Flute is a private offline music player for Android."
+
+>
+
+  <title>Flute Music Player</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: Arial, Helvetica, sans-serif;
+      color: #ffffff;
+      background:
+        radial-gradient(
+          circle at 15% 5%,
+          rgba(255, 25, 135, 0.25),
+          transparent 36%
+        ),
+        radial-gradient(
+          circle at 85% 10%,
+          rgba(37, 91, 255, 0.28),
+          transparent 38%
+        ),
+        #070810;
+    }
+
+    main {
+      width: min(1050px, 92%);
+      margin: 0 auto;
+      padding: 60px 0 30px;
+      text-align: center;
+    }
+
+    .hero-image {
+      width: min(760px, 100%);
+      border-radius: 24px;
+      box-shadow:
+        0 0 30px rgba(255, 32, 145, 0.2),
+        0 0 50px rgba(49, 100, 255, 0.22);
+    }
+
+    h1 {
+      margin: 32px 0 12px;
+      font-size: clamp(3rem, 9vw, 6rem);
+      letter-spacing: -0.05em;
+    }
+
+    .subtitle {
+      max-width: 720px;
+      margin: 0 auto;
+      color: #c9cbda;
+      font-size: 1.15rem;
+      line-height: 1.7;
+    }
+
+    .buttons {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 14px;
+      margin-top: 32px;
+    }
+
+    .button {
+      display: inline-block;
+      padding: 15px 25px;
+      border-radius: 14px;
+      color: #ffffff;
+      font-weight: 700;
+      text-decoration: none;
+      transition:
+        transform 0.2s ease,
+        opacity 0.2s ease;
+    }
+
+    .button:hover {
+      transform: translateY(-2px);
+      opacity: 0.92;
+    }
+
+    .primary {
+      background: linear-gradient(90deg, #ff238b, #365cff);
+      box-shadow: 0 0 22px rgba(78, 83, 255, 0.42);
+    }
+
+    .secondary {
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      background: rgba(255, 255, 255, 0.07);
+    }
+
+    .features {
+      display: grid;
+      grid-template-columns:
+        repeat(auto-fit, minmax(220px, 1fr));
+      gap: 18px;
+      margin-top: 70px;
+      text-align: left;
+    }
+
+    .card {
+      padding: 24px;
+      border: 1px solid rgba(255, 255, 255, 0.11);
+      border-radius: 20px;
+      background: rgba(255, 255, 255, 0.055);
+      backdrop-filter: blur(10px);
+    }
+
+    .card h2 {
+      margin: 0 0 10px;
+      font-size: 1.2rem;
+    }
+
+    .card p {
+      margin: 0;
+      color: #c9cbda;
+      line-height: 1.6;
+    }
+
+    .notice {
+      max-width: 760px;
+      margin: 55px auto 0;
+      padding: 20px;
+      border-radius: 16px;
+      color: #d8d9e4;
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    footer {
+      margin-top: 65px;
+      padding: 25px 0;
+      color: #8c8f9e;
+      font-size: 0.9rem;
+    }
+  </style>
+
+</head>
+
+<body>
+  <main>
+    <img
+      class="hero-image"
+      src="images/flute-neon.png"
+      alt="Flute glowing neon logo"
+    >
+
+```
+<h1>Flute</h1>
+
+<p class="subtitle">
+  A private and lightweight offline music player for Android,
+  featuring local library playback, an equalizer, audio effects,
+  ringtone tools, and Android Auto support.
+</p>
+
+<div class="buttons">
+  <a
+    class="button primary"
+    href="https://github.com/AmitSharma94/flute/releases/latest"
+    target="_blank"
+    rel="noopener noreferrer"
+  >
+    Download Latest Release
+  </a>
+
+  <a
+    class="button secondary"
+    href="https://github.com/AmitSharma94/flute"
+    target="_blank"
+    rel="noopener noreferrer"
+  >
+    View on GitHub
+  </a>
+</div>
+
+<section class="features">
+  <article class="card">
+    <h2>Offline Playback</h2>
+    <p>
+      Scan and play songs stored locally on your Android device.
+    </p>
+  </article>
+
+  <article class="card">
+    <h2>Audio Effects</h2>
+    <p>
+      Equalizer, loudness boost, spatial sound, and visualizer.
+    </p>
+  </article>
+
+  <article class="card">
+    <h2>Android Auto</h2>
+    <p>
+      Browse and control your local music library from compatible
+      car displays.
+    </p>
+  </article>
+
+  <article class="card">
+    <h2>Ringtone Tools</h2>
+    <p>
+      Crop a 30-second section of a song and set it as a ringtone.
+    </p>
+  </article>
+</section>
+
+<div class="notice">
+  Flute is designed for local, offline playback. Your music library
+  remains on your device.
+</div>
+
+<footer>
+  © 2026 Flute Music Player
+</footer>
+```
+
+  </main>
+</body>
+</html>
