@@ -1,4 +1,3 @@
-```dart
 import 'dart:io';
 
 import 'package:flutter/services.dart';
@@ -146,4 +145,3 @@ class AudioEffectsService {
     await _channel.invokeMethod<void>('release');
   }
 }
-```
