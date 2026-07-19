@@ -1,45 +1,71 @@
+import 'dart:io';
+
 import 'package:on_audio_query/on_audio_query.dart';
 import 'package:permission_handler/permission_handler.dart';
 
-import '../models/song_model.dart';
-
 class AudioScannerService {
-  final OnAudioQuery _audioQuery = OnAudioQuery();
+  AudioScannerService({
+    OnAudioQuery? audioQuery,
+  }) : _audioQuery = audioQuery ?? OnAudioQuery();
 
-  Future<bool> requestPermission() => _audioQuery.permissionsRequest();
+  final OnAudioQuery _audioQuery;
 
-  Future<bool> hasPermission() => _audioQuery.permissionsStatus();
+  Future<bool> requestPermission() async {
+    if (!Platform.isAndroid) {
+      return true;
+    }
 
-  Future<bool> openSettings() => openAppSettings();
+    // on_audio_query handles READ_MEDIA_AUDIO on Android 13+
+    // and READ_EXTERNAL_STORAGE on older Android versions.
+    final granted = await _audioQuery.permissionsRequest();
 
-  Future<List<FluteSong>> getSongs() async {
-    final songs = await _audioQuery.querySongs(
+    if (granted) {
+      return true;
+    }
+
+    // Fallback through permission_handler.
+    final audioStatus = await Permission.audio.request();
+
+    if (audioStatus.isGranted) {
+      return true;
+    }
+
+    final storageStatus = await Permission.storage.request();
+
+    if (storageStatus.isGranted) {
+      return true;
+    }
+
+    return false;
+  }
+
+  Future<bool> hasPermission() async {
+    if (!Platform.isAndroid) {
+      return true;
+    }
+
+    final queryPermission = await _audioQuery.permissionsStatus();
+
+    if (queryPermission) {
+      return true;
+    }
+
+    final audioGranted = await Permission.audio.isGranted;
+    final storageGranted = await Permission.storage.isGranted;
+
+    return audioGranted || storageGranted;
+  }
+
+  Future<List<SongModel>> getSongs() async {
+    return _audioQuery.querySongs(
       sortType: SongSortType.TITLE,
       orderType: OrderType.ASC_OR_SMALLER,
       uriType: UriType.EXTERNAL,
       ignoreCase: true,
     );
-
-    return songs
-        .map(
-          (song) => FluteSong(
-            id: song.id.toString(),
-            title: _clean(song.title, 'Unknown Title'),
-            artist: _clean(song.artist, 'Unknown Artist'),
-            album: _clean(song.album, 'Unknown Album'),
-            duration: song.duration ?? 0,
-            path: song.data,
-          ),
-        )
-        .where((song) => song.id.isNotEmpty && song.path.trim().isNotEmpty)
-        .toList(growable: false);
   }
 
-  String _clean(String? value, String fallback) {
-    final cleaned = value?.trim();
-    if (cleaned == null || cleaned.isEmpty || cleaned == '<unknown>') {
-      return fallback;
-    }
-    return cleaned;
+  Future<bool> openSettings() async {
+    return openAppSettings();
   }
 }
