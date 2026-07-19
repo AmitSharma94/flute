@@ -74,26 +74,52 @@ class MiniPlayer extends ConsumerWidget {
                     ],
                   ),
                 ),
-                if (busy)
-                  const Padding(
-                    padding: EdgeInsets.all(12),
-                    child: SizedBox.square(
-                      dimension: 24,
-                      child: CircularProgressIndicator(strokeWidth: 2.5),
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    IconButton(
+                      tooltip: 'Previous',
+                      visualDensity: VisualDensity.compact,
+                      icon: const Icon(Icons.skip_previous_rounded),
+                      onPressed: busy
+                          ? null
+                          : () => ref
+                              .read(playbackControllerProvider)
+                              .previous(),
                     ),
-                  )
-                else
-                  IconButton(
-                    tooltip: state.playing ? 'Pause' : 'Play',
-                    icon: Icon(
-                      state.playing
-                          ? Icons.pause_circle_filled
-                          : Icons.play_circle_fill,
-                      size: 42,
+                    if (busy)
+                      const Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 10),
+                        child: SizedBox.square(
+                          dimension: 26,
+                          child: CircularProgressIndicator(strokeWidth: 2.5),
+                        ),
+                      )
+                    else
+                      IconButton(
+                        tooltip: state.playing ? 'Pause' : 'Play',
+                        visualDensity: VisualDensity.compact,
+                        icon: Icon(
+                          state.playing
+                              ? Icons.pause_circle_filled
+                              : Icons.play_circle_fill,
+                          size: 40,
+                        ),
+                        onPressed: () => ref
+                            .read(playbackControllerProvider)
+                            .togglePlayPause(),
+                      ),
+                    IconButton(
+                      tooltip: 'Next',
+                      visualDensity: VisualDensity.compact,
+                      icon: const Icon(Icons.skip_next_rounded),
+                      onPressed: busy
+                          ? null
+                          : () =>
+                              ref.read(playbackControllerProvider).next(),
                     ),
-                    onPressed: () =>
-                        ref.read(playbackControllerProvider).togglePlayPause(),
-                  ),
+                  ],
+                ),
               ],
             ),
           ),

@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/constants/app_info.dart';
 import '../../../equalizer/presentation/pages/equalizer_page.dart';
+import '../../../audio_effects/presentation/pages/audio_effects_page.dart';
+import '../../../audio_effects/presentation/pages/visualizer_page.dart';
 import '../../../player/providers/repeat/repeat_provider.dart';
 import '../../../player/providers/shuffle/shuffle_provider.dart';
 import '../../providers/settings_provider.dart';
@@ -117,10 +119,33 @@ class SettingsPage extends ConsumerWidget {
                     ),
                   ),
                   const Divider(height: 1, indent: 76),
+                  SettingsTile(
+                    icon: Icons.graphic_eq_rounded,
+                    title: 'Audio enhancements',
+                    subtitle: 'Loudness boost and Flute Spatial',
+                    onTap: () => Navigator.of(context).push(
+                      MaterialPageRoute<void>(
+                        builder: (_) => const AudioEffectsPage(),
+                      ),
+                    ),
+                  ),
+                  const Divider(height: 1, indent: 76),
+                  SettingsTile(
+                    icon: Icons.waves_rounded,
+                    title: 'Visualizer',
+                    subtitle: 'Live waveform for the current song',
+                    onTap: () => Navigator.of(context).push(
+                      MaterialPageRoute<void>(
+                        builder: (_) => const VisualizerPage(),
+                      ),
+                    ),
+                  ),
+                  const Divider(height: 1, indent: 76),
                   const SettingsTile(
                     icon: Icons.directions_car_filled_rounded,
                     title: 'Android Auto',
                     subtitle: 'Browse and control your offline library in the car',
+                    trailing: Icon(Icons.check_circle_outline_rounded),
                   ),
                 ],
               ),
