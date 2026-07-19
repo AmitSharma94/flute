@@ -1,4 +1,3 @@
-```yaml
 name: Flute Release Build
 
 on:
@@ -26,13 +25,13 @@ jobs:
           distribution: temurin
           java-version: "17"
 
-      - name: Set up Flutter stable
+      - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
           channel: stable
           cache: true
 
-      - name: Display tool versions
+      - name: Display versions
         run: |
           flutter --version
           dart --version
@@ -41,7 +40,7 @@ jobs:
       - name: Install dependencies
         run: flutter pub get
 
-      - name: Verify Dart formatting
+      - name: Check formatting
         run: dart format --output=none --set-exit-if-changed lib test
 
       - name: Analyze project
@@ -54,8 +53,12 @@ jobs:
         shell: bash
         run: |
           if [ ! -f android/gradlew ] || \
-             [ ! -f android/gradle/wrapper/gradle-wrapper.jar ]; then
-            echo "Gradle wrapper is missing. Restoring it from a temporary Flutter project."
+             [ ! -f android/gradle/wrapper/gradle-wrapper.jar ] || \
+             [ ! -f android/gradle/wrapper/gradle-wrapper.properties ]; then
+
+            echo "Gradle wrapper is missing. Restoring it."
+
+            rm -rf /tmp/flute_wrapper
 
             flutter create \
               --platforms=android \
@@ -78,34 +81,45 @@ jobs:
 
           chmod +x android/gradlew
 
+          echo "Gradle wrapper files:"
+          ls -la android
+          ls -la android/gradle/wrapper
+
       - name: Build release APK
         run: flutter build apk --release
 
       - name: Build release App Bundle
         run: flutter build appbundle --release
 
-      - name: Prepare release artifacts
+      - name: Prepare release files
         shell: bash
         run: |
           mkdir -p release-artifacts
 
-          VERSION="${GITHUB_REF_NAME:-manual-build}"
+          TAG_NAME="${GITHUB_REF_NAME}"
 
           cp \
             build/app/outputs/flutter-apk/app-release.apk \
-            "release-artifacts/flute-${VERSION}.apk"
+            "release-artifacts/flute-${TAG_NAME}.apk"
 
           cp \
             build/app/outputs/bundle/release/app-release.aab \
-            "release-artifacts/flute-${VERSION}.aab"
+            "release-artifacts/flute-${TAG_NAME}.aab"
 
           cd release-artifacts
-          sha256sum "flute-${VERSION}.apk" > "flute-${VERSION}.apk.sha256"
-          sha256sum "flute-${VERSION}.aab" > "flute-${VERSION}.aab.sha256"
 
+          sha256sum \
+            "flute-${TAG_NAME}.apk" \
+            > "flute-${TAG_NAME}.apk.sha256"
+
+          sha256sum \
+            "flute-${TAG_NAME}.aab" \
+            > "flute-${TAG_NAME}.aab.sha256"
+
+          echo "Prepared release files:"
           ls -lh
 
-      - name: Upload APK workflow artifact
+      - name: Upload APK as workflow artifact
         uses: actions/upload-artifact@v4
         with:
           name: flute-${{ github.ref_name }}-apk
@@ -115,7 +129,7 @@ jobs:
           if-no-files-found: error
           retention-days: 30
 
-      - name: Upload AAB workflow artifact
+      - name: Upload AAB as workflow artifact
         uses: actions/upload-artifact@v4
         with:
           name: flute-${{ github.ref_name }}-aab
@@ -139,4 +153,5 @@ jobs:
             release-artifacts/*.apk
             release-artifacts/*.aab
             release-artifacts/*.sha256
-```
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
