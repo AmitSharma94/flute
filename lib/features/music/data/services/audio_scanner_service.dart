@@ -3,6 +3,8 @@ import 'dart:io';
 import 'package:on_audio_query/on_audio_query.dart';
 import 'package:permission_handler/permission_handler.dart';
 
+import '../models/song_model.dart';
+
 class AudioScannerService {
   AudioScannerService({
     OnAudioQuery? audioQuery,
@@ -15,15 +17,12 @@ class AudioScannerService {
       return true;
     }
 
-    // on_audio_query handles READ_MEDIA_AUDIO on Android 13+
-    // and READ_EXTERNAL_STORAGE on older Android versions.
     final granted = await _audioQuery.permissionsRequest();
 
     if (granted) {
       return true;
     }
 
-    // Fallback through permission_handler.
     final audioStatus = await Permission.audio.request();
 
     if (audioStatus.isGranted) {
@@ -32,11 +31,7 @@ class AudioScannerService {
 
     final storageStatus = await Permission.storage.request();
 
-    if (storageStatus.isGranted) {
-      return true;
-    }
-
-    return false;
+    return storageStatus.isGranted;
   }
 
   Future<bool> hasPermission() async {
@@ -56,16 +51,44 @@ class AudioScannerService {
     return audioGranted || storageGranted;
   }
 
-  Future<List<SongModel>> getSongs() async {
-    return _audioQuery.querySongs(
+  Future<List<FluteSong>> getSongs() async {
+    final songs = await _audioQuery.querySongs(
       sortType: SongSortType.TITLE,
       orderType: OrderType.ASC_OR_SMALLER,
       uriType: UriType.EXTERNAL,
       ignoreCase: true,
     );
+
+    return songs
+        .map(
+          (song) => FluteSong(
+            id: song.id.toString(),
+            title: _clean(song.title, 'Unknown Title'),
+            artist: _clean(song.artist, 'Unknown Artist'),
+            album: _clean(song.album, 'Unknown Album'),
+            duration: song.duration ?? 0,
+            path: song.data,
+          ),
+        )
+        .where(
+          (song) => song.id.isNotEmpty && song.path.trim().isNotEmpty,
+        )
+        .toList(growable: false);
   }
 
   Future<bool> openSettings() async {
     return openAppSettings();
+  }
+
+  String _clean(String? value, String fallback) {
+    final cleaned = value?.trim();
+
+    if (cleaned == null ||
+        cleaned.isEmpty ||
+        cleaned.toLowerCase() == '<unknown>') {
+      return fallback;
+    }
+
+    return cleaned;
   }
 }
