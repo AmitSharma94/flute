@@ -6,7 +6,6 @@ import '../../features/music/presentation/widgets/song_artwork.dart';
 import '../../features/ringtone/data/ringtone_service.dart';
 import '../../features/ringtone/presentation/pages/ringtone_crop_page.dart';
 import 'add_to_playlist_action.dart';
-import 'delete_song_action.dart';
 
 class SongTile extends ConsumerWidget {
   const SongTile({
@@ -100,7 +99,6 @@ class SongTile extends ConsumerWidget {
                 'crop_ringtone',
               ),
             ),
-
             ListTile(
               leading: const Icon(Icons.phone_in_talk_rounded),
               title: const Text('Set full song as ringtone'),
@@ -109,7 +107,6 @@ class SongTile extends ConsumerWidget {
                 'ringtone',
               ),
             ),
-
             ListTile(
               leading: const Icon(
                 Icons.notifications_active_rounded,
@@ -120,7 +117,6 @@ class SongTile extends ConsumerWidget {
                 'notification',
               ),
             ),
-
             ListTile(
               leading: const Icon(Icons.alarm_rounded),
               title: const Text('Set as alarm sound'),
@@ -129,7 +125,6 @@ class SongTile extends ConsumerWidget {
                 'alarm',
               ),
             ),
-
             ListTile(
               leading: const Icon(
                 Icons.playlist_add_rounded,
@@ -143,41 +138,12 @@ class SongTile extends ConsumerWidget {
                 'add_to_playlist',
               ),
             ),
-
-            ListTile(
-              leading: Icon(
-                Icons.delete_outline_rounded,
-                color: Theme.of(context).colorScheme.error,
-              ),
-              title: Text(
-                'Delete from device',
-                style: TextStyle(
-                  color: Theme.of(context).colorScheme.error,
-                ),
-              ),
-              subtitle: const Text(
-                'Permanently removes the local audio file',
-              ),
-              onTap: () => Navigator.pop(
-                context,
-                'delete',
-              ),
-            ),
           ],
         ),
       ),
     );
 
     if (type == null || !context.mounted) {
-      return;
-    }
-
-    if (type == 'delete') {
-      await confirmAndDeleteSong(
-        context: context,
-        ref: ref,
-        song: song,
-      );
       return;
     }
 
