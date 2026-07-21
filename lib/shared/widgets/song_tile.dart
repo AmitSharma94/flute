@@ -5,6 +5,7 @@ import '../../features/music/data/models/song_model.dart';
 import '../../features/music/presentation/widgets/song_artwork.dart';
 import '../../features/ringtone/data/ringtone_service.dart';
 import '../../features/ringtone/presentation/pages/ringtone_crop_page.dart';
+import 'add_to_playlist_action.dart';
 import 'delete_song_action.dart';
 
 class SongTile extends ConsumerWidget {
@@ -30,10 +31,21 @@ class SongTile extends ConsumerWidget {
       onLongPress: () => _showSongActions(context, ref),
       leading: ClipRRect(
         borderRadius: BorderRadius.circular(10),
-        child: SongArtwork(id: song.id, size: 55),
+        child: SongArtwork(
+          id: song.id,
+          size: 55,
+        ),
       ),
-      title: Text(song.title, maxLines: 1, overflow: TextOverflow.ellipsis),
-      subtitle: Text(song.artist, maxLines: 1, overflow: TextOverflow.ellipsis),
+      title: Text(
+        song.title,
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+      ),
+      subtitle: Text(
+        song.artist,
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+      ),
       trailing:
           trailing ??
           (onFavorite == null
@@ -51,7 +63,9 @@ class SongTile extends ConsumerWidget {
                           : 'Add to favorites',
                       onPressed: onFavorite,
                       icon: Icon(
-                        isFavorite ? Icons.favorite : Icons.favorite_border,
+                        isFavorite
+                            ? Icons.favorite
+                            : Icons.favorite_border,
                       ),
                     ),
                     IconButton(
@@ -64,7 +78,10 @@ class SongTile extends ConsumerWidget {
     );
   }
 
-  Future<void> _showSongActions(BuildContext context, WidgetRef ref) async {
+  Future<void> _showSongActions(
+    BuildContext context,
+    WidgetRef ref,
+  ) async {
     final type = await showModalBottomSheet<String>(
       context: context,
       showDragHandle: true,
@@ -75,24 +92,58 @@ class SongTile extends ConsumerWidget {
             ListTile(
               leading: const Icon(Icons.content_cut_rounded),
               title: const Text('Create 30s ringtone'),
-              subtitle: const Text('Choose and preview a 30-second section'),
-              onTap: () => Navigator.pop(context, 'crop_ringtone'),
+              subtitle: const Text(
+                'Choose and preview a 30-second section',
+              ),
+              onTap: () => Navigator.pop(
+                context,
+                'crop_ringtone',
+              ),
             ),
+
             ListTile(
               leading: const Icon(Icons.phone_in_talk_rounded),
               title: const Text('Set full song as ringtone'),
-              onTap: () => Navigator.pop(context, 'ringtone'),
+              onTap: () => Navigator.pop(
+                context,
+                'ringtone',
+              ),
             ),
+
             ListTile(
-              leading: const Icon(Icons.notifications_active_rounded),
+              leading: const Icon(
+                Icons.notifications_active_rounded,
+              ),
               title: const Text('Set as notification sound'),
-              onTap: () => Navigator.pop(context, 'notification'),
+              onTap: () => Navigator.pop(
+                context,
+                'notification',
+              ),
             ),
+
             ListTile(
               leading: const Icon(Icons.alarm_rounded),
               title: const Text('Set as alarm sound'),
-              onTap: () => Navigator.pop(context, 'alarm'),
+              onTap: () => Navigator.pop(
+                context,
+                'alarm',
+              ),
             ),
+
+            ListTile(
+              leading: const Icon(
+                Icons.playlist_add_rounded,
+              ),
+              title: const Text('Add to playlist'),
+              subtitle: const Text(
+                'Add this song to a playlist',
+              ),
+              onTap: () => Navigator.pop(
+                context,
+                'add_to_playlist',
+              ),
+            ),
+
             ListTile(
               leading: Icon(
                 Icons.delete_outline_rounded,
@@ -104,53 +155,92 @@ class SongTile extends ConsumerWidget {
                   color: Theme.of(context).colorScheme.error,
                 ),
               ),
-              subtitle: const Text('Permanently removes the local audio file'),
-              onTap: () => Navigator.pop(context, 'delete'),
+              subtitle: const Text(
+                'Permanently removes the local audio file',
+              ),
+              onTap: () => Navigator.pop(
+                context,
+                'delete',
+              ),
             ),
           ],
         ),
       ),
     );
-    if (type == null || !context.mounted) return;
+
+    if (type == null || !context.mounted) {
+      return;
+    }
 
     if (type == 'delete') {
-      await confirmAndDeleteSong(context: context, ref: ref, song: song);
+      await confirmAndDeleteSong(
+        context: context,
+        ref: ref,
+        song: song,
+      );
+      return;
+    }
+
+    if (type == 'add_to_playlist') {
+      await showAddToPlaylistSheet(
+        context: context,
+        ref: ref,
+        song: song,
+      );
       return;
     }
 
     if (type == 'crop_ringtone') {
       await Navigator.of(context).push<void>(
         MaterialPageRoute<void>(
-          builder: (_) => RingtoneCropPage(song: song),
+          builder: (_) => RingtoneCropPage(
+            song: song,
+          ),
         ),
       );
       return;
     }
 
     final service = RingtoneService();
+
     if (!await service.canWriteSettings()) {
-      if (!context.mounted) return;
+      if (!context.mounted) {
+        return;
+      }
+
       final openSettings = await showDialog<bool>(
         context: context,
         builder: (context) => AlertDialog(
-          title: const Text('Allow system setting changes'),
+          title: const Text(
+            'Allow system setting changes',
+          ),
           content: const Text(
-            'Android requires permission for Flute to set ringtones, '
-            'notification sounds, or alarm sounds.',
+            'Android requires permission for Flute to set '
+            'ringtones, notification sounds, or alarm sounds.',
           ),
           actions: [
             TextButton(
-              onPressed: () => Navigator.pop(context, false),
+              onPressed: () => Navigator.pop(
+                context,
+                false,
+              ),
               child: const Text('Cancel'),
             ),
             FilledButton(
-              onPressed: () => Navigator.pop(context, true),
+              onPressed: () => Navigator.pop(
+                context,
+                true,
+              ),
               child: const Text('Open settings'),
             ),
           ],
         ),
       );
-      if (openSettings == true) await service.requestWriteSettings();
+
+      if (openSettings == true) {
+        await service.requestWriteSettings();
+      }
+
       return;
     }
 
@@ -160,7 +250,11 @@ class SongTile extends ConsumerWidget {
         title: song.title,
         type: type,
       );
-      if (!context.mounted) return;
+
+      if (!context.mounted) {
+        return;
+      }
+
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
@@ -171,9 +265,16 @@ class SongTile extends ConsumerWidget {
         ),
       );
     } catch (error) {
-      if (!context.mounted) return;
+      if (!context.mounted) {
+        return;
+      }
+
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Could not set sound: $error')),
+        SnackBar(
+          content: Text(
+            'Could not set sound: $error',
+          ),
+        ),
       );
     }
   }
