@@ -8,7 +8,6 @@ import '../../providers/playback_controller.dart';
 import '../../providers/player_state_provider.dart';
 import '../../providers/repeat/repeat_provider.dart';
 import '../../providers/shuffle/shuffle_provider.dart';
-import '../../../../shared/widgets/delete_song_action.dart';
 import '../widgets/player_seek_bar.dart';
 import 'queue/queue_page.dart';
 
@@ -81,14 +80,7 @@ class PlayerPage extends ConsumerWidget {
                         if (value != 'delete') {
                           return;
                         }
-                        final deleted = await confirmAndDeleteSong(
-                          context: context,
-                          ref: ref,
-                          song: song,
-                        );
-                        if (deleted && context.mounted) {
-                          Navigator.maybePop(context);
-                        }
+
                       },
                       itemBuilder: (context) => [
                         PopupMenuItem<String>(
